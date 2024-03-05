@@ -25,8 +25,6 @@ from flask_login import login_required, current_user
 import random
 
 
-
-
 @app.route("/lop_finalizar_todos_Serviço")
 @login_required
 @nome_required
