@@ -1,0 +1,148 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Carros</h2>
+<div id="search-container">
+    <div class="search-box">
+        <form style="display: flex; width: 98%;" method="POST">
+            {% if busca %}
+            <input class="anular" value="{{busca}}" type="text" id="searchinput" placeholder="Buscar carro"
+                autofocus="autofocus" name="search_string" aria-label="searchCarro">
+            {% else %}
+            <input class="anular" type="text" id="searchinput" placeholder="Buscar carro" autofocus="autofocus"
+                name="search_string" aria-label="searchCarro">
+            {% endif %}
+            <select class="anular searchselector" id="searchselector" name="searchselector" onchange="alterarFormato()">
+                {% if escolha == "todos" %}
+                <option value="todos" selected>Todos</option>
+                {% else %}
+                <option value="todos">Todos</option>
+                {% endif %}
+                {% if escolha == "marca" %}
+                <option value="marca" selected>Marca</option>
+                {% else %}
+                <option value="marca">Marca</option>
+                {% endif %}
+                {% if escolha == "modelo" %}
+                <option value="modelo" selected>Modelo</option>
+                {% else %}
+                <option value="modelo">Modelo</option>
+                {% endif %}
+                {% if escolha == "ano" %}
+                <option value="ano" selected>Ano</option>
+                {% else %}
+                <option value="ano">Ano</option>
+                {% endif %}
+                {% if escolha == "motor" %}
+                <option value="motor" selected>Motor</option>
+                {% else %}
+                <option value="motor">Motor</option>
+                {% endif %}
+            </select>
+            <button id="search-button" formaction="/searchCarro">Buscar</button>
+
+        </form>
+    </div>
+</div>
+<div class="botao-add">
+    <a href="{{url_for('addCarros')}}" class="button-pequeno cor-ok">Adicionar carro</a>
+</div>
+
+<div class="mobile-table">
+    <table class="mobile-table">
+        <thead>
+            <tr>
+                <th>MARCA</th>
+                <th>MODELO</th>
+                <th>ANO</th>
+                <th>MOTOR</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for carro in carros %}
+            <tr>
+                <td>{{ carro.marca }}</td>
+                <td>{{ carro.modelo }}</td>
+                <td>{{ carro.ano }}</td>
+                <td>{{ carro.motor }}</td>
+            </tr>
+            <tr class="row-details">
+                <td colspan="4">
+                    <table class="nested-table">
+                        <tr>
+
+                            {%if session["nivel"] >= 4%}
+                            <td>
+                                <input type="submit" onclick="showDiv('carro', '{{carro.id}}', '{{carro.modelo}}')"
+                                    class="cor-cancelar" value="Apagar">
+                            </td>
+                            {%else%}
+                            <td>
+                            </td>
+                            {%endif%}
+                            <td>
+                                <a href="{{url_for('atulizCarros',id=carro.id)}}"><input type="submit"
+                                        class="cor-alerta" name="" value="Editar"></a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="pagination">
+    {% if carros.has_prev %}
+    {% if busca %}
+    <form action="{{ url_for('searchCarro', page=carros.prev_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('carros', page=carros.prev_num) }}">&lt;</a>
+    {% endif %}
+    {% endif %}
+    {% if carros.total > 10 %}
+    {% for page_num in carros.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_num %}
+    {% if carros.page == page_num %}
+    {%if busca %}
+    <form action="{{ url_for('searchCarro', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a class="paginationActive" href="{{ url_for('carros', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% else %}
+    {%if busca %}
+    <form action="{{ url_for('searchCarro', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('carros', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if carros.has_next %}
+    {% if busca %}
+    <form action="{{ url_for('searchCarro', page=carros.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('carros', page=carros.next_num) }}">&gt;</a>
+    {% endif %}
+    {% endif %}
+</div>
+
+
+{% endblock content %}

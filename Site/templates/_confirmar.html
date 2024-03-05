@@ -1,0 +1,16 @@
+<div id="DivDelet" class="retira">
+    <div class="cor-cancelar DivDeletCabeça">
+        <h3>VERIFICAR!!!</h3>
+        <span onclick="hideDiv()" class="close-btn">&times;</span>
+    </div>
+    <div class="DivDeletConte">
+        <p style="font-weight: bold;">Ao digitar os numeros você ira apagar: </p>
+        <p style="color: red; font-size: 24px; text-align: center;" id="retornoNome"></p>
+        <p>O número de confirmação:</p>
+        <span style="color: red; font-size: 24px; text-align: center;" id="randomNumbers"></span>
+        <input type="text" id="userNumbers" placeholder="Digite os números">
+        <button class="button-pequeno cor-alerta" onclick="hideDiv()">Cancelar</button>
+        <button class="button-pequeno cor-cancelar" onclick="checkNumbers()">DELETAR</button>
+        <p id="result"></p>
+    </div>
+</div>

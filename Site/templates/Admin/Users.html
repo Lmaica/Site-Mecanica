@@ -1,0 +1,262 @@
+{% extends 'layouts.html' %}
+{% block content %}
+<div class="duas-div-lado-lado">
+    <div class="container-lado">
+        <div class="estilo-dinamico">
+            <h2 class="cabeçario-pagina">Usuários</h2>
+            <div id="search-container">
+                <div class="search-box">
+                    <form style="display: flex; width: 98%;" method="POST">
+                        {% if busca %}
+                        <input class="anular" value="{{busca}}" type="text" id="searchinput"
+                            placeholder="Buscar Usuário" autofocus="autofocus" name="search_string"
+                            aria-label="searchUser">
+                        {% else %}
+                        <input class="anular" type="text" id="searchinput" placeholder="Buscar Usuário"
+                            autofocus="autofocus" name="search_string" aria-label="searchUser">
+                        {% endif %}
+                        <select class="anular searchselector" id="searchselector" name="searchselector"
+                            onchange="alterarFormato()">
+                            <option style="background-color: rgb(165, 164, 164); color: black;" disabled>Usuário
+                            </option>
+                            {% if escolha == "nome" %}
+                            <option value="nome" selected>Nome</option>
+                            {% else %}
+                            <option value="nome">Nome</option>
+                            {% endif %}
+                            {% if escolha == "apelido" %}
+                            <option value="apelido" selected>Apelido</option>
+                            {% else %}
+                            <option value="apelido">Apelido</option>
+                            {% endif %}
+                            {% if escolha == "id" %}
+                            <option value="id" selected>ID</option>
+                            {% else %}
+                            <option value="id">ID</option>
+                            {% endif %}
+                            {% if escolha == "fone" %}
+                            <option value="fone" selected>Telefone</option>
+                            {% else %}
+                            <option value="fone">Telefone</option>
+                            {% endif %}
+                            {% if escolha == "cpf" %}
+                            <option value="cpf" selected>CPF</option>
+                            {% else %}
+                            <option value="cpf">CPF</option>
+                            {% endif %}
+                            {% if escolha == "rg" %}
+                            <option value="rg" selected>RG</option>
+                            {% else %}
+                            <option value="rg">RG</option>
+                            {% endif %}
+                            {% if escolha == "email" %}
+                            <option value="email" selected>Email</option>
+                            {% else %}
+                            <option value="email">Email</option>
+                            {% endif %}
+                            <option style="background-color: rgb(165, 164, 164); color: black;" disabled>EMPRESA
+                            </option>
+                            {% if escolha == "razaoSocial" %}
+                            <option value="razaoSocial" selected>R/Social</option>
+                            {% else %}
+                            <option value="razaoSocial">R/Social</option>
+                            {% endif %}
+                            {% if escolha == "nomeFantasia" %}
+                            <option value="nomeFantasia" selected>N/Fantasia</option>
+                            {% else %}
+                            <option value="nomeFantasia">N/Fantasia</option>
+                            {% endif %}
+                            {% if escolha == "cnpj" %}
+                            <option value="cnpj" selected>CNPJ</option>
+                            {% else %}
+                            <option value="cnpj">CNPJ</option>
+                            {% endif %}
+                        </select>
+                        <button id="search-button" formaction="/searchUser">Buscar</button>
+                    </form>
+                </div>
+            </div>
+            <div class="botao-add">
+                <a href="{{url_for('addUser')}}" class="button-pequeno cor-ok">Adicionar Usuários</a>
+            </div>
+            <div class="mobile-table">
+                <table class="mobile-table">
+                    <thead>
+                        <tr>
+                            <th>APELIDO</th>
+                            <th>TELEFONE</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody>
+                        {% for user in users %}
+                        {%if session["id"] == user.id or session["nivel"] == 5 and user.nivel == 'PERITO'%}
+                        {%else%}
+                        <tr onclick="loadDynamicContentUser({{ user.id }})">
+                            <td class="redutor">{{user.apelido}}</td>
+                            <td>{{ user.fone }}</td>
+                        </tr>
+                        <tr class="row-details">
+                            <td colspan="5">
+                                <table class="nested-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="4"
+                                                style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                                Dados user</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="lado-div">
+                                                    <img src="{{ url_for('static', filename='imagens/' + user.foto) }}"
+                                                        alt="{{ user.nome }}" class="image-Pequena">
+                                                    <div style="width: 100%; text-align: center;">
+                                                        <h4>NOME COMPLETO</h4>
+                                                        <hr>
+                                                        <span style="font-size: 80%;">{{user.nome}}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>ID</th>
+                                            <td colspan="3">{{ user.id }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Função</th>
+                                            <td colspan="3">{{ user.cargo.nome }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td colspan="3">{{ user.status }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nivel</th>
+                                            <td colspan="3">{{ user.nivel }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>2°Telefone</th>
+                                            <td colspan="3">{{ user.fone1 }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>CPF</th>
+                                            <td colspan="3">{{user.cpf}}</td>
+                                        </tr>
+                                        {% if user.cnpj %}
+                                        <tr>
+                                            <th>Nome/Fantasia</th>
+                                            <td colspan="3">{{user.nomeFantasia}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>CNPJ</th>
+                                            <td colspan="3">{{user.cnpj}}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>SOCIAL</th>
+                                            <td>{{ user.razaoSocial }}</td>
+                                        </tr>
+                                        {% endif %}
+
+                                        <tr>
+                                            <th>E-mail</th>
+                                            <td colspan="3">{{ user.email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nacido</th>
+                                            <td colspan="3">{{ user.niver }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Endereço</th>
+                                            <td>{{user.rua}} {{user.nuCasa}}
+                                                {{user.complemento }} {{user.cidade }}
+                                                {{user.estado}}
+                                                {{user.cep}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Data/Cadastro</th>
+                                            <td colspan="3" class="dataFormatada">{{ user.data_criado }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="4">
+                                                <div class="button-container">
+
+                                                    <input type="button"
+                                                        onclick="showDiv('User', '{{user.id}}', '{{user.nome}}')"
+                                                        class="cor-cancelar" style="margin-bottom: 10px;"
+                                                        value="Apagar">
+                                                    <input type="button"
+                                                        onclick="window.location.href='{{url_for('atulizUser', id=user.id)}}';"
+                                                        class="cor-alerta" style="margin-bottom: 10px;" value="Editar">
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        {%endif%}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="pagination">
+            {% if users.has_prev %}
+            {% if busca %}
+            <form action="{{ url_for('searchUser', page=users.prev_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button type="submit">&lt;</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('Users', page=users.prev_num) }}">&lt;</a>
+            {% endif %}
+            {% endif %}
+            {% if users.total > 10 %}
+            {% for page_num in users.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+            {% if page_num %}
+            {% if users.page == page_num %}
+            {%if busca %}
+            <form action="{{ url_for('searchUser', page=page_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button class="paginationActive" type="submit">{{ page_num }}</button>
+            </form>
+            {% else %}
+            <a class="paginationActive" href="{{ url_for('Users', page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+            {% else %}
+            {%if busca %}
+            <form action="{{ url_for('searchUser', page=page_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button type="submit">{{ page_num }}</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('Users', page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% if users.has_next %}
+            {% if busca %}
+            <form action="{{ url_for('searchUser', page=users.next_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button type="submit">&gt;</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('Users', page=users.next_num) }}">&gt;</a>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="child-container">
+    </div>
+</div>
+{% endblock content %}

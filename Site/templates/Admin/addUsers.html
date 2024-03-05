@@ -1,0 +1,200 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+
+{% from "_formularioAjuda.html" import render_field %}
+{% if users %}
+<h2 class="cabeçario-pagina">Editar Usuário</h2>
+{% else %}
+<h2 class="cabeçario-pagina">Adicionar Usuário</h2>
+{% endif %}
+<form action="" method="POST" enctype="multipart/form-data">
+    {{form.csrf_token}}
+    {% if users %}
+    {% if users.id|int == session['_user_id']|int %}
+    <div class="retira">
+        {{ form.status.label }} {{ form.status() }}
+        {{ form.nivel.label }} {{ form.nivel() }}
+        {{ form.cargo.label }} {{ form.cargo() }}
+    </div>
+    {%else%}
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados de Selecionar</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div>
+            {{ form.status.label }} {{ form.status() }}
+            {{ form.nivel.label }} {{ form.nivel() }}
+            {{ form.cargo.label }} {{ form.cargo() }}
+        </div>
+    </fieldset>
+    {%endif%}
+    {% else %}
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados de Selecionar</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div>
+            {{ form.status.label }} {{ form.status() }}
+            {{ form.nivel.label }} {{ form.nivel() }}
+            {{ form.cargo.label }} {{ form.cargo() }}
+        </div>
+    </fieldset>
+    {% endif %}
+
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                {% if users%}
+                {% if users.id|int == 1 %}
+                <legend>Dados do(a) Proprietario(a)</legend>
+                {% else %}
+                <legend>Dados do(a) Usuário(a)</legend>
+                {%endif%}
+                {% else %}
+                <legend>Dados do(a) Usuário(a)</legend>
+                {%endif%}
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div id="dadosMudavel" class="containerDados hidden">
+            {{ render_field(form.nome,id='nome', placeholder='Qual seu Nome', required=True) }}
+            {{ render_field(form.apelido,id='apelido', placeholder='Qual seu Apelido') }}
+            {{ render_field(form.niver,id='niver', placeholder='Qual sua Data de Nacimento') }}
+            {{ render_field(form.cpf,id='cpf', placeholder='Qual seu cpf') }}
+            {{ render_field(form.rg,id='rg', placeholder='Qual seu RG') }}
+
+
+            {% if users%}
+            {% if users.id|int == 1 %}
+            {% else %}
+            {{ render_field(form.fone,id='telefone', placeholder='Qual seu Numero de Telefone') }}
+            {{ render_field(form.fone1,id='telefone1', placeholder='Tem outro Numero de Telefone') }}
+            {{ render_field(form.email,id='email',class='anular', placeholder='Qual seu Email') }}
+            {%endif%}
+            {% else %}
+            {{ render_field(form.fone,id='telefone', placeholder='Qual seu Numero de Telefone') }}
+            {{ render_field(form.fone1,id='telefone1', placeholder='Tem outro Numero de Telefone') }}
+            {{ render_field(form.email,id='email',class='anular', placeholder='Qual seu Email') }}
+            {%endif%}
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                {% if users%}
+                {% if users.id|int == 1 %}
+                <legend>Dados da Empresa</legend>
+                {% else %}
+                <legend>Dados Empresario</legend>
+                {%endif%}
+                {% else %}
+                <legend>Dados Empresario</legend>
+                {%endif%}
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+            {% if users%}
+            {% if users.id|int == 1 %}
+            {{ render_field(form.razaoSocial,id='razaoSocial', placeholder='Razão Social' , required=True) }}
+            {{ render_field(form.nomeFantasia,id='nomeFantasia', placeholder='Nome Fantasia', required=True) }}
+            {{ render_field(form.cnpj,id='cnpj', placeholder='cnpj', required=True) }}
+            {{ render_field(form.fone,id='telefone', placeholder='Qual seu Numero de Telefone', required=True) }}
+            {{ render_field(form.fone1,id='telefone1', placeholder='Tem outro Numero de Telefone', required=false) }}
+            {{ render_field(form.email,id='email',class='anular', placeholder='Qual seu Email', required=True) }}
+            {% else %}
+            {{ render_field(form.razaoSocial,id='razaoSocial', placeholder='Razão Social') }}
+            {{ render_field(form.nomeFantasia,id='nomeFantasia', placeholder='Nome Fantasia') }}
+            {{ render_field(form.cnpj,id='cnpj', placeholder='cnpj') }}
+            {%endif%}
+            {% else %}
+            {{ render_field(form.razaoSocial,id='razaoSocial', placeholder='Razão Social') }}
+            {{ render_field(form.nomeFantasia,id='nomeFantasia', placeholder='Nome Fantasia') }}
+            {{ render_field(form.cnpj,id='cnpj', placeholder='cnpj') }}
+            {%endif%}
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                {% if users%}
+                {% if users.id|int == 1 %}
+                <legend>Endereço da Empresa</legend>
+                {% else %}
+                <legend>Endereço do(a) Usuário(a)</legend>
+                {%endif%}
+                {% else %}
+                <legend>Endereço do(a) Usuário(a)</legend>
+                {%endif%}
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+            {{ render_field(form.cep,id='cep', placeholder='CEP') }}
+            {{ render_field(form.estado, placeholder='Estado') }}
+            {{ render_field(form.cidade, placeholder='Cidade') }}
+            {{ render_field(form.rua, placeholder='Rua ou Avenida') }}
+            {{ render_field(form.bairro, placeholder='Bairro') }}
+            {{ render_field(form.nuCasa,id='nufor', placeholder='Numero da Casa') }}
+            {{ render_field(form.complemento, placeholder='Complemento') }}
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+
+                {% if users%}
+                {% if users.id|int == 1 %}
+                <legend>Logo da Empresa</legend>
+                {% else %}
+                <legend>Foto do(a) Usuário(a)</legend>
+                {%endif%}
+                {% else %}
+                <legend>Foto do(a) Usuário(a)</legend>
+                {%endif%}
+            </div>
+
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+            {% if users %}
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Adicionar Imagem</label>
+                <img src="{{url_for('static',filename='imagens/'+users.foto)}}" id="preview-image-1" src=""
+                    alt="Preview Image 1" onclick="openFileInput(1)">
+            </div>
+            {% else %}
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Adicionar Imagem</label>
+                <img id="preview-image-1" src="{{url_for('static',filename='imagens/foto.jpg')}}" alt=""
+                    onclick="openFileInput(1)">
+            </div>
+        </div>
+        {% endif %}
+    </fieldset>
+    <fieldset class="containerForm">
+        {% if users %}
+        {{form.submit(value="ATUALIZAR", class="button-grande cor-ok")}}
+        {% else %}
+        {{form.submit(class="button-grande cor-ok")}}
+        {% endif %}
+        {% if users %}
+        {% if users.id|int == session['_user_id']|int %}
+        <a href="{{url_for('dadosUsuario',id=session['_user_id'])}}" class="button-medio cor-cancelar">CANCELAR</a>
+        {%else%}
+        <a href="{{url_for('Users')}}" class="button-medio cor-cancelar">CANCELAR</a>
+        {%endif%}
+        {%endif%}
+    </fieldset>
+</form>
+
+{% endblock content %}

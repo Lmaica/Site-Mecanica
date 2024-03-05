@@ -1,0 +1,217 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+<h2 class="cabeçario-pagina">principal</h2>
+{% set lembretes_list = lembretes.all() %}
+{% if lembretes_list|length != 0 %}
+<div class="lado-lado-desk">
+    <div style="display: block;">
+        <h3>Mensagens</h3>
+        <div class="fundo-container">
+            <ul class="lembretes">
+                {% for lembrete in lembretes %}
+                <li class="lembrete">
+                    <div class="lembrete-conteudo">
+                        <p class="lembrete-msg">
+                            <span class="lembrete-titulo">{{ lembrete.titulo }}:</span>
+                            {{ lembrete.msg }}
+                        </p>
+                    </div>
+                    <div class="lembrete-rodape">
+                        <div style="display: flex;">
+                            <p style="font-weight: bold;">Autor:</p>
+                            <span>{{ lembrete.autor }}</span>
+                        </div>
+                        <div style="display: flex;">
+                            <p style="font-weight: bold;">Data:</p>
+                            <span class="dataFormatada">{{ lembrete.data_inicil }}</span>
+                            <p style="font-weight: bold;">-</p>
+                            <span class="dataFormatada">{{ lembrete.data_fim }}</span>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {%else%}
+    {%endif%}
+    {% set adivertencia_list = adivertencias.all() %}
+    {% if adivertencia_list|length != 0 %}
+    <div style="display: block;">
+        <h3>Advertências</h3>
+        <div class="fundo-container">
+            <ul class="lembretes">
+                {% for adivertencia in adivertencia_list %}
+                <li class="lembrete">
+                    <div class="lembrete-conteudo">
+                        <p class="lembrete-msg">
+                            <span class="lembrete-titulo">{{ adivertencia.titulo }}:</span>
+                            {{ adivertencia.msg }}
+                        </p>
+                    </div>
+                    <div class="lembrete-rodape">
+                        <div style="display: flex;">
+                            <p style="font-weight: bold;">Autor:</p>
+                            <span>{{ adivertencia.autor }}</span>
+                        </div>
+                        <div style="display: flex;">
+                            <p style="font-weight: bold;">Data:</p>
+                            <span class="dataFormatada">{{ adivertencia.data_inicil }}</span>
+                            <p style="font-weight: bold;">-</p>
+                            <span class="dataFormatada">{{ adivertencia.data_fim }}</span>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div id="MenuInicial">
+    <ul>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/colaborador.png') }}" alt=""> Colaborador<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('dadosUsuario',id=session['_user_id'])}}">Dados<a></li>
+                {% if session["nivel"] >= 3 %}
+                <li><a href="{{url_for('relatorio')}}">Relatorios</a></li>
+                {%else%}
+                {%endif%}
+                {% if session["nivel"] >= 2 %}
+                <li><a href="{{url_for('servicoRelatorios')}}"> Meus Serviços</a></li>
+                {%else%}
+                {%endif%}
+                <hr>
+            </ul>
+        </li>
+
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="{{url_for('clientes')}}" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/clientes.png') }}" alt=""> Clientes</a>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="{{url_for('carros')}}" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/carro.png') }}" alt=""> Carros</a>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/MDO.png') }}" alt="">
+                Mão de Obra <i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('MaoObras')}}">Mão de Obras</a></li>
+                <li><a href="{{url_for('Nome_para_Mao_de_Obra')}}">Nomes</a></li>
+                {%if session["nivel"] >= 4%}
+                <li><a href="{{url_for('Categorias_de_Mão_de_Obra')}}">Cateogoria</a></li>
+                {%else%}
+                {%endif%}
+                {%if session["nivel"] >= 4%}
+                <li><a href="{{url_for('ValorMDO')}}"> Valor</a></li>
+                {%else%}
+                {%endif%}
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/pistao.png') }}" alt="">Peças<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Peças')}}">Peças</a></li>
+                <li><a href="{{url_for('Marca_das_Peças')}}"> Marcas</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+    </ul>
+    <ul>
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/fornecedor.png') }}" alt="">Fornecedor<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Fornecedors')}}">Fornecedor</a></li>
+                <li><a href="{{url_for('Cateforia_do_Fornecedor')}}">Cateogorias</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 2%}
+        <li class="principalCorUnica" ><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/serviço.png') }}"
+                    alt="">Serviços <i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('servisos',status='Orçamento')}}">Orçamentos</a></li>
+                {%if session["nivel"] >= 3%}
+                <li><a href="{{url_for('servisos',status='Aprovado')}}">Aprovados</a></li>
+                <li><a href="{{url_for('servisos',status='Finalizado')}}">Finalizados</a></li>
+                <li><a href="{{url_for('servisos',status='Todo')}}">Todos</a></li>
+                {%else%}
+                {%endif%}
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 4%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/moeda.png') }}"
+                    alt="">Administrativo<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Caixas',tipo='Todos')}}">Caixa</a></li>
+                <li><a href="{{url_for('Caixas',tipo='Entrada')}}">Entrada</a></li>
+                <li><a href="{{url_for('Caixas',tipo='Saida')}}">Saida</a></li>
+                <li><a href="{{url_for('Carteiras')}}">Carteira</a></li>
+                <li><a href="{{url_for('Categorias_de_Caixa')}}">Categoria</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {% if session["nivel"] >= 5 %}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/grafico.png') }}"
+                    alt=""> Metas<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('MetaBruta')}}">Bruto</a></li>
+                <li><a href="{{url_for('MetaLiquida')}}">Liquido</a></li>
+                <li><a href="{{url_for('MetaMecanico')}}">Mecanico</a></li>
+                <li><a href="{{url_for('MetaVendedor')}}">Vendedor</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {% if session["nivel"] >= 5 %}
+        <li class="principalCorUnica" ><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/equipe.png') }}"
+                    alt=""> Equipe<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Users')}}">Colaboradores</a></li>
+                <li><a href="{{url_for('Cargos')}}">Cargos</a></li>
+                <li><a href="{{url_for('Lembretes')}}">Avisos</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+    </ul>
+</div>
+
+<script>
+
+</script>
+
+
+{% endblock content %}

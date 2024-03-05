@@ -1,0 +1,234 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Configuraçãol</h2>
+
+<h2>Configuração de Estilo</h2>
+<hr>
+<h4>Teste Botão</h4>
+<div id="MenuInicial">
+    <ul>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/colaborador.png') }}" alt=""> Colaborador<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="#">Dados<a></li>
+                <li><a href="#">Relatorios</a></li>
+                <li><a href="#"> Meus Serviços</a></li>
+                <hr>
+            </ul>
+        </li>
+
+    </ul>
+    <ul>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/carro.png') }}" alt=""> Carros</a>
+        </li>
+
+    </ul>
+</div>
+<hr>
+<label for="corBotao">Cor de Botões:</label>
+<input type="color" id="corBotao" value="{{cores.principal_botao}}" onchange="aplicarEstilo()">
+
+<label for="corImg">Cor Icones:</label>
+<input type="range" style="-webkit-appearance: none; background: linear-gradient(to right, black 10%, white 80%);"
+    id="corImg" min="0" max="100" step="" value="{{icones.img_cor}}" onchange="aplicarEstilo()">
+
+<label for="corFundo">Cor de Fundo:</label>
+<input type="color" id="corFundo" value="{{cores.principal_principal}}" onchange="aplicarEstilo()">
+
+<label for="brilho">Sombra Fundo:</label>
+<input type="range" style="-webkit-appearance: none; background: linear-gradient(to right, black 37%, white 40%);"
+    id="brilho" min="0" max="2.8" step="0.1" value="{{cores.meschagem}}" onchange="aplicarEstilo()">
+
+
+<label for="corLetras">Cor de Letras:</label>
+<input type="color" id="corLetras" value="{{cores.principal_letras}}" onchange="aplicarEstilo()">
+
+
+<label for="fonte">Fonte:</label>
+<select id="fonte" onchange="aplicarEstilo()">
+    <option value="{{fontes.fonte_principal}}" selected>{{fontes.fonte_principal}}</option>
+    <option value="Arial, sans-serif">Arial</option>
+    <option value="'Times New Roman', serif">Times New Roman</option>
+    <option value="'Courier New', monospace">Courier New</option>
+    <option value="Verdana, sans-serif">Verdana</option>
+    <option value="Georgia, serif">Georgia</option>
+    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+    <option value="'Lucida Console', Monaco, monospace">Lucida Console</option>
+    <option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino</option>
+    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+    <option value="'Impact', Charcoal, sans-serif">Impact</option>
+    <option value="'Copperplate Gothic Light', sans-serif">Copperplate Gothic Light</option>
+    <option value="'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">Franklin Gothic Medium</option>
+    <option value="'Garamond', 'Baskerville', 'Baskerville Old Face', 'Hoefler Text', 'Times New Roman', serif">Garamond
+    </option>
+    <option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
+    <option value="'Century Gothic', sans-serif">Century Gothic</option>
+</select>
+
+
+
+
+<div style="padding: 20px;" class="lado-a-lado">
+    <input type="button" class="cor-ok button-medio" value="SALVAR CONFIGURAÇÔES" onclick="enviarDadosParaFlask()">
+
+    <a href="{{url_for('Admin')}}" class="button-pequeno cor-cancelar">CANCELAR</a>
+</div>
+<script>
+    var body = document.body;
+    var principalCorMesclada = document.getElementsByClassName('principalCorMesclada');
+    var principalCorUnica = document.getElementsByClassName('principalCorUnica');
+    var cabeçarioPagina = document.getElementsByClassName('cabeçario-pagina');
+
+    function hexToRgb(hex) {
+        hex = hex.replace(/^#/, '');
+        var bigint = parseInt(hex, 16);
+        var r = (bigint >> 16) & 255;
+        var g = (bigint >> 8) & 255;
+        var b = bigint & 255;
+        return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+    }
+
+    function escurecerCor(cor, fator) {
+        var match = cor.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
+
+        if (match && match.length === 4) {
+            if (fator > 1.0) {
+                var r = Math.max(0, Math.min(255, Math.round(parseInt(match[1], 10) + (90) * fator)));
+                var g = Math.max(0, Math.min(255, Math.round(parseInt(match[2], 10) + (90) * fator)));
+                var b = Math.max(0, Math.min(255, Math.round(parseInt(match[3], 10) + (90) * fator)));
+
+                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+            } else {
+                var r = Math.max(0, Math.min(255, Math.round(parseInt(match[1], 10) + (10 - parseInt(match[1], 10)) * fator)));
+                var g = Math.max(0, Math.min(255, Math.round(parseInt(match[2], 10) + (10 - parseInt(match[2], 10)) * fator)));
+                var b = Math.max(0, Math.min(255, Math.round(parseInt(match[3], 10) + (10 - parseInt(match[3], 10)) * fator)));
+            }
+
+            return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+
+        } else {
+            return cor;
+        }
+    }
+
+    function clarearCor(cor, fator) {
+        var match = cor.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
+
+        if (match && match.length === 4) {
+            if (fator > 1.0) {
+                var r = Math.max(0, Math.min(255, Math.round(parseInt(match[1], 10) + (120) * fator)));
+                var g = Math.max(0, Math.min(255, Math.round(parseInt(match[2], 10) + (120) * fator)));
+                var b = Math.max(0, Math.min(255, Math.round(parseInt(match[3], 10) + (120) * fator)));
+
+                return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+            } else {
+                var r = Math.max(0, Math.min(255, Math.round(parseInt(match[1], 10) + (90 - parseInt(match[1], 10)) * fator)));
+                var g = Math.max(0, Math.min(255, Math.round(parseInt(match[2], 10) + (90 - parseInt(match[2], 10)) * fator)));
+                var b = Math.max(0, Math.min(255, Math.round(parseInt(match[3], 10) + (90 - parseInt(match[3], 10)) * fator)));
+            }
+
+            return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+        } else {
+            return cor;
+        }
+    }
+    function extrairNumerosRGB(rgbString) {
+        const numeros = rgbString.match(/\d+/g);
+
+        const num1 = parseInt(numeros[0], 10);
+        const num2 = parseInt(numeros[1], 10);
+        const num3 = parseInt(numeros[2], 10);
+
+        const numerosSomar = num1 + num2 + num3;
+        return numerosSomar;
+    }
+    function aplicarEstilo() {
+        var corBotaoHex = document.getElementById('corBotao').value;
+        var corFundoHex = document.getElementById('corFundo').value;
+        var corLetrasHex = document.getElementById('corLetras').value;
+        var corFundoRGB = hexToRgb(corFundoHex);
+        var fonte = document.getElementById('fonte').value;
+        var brilho = parseFloat(document.getElementById('brilho').value);
+        var corImg = parseFloat(document.getElementById('corImg').value);
+        var corMaisEscura = escurecerCor(corFundoRGB, brilho);
+        var corMaisClara = clarearCor(corFundoRGB, brilho);
+        var gradienteLinear3cor = 'linear-gradient(to bottom right, ' + corMaisClara + ', ' + corMaisEscura + ', ' + corMaisClara + ')';
+
+        const numerosRGB1 = extrairNumerosRGB(corFundoRGB);
+
+        for (var i = 0; i < principalCorUnica.length; i++) {
+            principalCorUnica[i].style.background = corBotaoHex;
+            principalCorUnica[i].style.color = corLetrasHex;
+
+            var aElements = principalCorUnica[i].querySelectorAll('a');
+            var imagem = principalCorUnica[i].querySelector('img');
+
+            if (imagem) {
+                imagem.style.filter = 'invert(' + corImg + '%)';
+            }
+
+            aElements.forEach(function (a) {
+                a.style.color = corLetrasHex;
+            });
+        }
+        for (var i = 0; i < cabeçarioPagina.length; i++) {
+            cabeçarioPagina[i].style.background = gradienteLinear3cor;
+            cabeçarioPagina[i].style.color = corLetrasHex;
+        }
+        for (var i = 0; i < principalCorMesclada.length; i++) {
+            principalCorMesclada[i].style.background = gradienteLinear3cor;
+            principalCorMesclada[i].style.color = corLetrasHex;
+        }
+
+        body.style.fontFamily = fonte;
+    }
+    // Criar um objeto com os dados que serão enviados
+    function enviarDadosParaFlask() {
+        var corBotaoHex = document.getElementById('corBotao').value;
+        var corFundoHex = document.getElementById('corFundo').value;
+        var corLetrasHex = document.getElementById('corLetras').value;
+        var corFundoRGB = hexToRgb(corFundoHex);
+        var fonte = document.getElementById('fonte').value;
+        var brilho = parseFloat(document.getElementById('brilho').value);
+        var corImg = parseFloat(document.getElementById('corImg').value);
+
+        var corMaisEscura = escurecerCor(corFundoRGB, brilho);
+        var corMaisClara = clarearCor(corFundoRGB, brilho);
+        var gradienteLinear3cor = 'linear-gradient(to bottom right, ' + corMaisClara + ', ' + corMaisEscura + ', ' + corMaisClara + ')';
+
+        const numerosRGB1 = extrairNumerosRGB(corFundoRGB);
+
+        var dados = {
+            "cores": {
+                "principal_botao": corBotaoHex,
+                "principal_principal": corFundoHex,
+                "principal_secundaria": gradienteLinear3cor,
+                "principal_letras": corLetrasHex,
+                "meschagem": brilho,
+            },
+            "fontes": {
+                "fonte_principal": fonte,
+            },
+            "icones": {
+                "img_cor": corImg,
+            }
+
+        };
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/salvar_config', false);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                window.location.href = '/';
+            } else {
+                console.error('Erro ao enviar dados para o servidor.');
+            }
+        };
+
+        xhr.send(JSON.stringify(dados));
+    }
+</script>
+{% endblock content %}

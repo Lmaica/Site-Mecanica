@@ -1,0 +1,79 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+{% if atulizar %}
+<h2 class="cabeçario-pagina">Atulizar Fornecedor</h2>
+{% else %}
+<h2 class="cabeçario-pagina">Adicionar Fornecedor</h2>
+{% endif %}
+{% from "_formularioAjuda.html" import render_field %}
+<form action="" method="POST" enctype="multipart/form-data">
+    {{form.csrf_token}}
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados do Fornecedor</legend>
+                <span style="font-size: 80%;">(Dados Obrigatorios)</span>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+
+            {{ render_field(form.nome, placeholder='Nome') }}
+            {{ form.catfornecedor.label }} {{ form.catfornecedor() }}
+            {{ render_field(form.fone,id='telefone', placeholder='Telefone') }}
+            {{ render_field(form.fone1,id='telefone1', placeholder='Telefone') }}
+            {{ render_field(form.email,class='anular', placeholder='Email') }}
+            {{ render_field(form.cnpj,id='cnpj', placeholder='cnpj') }}
+            {{ render_field(form.obs, placeholder='Observação ') }}
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Endereço do Fornecedor</legend>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+            {{ render_field(form.cep,id='cep', placeholder='CEP') }}
+            {{ render_field(form.estado, placeholder='Estado') }}
+            {{ render_field(form.cidade, placeholder='Cidade') }}
+            {{ render_field(form.bairro, placeholder='Bairro') }}
+            {{ render_field(form.rua, placeholder='Rua ou Avenida') }}
+            {{ render_field(form.nuCasa,id='nufor', placeholder='Numero da Casa') }}
+            {{ render_field(form.complemento, placeholder='Complemento') }}
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Imagens do Fornecedor</legend>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Adicionar Imagem 1</label>
+                {% if atulizar %}
+                <img src="{{url_for('static',filename='imagens/'+Fornecedor.foto)}}" id="preview-image-1" src=""
+                    alt="Preview Image 1" onclick="openFileInput(1)">
+                {% else %}
+                <img id="preview-image-1" src="{{url_for('static',filename='imagens/foto.jpg')}}" alt=""
+                    onclick="openFileInput(1)">
+                {% endif %}
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        {% if atulizar %}
+        {{form.submit(value="ATULIZAR", class="button-grande cor-ok")}}
+        {% else %}
+        {{form.submit(class="button-grande cor-ok")}}
+        {% endif %}
+        <a href="{{url_for('Fornecedors')}}" class="button-medio cor-cancelar">CANCELAR</a>
+    </fieldset>
+
+</form>
+{% endblock content %}

@@ -1,0 +1,50 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+{% from "_formularioAjuda.html" import render_field %}
+{{form.csrf_token}}
+{% if atulizar %}
+{%if tipo == 'Todos'%}
+<h2 class="cabeçario-pagina">Atulizar Dados</h2>
+{%else%}
+<h2 class="cabeçario-pagina">Atulizar {{tipo}}</h2>
+{%endif%}
+{% else %}
+<h2 class="cabeçario-pagina">Adicionar {{tipo}} </h2>
+{% endif %}
+<fieldset class="containerForm">
+    <legend>Dados da {{tipo}}</legend>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.pagopor.label }}
+        {{ form.pagopor() }}
+        {{ form.descricao.label }}
+        {{ form.descricao() }}
+        <div class="lado-a-lado">
+            {{ render_field(form.valor,placeholder='R$ 0,00', class="inputReais ")}}
+        </div>
+        {{ form.carteira_id.label }}
+        {{ form.carteira_id() }}
+        {{ form.catcaixa_id.label }}
+        {{ form.catcaixa_id() }}
+        {% if tipo == 'Entrada' %}
+        <div class="retira">
+            {{ render_field(form.fornecedor_id) }}
+        </div>
+        {% else %}
+        {{ form.fornecedor_id.label }}
+        {{ form.fornecedor_id() }}
+        {% endif %}
+</fieldset>
+<fieldset class="containerForm">
+    {% if atulizar %}
+    {{form.submit(value="ATULIZAR", class="button-grande cor-ok")}}
+    {% else %}
+    {{form.submit(class="button-grande cor-ok")}}
+    {% endif %}
+    <a href="{{url_for('Caixas',tipo=tipo)}}" class="button-medio cor-cancelar">CANCELAR</a>
+</fieldset>
+
+
+
+{% endblock content %}

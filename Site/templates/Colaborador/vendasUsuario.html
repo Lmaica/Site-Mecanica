@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota Fiscal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Lato";
+            margin: 0;
+            padding: 0;
+            background-color: #D3D6E1;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .nota-fiscal {
+            width: 100%;
+            background-color: #9c9c9c;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+
+        }
+
+
+        .cabecalho {
+            background-color: #383636;
+            color: #fff;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .informacoes-cliente {
+            padding: 20px;
+        }
+
+        .informacoes-compra {
+            padding-top: 5px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        tbody>tr:nth-child(2n+1),
+        tbody>tr:nth-child(2n+1) {
+            background-color: #d0d0d0;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .rodape {
+            padding: 20px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .div-botoes {
+            height: 0;
+            top: 13px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        .dados_caretira {
+            padding-top: 5px;
+            padding-left: 20px;
+            padding-right: 20px;
+            display: block;
+            min-height: 130px;
+            background-color: #c7c6c6;
+            border-radius: 10px;
+        }
+
+        .servicos-list {
+            margin: 0;
+            padding: 0;
+            background-color: #D3D6E1;
+        }
+
+        .servicos-list-ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .servicos-list-li {
+            margin-bottom: 0px;
+        }
+
+        .servicos-list-li p {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .servicos-list-li:nth-child(even) a {
+            background-color: #d9d9d9;
+            color: #000000;
+        }
+
+        .servicos-list-li:nth-child(odd) a {
+            background-color: #a5a5a5;
+            color: #000000;
+        }
+
+        .servicos-list-li a {
+            text-align: center;
+            display: block;
+            text-decoration: none;
+            padding: 5px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .servicos-list-li a:hover {
+            background-color: #34495e;
+        }
+
+        .funcionario-info {
+            background-color: #d9d9d9;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 0px;
+        }
+
+        .funcionario-info h1 {
+            color: #333;
+        }
+
+        .funcionario-info .info {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .custom-table {
+            background-color: #c6c5c5;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0px;
+        }
+
+        .custom-table th,
+        .custom-table td {
+            border-bottom: 1px solid #000000;
+            text-align: center;
+        }
+
+        .custom-table th {
+            background-color: #606060;
+        }
+
+        .rolage {
+            max-height: 200px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="funcionario-info">
+        <h1>Meta e Faturamento do Funcionário</h1>
+        <div class="container">
+            <div class="info">
+                <p><strong>Funcionário:</strong> João Silva</p>
+                <p><strong>Meta Mensal:</strong> R$ 10.000,00</p>
+            </div>
+            <div class="rolage">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Ganhos</th>
+                            <th>Meta</th>
+                            <th>Bonos</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for ganho in ganhos_por_mes %}
+                        <tr>
+                            <td>{{ ganho.mes }}/{{ ganho.ano }}</td>
+                            <td style="color: rgb(136, 0, 5);">{{ ganho.ganhos_total }}</td>
+                            <td style="color: rgb(9, 136, 0);">{{ ganho.meta }}</td>
+                            <td style="color: rgb(18, 0, 214);">{{ ganho.bonos }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% for item in servisos %}
+    <div class="servicos-list">
+        <h2>Navegador</h2>
+        <ul class="servicos-list-ul">
+            {% for item in servisos %}
+            <li class="servicos-list-li"><a href="javascript:void(0);" onclick="rolarParaServico({{ loop.index }})">{{
+                    loop.index }}) Cleinte: <p>{{
+                        item.cliente_os.nome }}</p> carro: <p>{{
+                        item.veiculo_os.carro.modelo }}</p> data: <p class="dataFormEspecif"> {{
+                        item.data_criado }}</p></a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div style="background-color: #eeeaea; padding: 5px;"></div>
+    <div class="div-botoes">
+        <a href="{{url_for('AbrirServiço',id=item.id,tratatar='alertar')}}"><input type="submit"
+                class="button-grande cor-ok" name="" value="Abrir Serviço"></a>
+        <a><input type="submit" class="button-grande cor-alerta" onclick="gerarPDF({{ loop.index - 1 }})" name=""
+                value="PDF"></a>
+    </div>
+    <div id="servico{{ loop.index }}" class="nota-fiscal">
+        <div class="cabecalho">
+            <h2>{{ loop.index }}: Dados de Seviços</h2>
+        </div>
+        <div class="informacoes-cliente">
+            <table>
+                <tr>
+                    <th>ID:</th>
+                    <td>{{ item.id }}</td>
+                </tr>
+                <tr>
+                    <th>Cliente:</th>
+                    <td>{{ item.cliente_os.nome }}</td>
+                </tr>
+                <tr>
+                    <th>Telefone:</th>
+                    <td>{{ item.cliente_os.fone }} - {{ item.cliente_os.fone1 }}</td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td>{{ item.cliente_os.email }}</td>
+                </tr>
+                <tr>
+                    <th>Placa:</th>
+                    <td>{{ item.veiculo_os.placa }}</td>
+                </tr>
+                <tr>
+                    <th>Marca:</th>
+                    <td>{{ item.veiculo_os.carro.marca }}</td>
+                </tr>
+                <tr>
+                    <th>Modelo:</th>
+                    <td>
+                        <p style="font-weight: bold;">{{ item.veiculo_os.carro.modelo }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Ano:</th>
+                    <td>{{ item.veiculo_os.carro.ano }}</td>
+                </tr>
+                <tr>
+                    <th>Motor:</th>
+                    <td>{{ item.veiculo_os.carro.motor }}</td>
+                </tr>
+                <tr>
+                    <th>Observação:</th>
+                    <td> {{ item.obs }}</td>
+                </tr>
+                <tr>
+                    <th>Km do Serviço:</th>
+                    <td>{{ item.km_final }}</td>
+                </tr>
+                <tr>
+                    <th>Valor em Peças:</th>
+                    <td>{{ item.valor_pesas }}</td>
+                </tr>
+                <tr>
+                    <th>Valor em Mão de Obra:</th>
+                    <td>{{ item.valor_mdo }}</td>
+                </tr>
+                <tr>
+                    <th>Valor gasto:</th>
+                    <td>{{ item.valor_gasto }}</td>
+                </tr>
+                <tr>
+                    <th>Valor Recebido:</th>
+                    <td> {{ item.valor_recebido }}</td>
+                </tr>
+                <tr>
+                    <th>Desconto ou Ganho:</th>
+                    <td>{{ item.desconto_sobra }}</td>
+                </tr>
+                <tr>
+                    <th>Valor Ganho:</th>
+                    <td>{{ item.valor_ganho }}</td>
+                </tr>
+                <tr>
+                    <th>Criador do Orçamento:</th>
+                    <td>{{ item.user_os.apelido }}</td>
+                </tr>
+                <tr>
+                    <th>Mecanico:</th>
+                    <td>{{ item.mecanico.apelido }}</td>
+                </tr>
+                <tr>
+                    <th>Vendedor:</th>
+                    <td>{{ item.vendedor.apelido }}</td>
+                </tr>
+                <tr>
+                    <th>Data Criado:</th>
+                    <td class="dataFormEspecif"> {{ item.data_criado }}</td>
+                </tr>
+                <tr>
+                    <th>Data Finalizado:</th>
+                    <td class="dataFormEspecif">{{ item.data_finalizada }}</td>
+                </tr>
+            </table>
+            <br>
+            <div class="dados_caretira">
+                <h3>Carteiras</h3>
+            </div>
+            <input type="hidden" class="caretiras_json" value="{{ item.carteira_id }}">
+        </div>
+        <div class="informacoes-compra">
+            <h3>Peças e Seviços</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>ID</th>
+                        <th>Códig/Tipo</th>
+                        <th>Unidade</th>
+                        <th>Lado</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody class="dados_peças">
+                </tbody>
+                <tbody class="dados_mdo">
+                </tbody>
+            </table>
+            <div class="rodape">Total: {{ item.valor_total }}</div>
+            <input type="hidden" class="peças_json" value="{{item.peça_os}}">
+            <input type="hidden" class="mdo_json" value="{{ item.mo_os }}">
+        </div>
+    </div>
+    {% endfor %}
+    <script>
+        function gerarPDF(index) {
+            var notasFiscais = document.querySelectorAll('.nota-fiscal');
+            var notaFiscal = notasFiscais[index];
+            var element = document.createElement('div');
+            element.appendChild(notaFiscal.cloneNode(true));
+
+            html2pdf(element, {
+                margin: 0,
+                filename: 'nota_fiscal_' + (index + 1) + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            });
+        }
+
+        var elementosData = document.querySelectorAll(".dataFormEspecif");
+
+        elementosData.forEach(function (elemento) {
+            var dataOriginal = elemento.textContent;
+            var dataObj = new Date(dataOriginal);
+
+            var dia = dataObj.getDate();
+            var mes = dataObj.getMonth() + 1;
+            var ano = dataObj.getFullYear();
+            var hora = dataObj.getHours();
+            var minutos = dataObj.getMinutes();
+
+            if (dia < 10) dia = "0" + dia;
+            if (mes < 10) mes = "0" + mes;
+            if (hora < 10) hora = "0" + hora;
+            if (minutos < 10) minutos = "0" + minutos;
+
+            var dataFormatada = dia + "/" + mes + "/" + ano + " " + hora + ":" + minutos;
+            elemento.textContent = dataFormatada;
+        });
+        var jsonPecasInputs = document.querySelectorAll('.peças_json');
+        var divDadosPecas = document.querySelectorAll('.dados_peças');
+
+        jsonPecasInputs.forEach(function (input, index) {
+            var jsonDataPecas = input.value;
+            var dadosPecas = JSON.parse(jsonDataPecas);
+
+            dadosPecas.itens.forEach(function (item) {
+                var listItem = document.createElement('tr');
+                listItem.innerHTML =
+                    '<td> ' + item.peça_nome + '</td>' +
+                    '<td> ' + item.peça_id + '</td>' +
+                    '<td> ' + item.peça_codigo + '</td>' +
+                    '<td> ' + item.un + '</td>' +
+                    '<td> ' + item.lado + '</td>' +
+                    '<td> ' + item.valor_final + '</td>';
+
+                divDadosPecas[index].appendChild(listItem); // Append directly to divDadosPecas
+            });
+        });
+
+        var jsonMdoInputs = document.querySelectorAll('.mdo_json');
+        var divDadosMdo = document.querySelectorAll('.dados_mdo');
+
+        jsonMdoInputs.forEach(function (input, index) {
+            var jsonDataMdo = input.value;
+            var dadosMdo = JSON.parse(jsonDataMdo);
+
+            dadosMdo.itens.forEach(function (item) {
+                var listItem = document.createElement('tr');
+                listItem.innerHTML =
+                    '<td> ' + item.MDO_nome + '</td>' +
+                    '<td> ' + item.MDO_id + '</td>' +
+                    '<td> ' + 'Mão de Obra' + '</td>' +
+                    '<td> ' + ' ' + '</td>' +
+                    '<td> ' + ' ' + '</td>' +
+                    '<td> ' + item.MDO_preso + '</td>';
+
+                divDadosMdo[index].appendChild(listItem); // Append directly to divDadosMdo
+            });
+        });
+
+        var jsonCarteiraInputs = document.querySelectorAll('.caretiras_json');
+        var divDadosCarteira = document.querySelectorAll('.dados_caretira');
+
+        jsonCarteiraInputs.forEach(function (input, index) {
+            var jsonDataCarteira = input.value;
+            var dadosCarteira = JSON.parse(jsonDataCarteira);
+            var listaOrdenadaCarteira = document.createElement('ol');
+
+            dadosCarteira.itens.forEach(function (item) {
+                var listItem = document.createElement('li');
+                listItem.innerHTML =
+                    '<strong>ID Carteira:</strong> ' + item.carteira_id + ' ' +
+                    '<strong>Valor:</strong> ' + item.valor_recebido + ' ' +
+                    '<strong>Detales:</strong> ' + item.detalesPago + ' ' +
+                    '<hr>';
+
+                listaOrdenadaCarteira.appendChild(listItem);
+            });
+
+            divDadosCarteira[index].appendChild(listaOrdenadaCarteira);
+        });
+        function rolarParaServico(index) {
+            var elementoServico = document.getElementById('servico' + index);
+            if (elementoServico) {
+                elementoServico.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+
+</body>
+
+</html>

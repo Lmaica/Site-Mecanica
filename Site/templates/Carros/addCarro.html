@@ -1,0 +1,24 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+{% include '_menssagem.html'%}
+{% include 'NavAdimin.html' %}
+
+<h2 class="cabeçario-pagina">Cadastrar Carro</h2>
+<form accept="" method="post">
+    <fieldset class="containerForm">
+        <form accept="" method="post">
+            <label for="marca">Marca</label>
+            <input type="text" name="marca" style="text-align: center;" required>
+            <label for="modelo">Modelo</label>
+            <input type="text" name="modelo" style="text-align: center;" required>
+            <label for="ano">Ano do Modelo</label>
+            <input type="number" name="ano" min="1900" max="{{anoatual}}" style="text-align: center;" required>
+            <label for="motor">Motor</label>
+            <input type="text" name="motor" style="text-align: center;" required>
+        </form>
+        <input type="submit" value="CADASTRAR" class="button-grande cor-ok">
+        <a href="{{url_for('carros')}}" class="button-medio cor-cancelar">CANCELAR</a>
+    </fieldset>
+</form>
+{% endblock content %}

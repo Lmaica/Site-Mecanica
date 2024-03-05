@@ -1,0 +1,467 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Relatórios</h2>
+<div class="custom-validation-message" id="customMessage"></div>
+{%if estilo_data == 'mes' or estilo_data == 'dia'%}
+<div style="text-align: center;">
+    <div class="lado-a-lado">
+        <label for="start-date">Data de Início:</label>
+        <input type="date" id="start-date" name="start-date" style="width: 140px; font-size: 16px;" required>
+    </div>
+    <div class="lado-a-lado">
+        <label for="end-date">Data de Término:</label>
+        <input type="date" id="end-date" name="end-date" style="width: 140px; font-size: 16px;" required>
+    </div>
+
+    <button class="button-grande cor-ok" onclick="buscarDados()">Buscar Dados</button>
+</div>
+{%endif%}
+{%if estilo_data == 'ano'%}
+<div style="text-align: center;">
+    <div class="lado-a-lado">
+        <label for="start-date">Data de Início:</label>
+        <input type="number" id="start-date" name="start-date" min="1900" max="3000" step="1" placeholder="Ano"
+            style="width: 80px; font-size: 16px;" required>
+
+    </div>
+    <div class="lado-a-lado">
+        <label for="end-date">Data de Término:</label>
+        <input type="number" id="end-date" name="end-date" min="1900" max="3000" step="1" placeholder="Ano"
+            style="width: 80px; font-size: 16px;" required>
+
+    </div>
+
+    <button class="button-grande cor-ok" onclick="buscarDados()">Buscar Dados</button>
+</div>
+{%endif%}
+<div class="ocultar_div">
+    <h3 style="background-color: #D3D6E1; margin: 10px;">Valor Total Categorias</h3>
+    <div class="busca_datas_input" style="text-align: center;"></div>
+    <div class="graficos-container">
+        <div id="donut-pie-chart-container"
+            style="margin: 10px; border-radius: 10px; width: 100%; height: 95%; background-color: rgb(255, 255, 255);">
+        </div>
+    </div>
+    <h3 style="background-color: #D3D6E1; margin: 10px;">Valor Individual</h3>
+    <div class="busca_datas_input" style="text-align: center;"></div>
+    <div class="graficos-container">
+        <div id="stacked-bar-chart-container"
+            style=" margin: 10px; border-radius: 10px; width: 100%; height: 95%; background-color: rgb(255, 255, 255);">
+        </div>
+    </div>
+    {%if tipo == 'saida'%}
+    {%else%}
+    <h3 style="background-color: #D3D6E1; margin: 10px;">Valor Total</h3>
+    <div class="busca_datas_input dataFormatada" style="text-align: center;"></div>
+    <div class="graficos-container">
+        <div id="gaugeChartLiquido" class="gaugeChart"></div>
+    </div>
+    {%endif%}
+</div>
+<script>
+    var estilo_data = '{{ estilo_data }}';
+    var tipo = '{{ tipo }}';
+
+    const diaAtual = new Date().getDate();
+    const mesAtual = new Date().getMonth();
+    const anoAtual = new Date().getFullYear();
+    if (estilo_data === 'dia') {
+        const startDate = new Date(anoAtual, mesAtual, 1);
+        const endDate = new Date(anoAtual, mesAtual, diaAtual);
+        document.getElementById('start-date').value = startDate.toISOString().slice(0, 10);
+        document.getElementById('end-date').value = endDate.toISOString().slice(0, 10);
+    } else if (estilo_data === 'mes') {
+        const startDate = new Date(anoAtual, 0, 1);
+        const endDate = new Date(anoAtual, mesAtual, diaAtual);
+        document.getElementById('start-date').value = startDate.toISOString().slice(0, 10);
+        document.getElementById('end-date').value = endDate.toISOString().slice(0, 10);
+    } else {
+        document.getElementById('start-date').value = anoAtual - 5;
+        document.getElementById('end-date').value = anoAtual;
+    }
+    function buscarDados() {
+        var dataInicio = document.getElementById('start-date').value;
+        var dataFim = document.getElementById('end-date').value;
+        var customMessage = document.getElementById("customMessage");
+
+        customMessage.textContent = "";
+        if (dataInicio === '' || dataFim === '') {
+            customMessage.textContent = "Por favor, preencha ambas as datas.";
+            return;
+        }
+        if (new Date(dataInicio) > new Date(dataFim)) {
+            customMessage.textContent = "A data de início não pode ser maior que a data de término.";
+            return;
+        }
+
+        fetch(`/buscar_graficos?data_inicio=${dataInicio}&data_fim=${dataFim}&estilo_data=${estilo_data}&tipo=${tipo}`)
+            .then(response => response.json())
+            .then(dados => {
+                var divs = document.querySelectorAll('.ocultar_div');
+
+                divs.forEach(function (div) {
+                    div.style.display = 'block';
+                });
+                function isValidDate(dateString) {
+                    var regex = /^\d{4}-\d{2}-\d{2}$/;
+                    return dateString.match(regex) !== null;
+                }
+
+                if (isValidDate(dataInicio) && isValidDate(dataFim)) {
+                    var dataInicioArray = dataInicio.split('-');
+                    var dataInicioInternacional = dataInicioArray[2] + '/' + dataInicioArray[1] + '/' + dataInicioArray[0];
+
+                    var dataFimArray = dataFim.split('-');
+                    var dataFimInternacional = dataFimArray[2] + '/' + dataFimArray[1] + '/' + dataFimArray[0];
+
+                    var busca_datas_inputs = document.querySelectorAll(".busca_datas_input");
+                    busca_datas_inputs.forEach(function (busca_datas_input) {
+                        busca_datas_input.textContent = dataInicioInternacional + ' até ' + dataFimInternacional;
+                    });
+                } else {
+                    var busca_datas_inputs = document.querySelectorAll(".busca_datas_input");
+                    busca_datas_inputs.forEach(function (busca_datas_input) {
+                        busca_datas_input.textContent = dataInicio + ' até ' + dataFim;
+                    });
+                }
+
+                var lineData = dados.line_data;
+                var barData = dados.bar_data;
+                var pieData = dados.pie_data;
+                var speedData = dados.speed_data;
+                var gaugeChartLiquidoElement = document.getElementById("gaugeChartLiquido");
+
+                if (gaugeChartLiquidoElement) {
+                    function createGaugeChart(chartId, metaId, valueId, bonosId) {
+                        const gaugeChart = echarts.init(document.getElementById(chartId));
+                        const meta = parseInt(speedData.meta);
+                        const valorAtual = parseInt(speedData.value);
+                        const bonificar = parseInt(speedData.bonos);
+                        const mediaMeta = meta * 2.5;
+                        const mediabonificar = bonificar / mediaMeta;
+                        const option = {
+                            toolbox: {
+                                feature: {
+                                    saveAsImage: {
+                                        show: true,
+                                        title: 'Baixar',
+                                    }
+                                }
+                            },
+                            series: [
+                                {
+                                    type: 'gauge',
+                                    endAngle: 0,
+                                    min: 0,
+                                    axisLabel: {
+                                        color: '#000',
+                                        distance: 40,
+                                        textStyle: {
+                                            fontSize: 12,
+                                        },
+                                    },
+                                    max: mediaMeta,
+                                    splitNumber: 10,
+                                    radius: '99%',
+                                    splitLine: {
+                                        distance: -31,
+                                        length: 50,
+                                        lineStyle: {
+                                            color: '#c6c5c5',
+                                            width: 2
+                                        }
+                                    },
+                                    axisLine: {
+                                        lineStyle: {
+                                            color: [
+                                                [0.40, 'red'],
+                                                [mediabonificar, 'green'],
+                                                [1, 'blue']
+                                            ],
+                                            width: 30,
+                                            shadowBlur: 1,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+
+                                        }
+                                    },
+                                    axisTick: {
+                                        length: 8,
+                                        lineStyle: {
+                                            color: '#000',
+                                            width: 2
+                                        }
+                                    },
+                                    progress: {
+                                        show: true,
+                                        width: 30,
+                                        itemStyle: {
+                                            color: 'rgba(0, 0, 0, 0.5)',
+                                            length: '75%',
+                                            width: 3,
+                                            offsetCenter: [0, '5%'],
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                                            borderColor: 'rgba(0, 0, 0, 0.2)',
+                                            borderWidth: 3,
+                                        }
+                                    },
+                                    pointer: {
+                                        length: '90%',
+                                        width: 8,
+                                        icon: 'path://M2090.36389,615.30999 L2090.36389,615.30999 C2091.48372,615.30999 2092.40383,616.194028 2092.44859,617.312956 L2096.90698,728.755929 C2097.05155,732.369577 2094.2393,735.416212 2090.62566,735.56078 C2090.53845,735.564269 2090.45117,735.566014 2090.36389,735.566014 L2090.36389,735.566014 C2086.74736,735.566014 2083.81557,732.63423 2083.81557,729.017692 C2083.81557,728.930412 2083.81732,728.84314 2083.82081,728.755929 L2088.2792,617.312956 C2088.32396,616.194028 2089.24407,615.30999 2090.36389,615.30999 Z',
+                                        length: '80%',
+                                        offsetCenter: [0, '5%'],
+                                        itemStyle: {
+                                            color: 'auto',
+                                            length: '75%',
+                                            width: 30,
+                                            offsetCenter: [0, '5%'],
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                                            borderColor: 'rgba(0, 0, 0, 0.2)',
+                                            borderWidth: 3,
+                                        }
+                                    },
+                                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                                    itemStyle: {
+                                        color: 'inherit',
+                                        borderColor: 'rgba(0, 0, 0, 0.2)',
+                                        borderWidth: 5,
+
+                                    },
+                                    animationDuration: 500,
+                                    animationEasing: 'cubicInOut',
+                                    animationDelay: 1,
+                                    detail: {
+                                        backgroundColor: '#fff',
+                                        borderColor: '#999',
+                                        borderWidth: 2,
+                                        width: '60%',
+                                        lineHeight: 40,
+                                        height: 40,
+                                        borderRadius: 8,
+                                        offsetCenter: [0, '45%'],
+                                        valueAnimation: true,
+                                        formatter: function (value) {
+                                            return '{value|' + value.toFixed(0) + '}';
+                                        },
+
+                                        rich: {
+                                            value: {
+                                                fontSize: 20,
+                                                fontWeight: 'bolder',
+                                                color: '#000',
+
+                                            },
+                                            unit: {
+                                                fontSize: 20,
+                                                color: '#000',
+                                                padding: [0, 0, -20, 10]
+                                            }
+                                        }
+                                    },
+
+                                }
+                            ]
+                        };
+
+                        gaugeChart.setOption(option);
+
+                        function setFuelLevel(level) {
+                            gaugeChart.setOption({
+                                series: [
+                                    {
+                                        data: [{
+                                            value: level,
+                                            name: 'META/MES',
+                                            title: {
+                                                color: '#000',
+                                            },
+                                        }],
+                                    },
+                                ],
+                            });
+                        }
+
+                        setFuelLevel(valorAtual);
+                    }
+
+                    createGaugeChart('gaugeChartLiquido', 'dadosGraficoMetaLiquido', 'dadosGraficoLiquido', 'dadosGraficoBonosLiquido');
+                } else {
+                }
+
+
+                // Gráfico de Pizza Donut Moderno
+
+                var donutPieChart = echarts.init(document.getElementById('donut-pie-chart-container'));
+                var donutPieOption = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b} : {c} ({d}%)'
+                    },
+                    toolbox: {
+                        feature: {
+                            dataView: {
+                                show: true,
+                                readOnly: false,
+                                title: 'Visualizar Dados',
+                                lang: ['Visualizar Dados', 'Fechar', 'Atualizar'],
+
+                            },
+                            saveAsImage: {
+                                show: true,
+                                title: 'Baixar',
+                            }
+                        },
+                        orient: 'vertical',
+                        right: '1',
+                        top: 'bottom',
+                    },
+                    legend: {
+                        data: pieData.categories,
+                        textStyle: {
+                            fontSize: 0,
+                        },
+
+                    },
+                    series: [{
+                        name: 'Categoria',
+                        type: 'pie',
+                        radius: ['20%', '40%'],
+
+                        avoidLabelOverlap: false,
+                        label: {
+                            show: true,
+                            formatter(param) {
+                                return param.name + ' (' + param.percent * 1 + '%)';
+                            }
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '20',
+                                position: 'center',
+                                formatter: '{b}\n{d}%',
+                                fontWeight: 'bold',
+                            }
+                        },
+                        labelLine: {
+                            show: true
+                        },
+
+                        data: pieData.categories.map(function (category, index) {
+                            return {
+                                name: category,
+                                value: pieData.values[index],
+                            };
+                        })
+                    }]
+                };
+
+                donutPieChart.setOption(donutPieOption);
+                // Gráfico de Barras Empilhadas com Cores Vibrantes
+
+                var barChart = echarts.init(document.getElementById('stacked-bar-chart-container'));
+
+                var barOption = {
+                    grid: {
+                        containLabel: true,
+                        left: '5%',  // Ajuste conforme necessário
+                        right: '5%', // Ajuste conforme necessário
+                        top: '20%',  // Ajuste conforme necessário
+                        bottom: '10%', // Ajuste conforme necessário
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'shadow',
+                            label: {
+                                show: true
+                            }
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: barData.categories
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLabel: {
+                            formatter: 'R${value}'
+                        },
+                    },
+                    toolbox: {
+                        feature: {
+                            dataView: {
+                                show: true,
+                                readOnly: false,
+                                title: 'Visualizar Dados',
+                                lang: ['Visualizar Dados', 'Fechar', 'Atualizar'],
+                            },
+                            magicType: {
+                                show: true,
+                                type: ['line', 'bar'],
+                                title: {
+                                    line: 'Linha',
+                                    bar: 'Coluna'
+                                }
+                            },
+                            saveAsImage: {
+                                show: true,
+                                title: 'Baixar',
+                            }
+                        },
+                        orient: 'vertical',
+                        right: '1',
+                        top: 'bottom'
+                    },
+                    legend: {
+                        data: barData.series.map(function (serie, index) {
+                            return { name: index + 1 + ' ' + serie.name };
+                        }),
+
+                        top: 'top',
+                        left: 'center',
+                        textStyle: {
+                            fontSize: 10,
+                        },
+                        formatter: function (name) {
+                            return name[0] + name[1];
+                        },
+                    },
+                    dataZoom: [
+                        {
+                            show: true,
+                            start: 10000000,
+                            end: 100
+                        },
+                        {
+                            type: 'inside',
+                            start: 10000000,
+                            end: 100
+                        },
+
+                    ],
+                    series: barData.series.map(function (serie, index) {
+                        let valoresFormatados = serie.values.map(function (valor) {
+                            return Number(valor.toFixed(2));
+                        });
+                        return {
+                            emphasis: {
+                                focus: 'series'
+                            },
+                            name: index + 1 + ' ' + serie.name,
+                            data: valoresFormatados,
+                            type: 'bar',
+                            barWidth: '10%' / barData.categories.length + '%',
+                        };
+                    }),
+                };
+                barChart.setOption(barOption);
+            })
+            .catch(erro => {
+                customMessage.textContent = "Algo deu errado. Pode ser que não haja dados suficientes no banco de dados.";
+                return;
+            });
+    }
+</script>
+{% endblock content %}

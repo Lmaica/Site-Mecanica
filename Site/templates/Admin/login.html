@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #d3d6e1b2;
+            border-radius: 10px;
+            box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            margin: 0 0 20px;
+            color: #000000;
+            font-size: 24px;
+        }
+
+        .input-container {
+            text-align: left;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #010101;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .password-toggle {
+            background-color: #0000008e;
+            position: absolute;
+            right: -20px;
+            top: 10px;
+            cursor: pointer;
+            color: #333;
+            border-top-right-radius: 50%;
+            border-bottom-right-radius: 50%;
+            padding: 9px;
+        }
+
+        .password-toggle:hover::after {
+            content: "Mostrar/Ocultar Senha";
+            position: absolute;
+            top: -40px;
+            left: -20px;
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            opacity: 0.9;
+            transition: opacity 0.3s;
+        }
+
+        .password-toggle:hover::before {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent #333 transparent;
+        }
+
+        .password-toggle:hover {
+            background-color: #22cc005e;
+        }
+
+        .login-btn {
+            background-color: #0000006e;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 25px;
+            transition: background-color 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #22cc005e;
+        }
+
+        .login-links {
+            margin-top: 20px;
+        }
+
+        .login-links a {
+            text-decoration: none;
+            color: #333;
+            margin: 0 10px;
+        }
+
+        .aviso {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform: translate(-50%, -120%);
+            text-align: center;
+            border: 0px;
+            color: #570000;
+            border-radius: 10px;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>Bem Vindo!</h2>
+        {% from "_formularioAjuda.html" import render_field %}
+        {% include '_menssagem.html'%}
+        <form method="post" enctype="multipart/form-data">
+
+            {{ form.csrf_token }}
+            <div class="input-container">
+                {{ form.email.label }}
+                {{ form.email(id="usuario", class="login-input", placeholder="E-mail") }}
+            </div>
+            <div style="position: relative;" class="input-container">
+                {{ form.senha.label }}
+                {{ form.senha(id="senha", class="login-input", placeholder="Senha") }}
+                <span class="password-toggle" onclick="togglePasswordVisibility()"> 🔒</span>
+            </div>
+            <input type="submit" value="Entrar" class="login-btn">
+        </form>
+
+        <div class="login-links">
+            <a href="#" onclick="enviarEmail()">Esqueceu sua senha?</a>
+            <a href="{{url_for('googleLogin')}}">Login Google</a>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Exemplo de dados a serem enviados
+            var dados = {};
+            var body = document.body;
+
+            $.ajax({
+                type: 'POST',
+                url: '/dados_cofigurarar',
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(dados),
+                success: function (response) {
+                    body.style.background = response.cores.principal_secundaria;
+                },
+                error: function (error) {
+                    console.error('Erro:', error);
+                }
+            });
+        });
+        function togglePasswordVisibility() {
+            const senhaInput = document.getElementById('senha');
+            const passwordToggle = document.querySelector('.password-toggle');
+
+            if (senhaInput.type === 'password') {
+                senhaInput.type = 'text';
+                passwordToggle.textContent = '🔓';
+            } else {
+                senhaInput.type = 'password';
+                passwordToggle.textContent = '🔒';
+            }
+        }
+        function enviarEmail() {
+            var usuario = document.getElementById('usuario').value;
+
+            // Envia os dados do formulário para o Flask usando AJAX
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/recuperar_senha', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                        }
+                    } else {
+                        alert('Ocorreu um erro ao enviar o e-mail de recuperação. Consulte o console para mais detalhes.');
+                    }
+                }
+            };
+            xhr.send(JSON.stringify({ usuario: usuario }));
+        }
+
+    </script>
+</body>
+
+</html>

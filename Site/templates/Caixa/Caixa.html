@@ -1,0 +1,218 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Caixa {{tipo}}</h2>
+<div id="search-container">
+    <div class="search-box">
+        <form style="display: flex; width: 98%;" method="POST">
+            {% if busca %}
+            <input class="anular " value="{{busca}}" type="text" id="searchinput" placeholder="Buscar Caixas"
+                autofocus="autofocus" name="search_string" aria-label="searchCaixas">
+            {% else %}
+            <input class="anular" type="text" id="searchinput" placeholder="Buscar Caixas" autofocus="autofocus"
+                name="search_string" aria-label="searchCaixas">
+            {% endif %}
+            <select class="anular searchselector" id="searchselector" name="searchselector" onchange="alterarFormato()">
+                <option style="background-color: rgb(165, 164, 164); color: black;" disabled>Caixas
+                </option>
+                {% if escolha == "todos" %}
+                <option value="todos" selected>Todos</option>
+                {% else %}
+                <option value="todos">Todos</option>
+                {% endif %}
+                {% if escolha == "descricao" %}
+                <option value="descricao" selected>Descrição</option>
+                {% else %}
+                <option value="descricao">Descrição</option>
+                {% endif %}
+                {% if escolha == "id" %}
+                <option value="id" selected>ID</option>
+                {% else %}
+                <option value="id">ID</option>
+                {% endif %}
+                {% if escolha == "categoria" %}
+                <option value="categoria" selected>Categoria</option>
+                {% else %}
+                <option value="categoria">Categoria</option>
+                {% endif %}
+                {% if escolha == "carteira" %}
+                <option value="carteira" selected>Carteira</option>
+                {% else %}
+                <option value="carteira">Carteira</option>
+                {% endif %}
+                {%if tipo == 'Entrada' %}
+                {%else%}
+                {% if escolha == "fornecedor" %}
+                <option value="fornecedor" selected>Fornecedor</option>
+                {% else %}
+                <option value="fornecedor">Fornecedor</option>
+                {% endif %}
+                {%endif%}
+                {% if escolha == "datafor" %}
+                <option value="datafor" selected>Data</option>
+                {% else %}
+                <option value="datafor">Data</option>
+                {% endif %}
+            </select>
+            <button id="search-button" formaction="/searchCaixas/{{tipo}}">Buscar</button>
+        </form>
+    </div>
+</div>
+<div class="custom-validation-message" id="customMessage"></div>
+
+<div style="display: flex; flex-wrap: wrap; white-space: nowrap;">
+    <div style="margin-right: auto; margin-bottom: 10px;">
+        <a href="{{url_for('addCaixas',tipo='Saida')}}" class="button-pequeno cor-cancelar">Add Saida de Caixa</a>
+    </div>
+    <div style="margin-left: auto;">
+        <a href="{{url_for('addCaixas',tipo='Entrada')}}" class="button-pequeno cor-ok">Add Entrada de Caixa</a>
+    </div>
+</div>
+
+<div class="div-valor-total">
+    <p class="total-label">Total Caixa:</p>
+    <strong class="total-value">{{total_caixa}}</strong>
+</div>
+<div class="mobile-table">
+    <table class="mobile-table">
+        <thead>
+            <tr>
+                <th>Valor</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for Caixa in Caixas %}
+            {% if Caixa.tipo == 'Saida' %}
+            {% if loop.index is odd %}
+            <tr style="background-color: rgba(255, 0, 0, 0.92);">
+                {% else %}
+            <tr style="background-color:rgb(255, 0, 0, 0.7);">
+                {% endif %}
+                {%else%}
+                {% if loop.index is odd %}
+            <tr style="background-color: rgb(52, 165, 42);">
+                {% else %}
+            <tr style="background-color: rgb(36, 253, 12);">
+                {%endif%}
+                {%endif%}
+                <td>{{ Caixa.valor }}</td>
+                <td class="dataFormatada">{{ Caixa.data_criado }}</td>
+            </tr>
+            <tr class="row-details">
+                <td colspan="5">
+                    <table class="nested-table">
+                        <thead>
+                            <tr>
+                                <th colspan="4"
+                                    style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                    Dados</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <td colspan="3">{{ Caixa.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Pagador/Codigo</th>
+                                <td colspan="3">{{ Caixa.pagopor }}</td>
+                            </tr>
+                            {%if Caixa.tipo == 'Entrada' %}
+                            {%else%}
+                            <tr>
+                                <th>Fornecedor</th>
+                                <td colspan="3">{{ Caixa.fornecedor.nome }}</td>
+                            </tr>
+                            {%endif%}
+                            <tr>
+                                <th>Carteira</th>
+                                <td colspan="3">{{ Caixa.carteira.nome }}</td>
+                            </tr>
+                            <tr>
+                                <th>Categoria</th>
+                                <td colspan="3">{{ Caixa.catcaixa.nome }}</td>
+                            </tr>
+                            <tr>
+                                <th> Descrição </th>
+                                <td colspan="3">{{ Caixa.descricao }}</td>
+                            </tr>
+                            <tr>
+                                <td style="background-color: rgb(77, 77, 77);" colspan="4">
+                                    <div class="button-container">
+                                        {%if Caixa.catcaixa.nome == '*SERVIÇO*'%}
+                                        <p style="color: aliceblue;" >Para efetuar modificações ou exclusão neste item, é necessário utilizar
+                                            exclusivamente o Serviços Finalizados.</p>
+                                        {%else%}
+                                        <a href="#"><input type="submit"
+                                                onclick="showDiv('Caixas', '{{Caixa.id}}', '{{Caixa.descricao}}')"
+                                                class="cor-cancelar" value="Apagar"></a>
+                                        <a href="{{url_for('atulizCaixas', id=Caixa.id,tipo=tipo)}}"><input
+                                                type="submit" class="cor-alerta" name="" value="Editar"></a>
+                                        {%endif%}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="pagination">
+    {% if Caixas.has_prev %}
+    {% if busca %}
+    <form action="{{ url_for('searchCaixas',tipo=tipo, page=Caixas.prev_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('Caixas',tipo=tipo, page=Caixas.prev_num) }}">&lt;</a>
+    {% endif %}
+    {% endif %}
+    {% if Caixas.total > 10 %}
+    {% for page_num in Caixas.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_num %}
+    {% if Caixas.page == page_num %}
+    {%if busca %}
+    <form action="{{ url_for('searchCaixas',tipo=tipo, page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a class="paginationActive" href="{{ url_for('Caixas',tipo=tipo, page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% else %}
+    {%if busca %}
+    <form action="{{ url_for('searchCaixas',tipo=tipo, page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('Caixas',tipo=tipo, page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if Caixas.has_next %}
+    {% if busca %}
+    <form action="{{ url_for('searchCaixas',tipo=tipo, page=Caixas.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('Caixas',tipo=tipo, page=Caixas.next_num) }}">&gt;</a>
+    {% endif %}
+    {% endif %}
+</div>
+
+
+{% endblock content %}

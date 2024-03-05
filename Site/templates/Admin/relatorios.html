@@ -1,0 +1,32 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Relatórios</h2>
+
+<div id="MenuInicial">
+    <ul>
+        <h3 style="color: black; background-color: #D3D6E1; margin: 10px;">Desempenho Total</h3>
+        <li class="principalCorUnica"><a href="#"  onclick="toggleSubMenu(this)">Faturamento<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='dia',tipo='ganho')}}">Diario<a></li>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='mes',tipo='ganho')}}">Mensal<a></li>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='ano',tipo='ganho')}}">Anual</a></li>
+                <hr>
+            </ul>
+        </li>
+        <li class="principalCorUnica"><a href="#"  onclick="toggleSubMenu(this)">Despesas<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='dia',tipo='saida')}}">Diario<a></li>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='mes',tipo='saida')}}">Mensal<a></li>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='ano',tipo='saida')}}">Anual</a></li>
+                <hr>
+            </ul>
+        </li>
+
+        <hr style="padding: 1px; background-color: black; border-radius: 10px;">
+    </ul>
+</div>
+
+{% endblock content %}
