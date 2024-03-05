@@ -9,9 +9,10 @@ from datetime import datetime, timezone
 
 class Calculos_gloabal:
     def format_valor_moeda(valor):
-        locale.setlocale(locale.LC_ALL, "pt_BR.UTF-8")
-        formatted_value = locale.currency(valor, symbol=True, grouping=True)
+        formatted_value = "{:,.2f}".format(valor)
+        formatted_value = "R$" + formatted_value.replace(",", ";").replace(".", ",").replace(";", ".")
         return formatted_value
+
 
     def valor_para_Calculos(valor_str):
         return float(

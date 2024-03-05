@@ -23,7 +23,6 @@ from Site.Admin.modelos import User
 from .formularios import Responsaveis
 from flask_login import login_required, current_user
 
-
 # Dados do Serviços
 @app.route("/servisos/<string:status>", methods=["GET", "POST"])
 @login_required
