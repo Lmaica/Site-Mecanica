@@ -25,6 +25,38 @@ from flask_login import login_required, current_user
 import random
 
 
+<<<<<<< HEAD
+=======
+
+@app.route("/lop_criar_orcamentos")
+@login_required
+@nome_required
+@verificacao_nivel(4)
+def lop_criar_orcamentos():
+    carros = Veiculo.query.all()
+    for veiculo in carros:
+        user = current_user
+        num_items = Serviso.query.count()
+
+        if num_items == 0:
+            Redutor_codigo.Redutor_codigo_seriviços(veiculo.cliente_id, veiculo.id, user.id)
+        else:
+            filtro = Serviso.query.order_by(desc(Serviso.id)).first()
+            get_serviso = Serviso.query.get_or_404(filtro.id)
+            Cliente_os_atual = json.loads(get_serviso.cliente_veiculo)
+
+            if len(Cliente_os_atual["itens"]) == 0 and get_serviso.cliente_os_id == 0:
+                get_serviso.cliente_os_id = veiculo.cliente_id
+                get_serviso.veiculo_os_id = veiculo.id
+                get_serviso.user_os_id = user.id
+                get_serviso.data_finalizada = datetime.now(timezone.utc).astimezone()
+                db.session.commit()
+            else:
+                Redutor_codigo.Redutor_codigo_seriviços(veiculo.cliente_id, veiculo.id, user.id)
+    return redirect("/")
+
+
+>>>>>>> 40b5041b5cad4eccb2ac8b770f3c881d50e744e6
 @app.route("/lop_finalizar_todos_Serviço")
 @login_required
 @nome_required
