@@ -1,0 +1,86 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+
+<style>
+    .dadosUsuario {
+        text-align: center;
+        background: #f8f8f8;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+
+    .dadosUsuario .info {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .dadosUsuario p {
+        margin: 10px 0;
+    }
+
+    .dadosUsuario strong {
+        font-weight: bold;
+    }
+
+    .dadosUsuario img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s;
+    }
+
+    .dadosUsuario img:hover {
+        transform: scale(1.1);
+    }
+</style>
+
+<h2 class="cabeçario-pagina">Informações Pessoais</h2>
+<div class="dadosUsuario">
+    <img src="{{ url_for('static', filename='imagens/' + user.foto) }}" alt="{{user.nome }}">
+    <div class="info">
+        <p><strong>ID:</strong> {{ user.id }}</p>
+        <p><strong>Nome:</strong> {{ user.nome }}</p>
+        <p><strong>Apelido:</strong> {{ user.apelido }}</p>
+        <p><strong>Nascido:</strong> {{ user.niver }}</p>
+        <p><strong>CPF:</strong> {{ user.cpf }}</p>
+        <p><strong>RG:</strong> {{ user.rg }}</p>
+        <hr>
+        <p><strong>Função:</strong> {{ user.cargo.nome }}</p>
+        <p><strong>Status:</strong> {{ user.status }}</p>
+        <p><strong>Nível:</strong> {{ user.nivel }}</p>
+        <hr>
+        <p><strong>Telefone:</strong> {{ user.fone }} - {{ user.fone1 }}</p>
+        <p><strong>E-mail:</strong> {{ user.email }}</p>
+        {% if user.cnpj %}
+        <hr>
+        <p><strong>Nome/Fantasia:</strong> {{ user.nomeFantasia }}</p>
+        <p><strong>CNPJ:</strong> {{ user.cnpj }}</p>
+        <p><strong>SOCIAL:</strong> {{ user.razaoSocial }}</p>
+        {% endif %}
+        <hr>
+        <p><strong>Endereço:</strong> {{ user.rua }} {{ user.nuCasa }}
+            {{ user.complemento }}
+            {{ user.cidade }}
+            {{ user.estado }}
+            {{ user.cep }}</p>
+        <hr>
+        <div style="display: flex; padding: 10px; font-size: 15px;">
+            <span>Data Cadastro : </span>
+            <samp class="dataFormatada">{{ user.data_criado }}</samp>
+        </div>
+        <div class="lado-a-lado">
+            <input type="button" onclick="window.location.href='{{ url_for('atulizUser', id=user.id) }}';"
+                class="cor-alerta button-pequeno" style="margin-bottom: 10px;" value="Editar Cadastro">
+            <input type="button" onclick="window.location.href='{{ url_for('alterar_senha', id=user.id) }}';"
+                class="cor-cancelar button-pequeno" style="margin-bottom: 10px;" value="Alterar Senha">
+        </div>
+
+    </div>
+</div>
+
+{% endblock content %}

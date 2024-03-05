@@ -1,0 +1,193 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Fornecedores</h2>
+<div id="search-container">
+    <div class="search-box">
+        <form style="display: flex; width: 98%;" method="POST">
+            {% if busca %}
+            <input class="anular searchselector" value="{{busca}}" type="text" id="searchinput"
+                placeholder="Buscar Fornecedores" autofocus="autofocus" name="search_string"
+                aria-label="searchFornecedors">
+            {% else %}
+            <input class="anular" type="text" id="searchinput" placeholder="Buscar Fornecedores" autofocus="autofocus"
+                name="search_string" aria-label="searchFornecedors">
+            {% endif %}
+
+            <select class="anular searchselector" id="searchselector" name="searchselector" onchange="alterarFormato()">
+                <option style="background-color: rgb(165, 164, 164); color: black;" disabled>Fornecedores
+                </option>
+                {% if escolha == "todos" %}
+                <option value="todos" selected>Todos</option>
+                {% else %}
+                <option value="todos">Todos</option>
+                {% endif %}
+                {% if escolha == "nome" %}
+                <option value="nome" selected>Nome</option>
+                {% else %}
+                <option value="nome">Nome</option>
+                {% endif %}
+                {% if escolha == "categoria" %}
+                <option value="categoria" selected>Categoria</option>
+                {% else %}
+                <option value="categoria">Categoria</option>
+                {% endif %}
+                {% if escolha == "fone" %}
+                <option value="fone" selected>Telefone</option>
+                {% else %}
+                <option value="fone">Telefone</option>
+                {% endif %}
+            </select>
+            <button id="search-button" formaction="/searchFornecedors">Buscar</button>
+        </form>
+    </div>
+</div>
+<div class="botao-add">
+    <a href="{{url_for('addFornecedors')}}" class="button-pequeno cor-ok">Adicionar Fornecedor</a>
+</div>
+
+<div class="mobile-table">
+    <table class="mobile-table">
+        <thead>
+            <tr>
+                <th>NOME</th>
+                <th>CATEGORIA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for Fornecedor in Fornecedors %}
+            <tr>
+                <td>{{ Fornecedor.nome }}</td>
+                <td>{{ Fornecedor.catfornecedor.nome }}</td>
+            </tr>
+            <tr class="row-details">
+                <td colspan="5">
+                    <table class="nested-table">
+                        <thead>
+                            <tr>
+                                <th colspan="4"
+                                    style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                    Dados Fornecedores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="3">
+                                    <div class="lado-div">
+                                        <img src="{{ url_for('static', filename='imagens/' + Fornecedor.foto) }}"
+                                            alt="{{ Fornecedor.nome }}" class="image-Pequena">
+                                        <div style="width: 100%; text-align: center;">
+                                            <h4>Descrição</h4>
+                                            <hr>
+                                            <span style="font-size: 80%;">{{ Fornecedor.obs }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>ID</th>
+                                <td colspan="3">{{ Fornecedor.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Telefone</th>
+                                <td colspan="3">{{ Fornecedor.fone }}</td>
+                            </tr>
+                            <tr>
+                                <th>2ºTelefone</th>
+                                <td colspan="3">{{ Fornecedor.fone1 }}</td>
+                            </tr>
+                            <tr>
+                                <th>CNPJ</th>
+                                <td colspan="3">{{ Fornecedor.cnpj }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td colspan="3">{{ Fornecedor.email }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Endereço</th>
+                                <td colspan="3">{{ Fornecedor.rua}}, {{ Fornecedor.nuCasa}}, {{ Fornecedor.bairro}},
+                                    {{ Fornecedor.estado}}, {{ Fornecedor.cep}} </td>
+                            </tr>
+                            <tr>
+                                <th>Data/Cadastro</th>
+                                <td colspan="3">{{ Fornecedor.dataCriado }}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="3">
+                                    <div class="button-container">
+                                        {%if session["nivel"] >= 4%}
+                                        <a href="#"><input type="submit"
+                                                onclick="showDiv('Fornecedors', '{{Fornecedor.id}}', '{{Fornecedor.nome}}')"
+                                                class="cor-cancelar" value="Apagar"></a>
+                                        {%else%}
+                                        {%endif%}
+                                        <a href="{{url_for('atulizFornecedors', id=Fornecedor.id)}}"><input
+                                                type="submit" class="cor-alerta" name="" value="Editar"></a>
+                                    </div>
+                                </th>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="pagination">
+    {% if Fornecedors.has_prev %}
+    {% if busca %}
+    <form action="{{ url_for('searchFornecedors', page=Fornecedors.prev_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('Fornecedors', page=Fornecedors.prev_num) }}">&lt;</a>
+    {% endif %}
+    {% endif %}
+    {% if Fornecedors.total > 10 %}
+    {% for page_num in Fornecedors.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_num %}
+    {% if Fornecedors.page == page_num %}
+    {%if busca %}
+    <form action="{{ url_for('searchFornecedors', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a class="paginationActive" href="{{ url_for('Fornecedors', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% else %}
+    {%if busca %}
+    <form action="{{ url_for('searchFornecedors', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('Fornecedors', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if Fornecedors.has_next %}
+    {% if busca %}
+    <form action="{{ url_for('searchFornecedors', page=Fornecedors.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('Fornecedors', page=Fornecedors.next_num) }}">&gt;</a>
+    {% endif %}
+    {% endif %}
+</div>
+
+
+{% endblock content %}

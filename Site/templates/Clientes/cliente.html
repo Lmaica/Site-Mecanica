@@ -1,0 +1,429 @@
+{% extends 'layouts.html' %}
+{% block content %}
+<div class="duas-div-lado-lado">
+    <div class="container-lado">
+        <div class="estilo-dinamico">
+            <h2 class="cabeçario-pagina">Clientes</h2>
+            <div id="search-container">
+                <div class="search-box">
+                    <form style="display: flex; width: 98%;" method="POST">
+                        {% if busca %}
+                        <input class="anular" value="{{busca}}" type="text" id="searchinput"
+                            placeholder="Buscar Cliente" autofocus="autofocus" name="search_string" aria-label="search">
+                        {% else %}
+                        <input class="anular" type="text" id="searchinput" placeholder="Buscar Cliente"
+                            autofocus="autofocus" name="search_string" aria-label="search">
+                        {% endif %}
+
+                        <select class="anular searchselector" id="searchselector" name="searchselector"
+                            onchange="alterarFormato()">
+                            {% if escolha == "todos" %}
+                            <option value="todos" selected>Todos</option>
+                            {% else %}
+                            <option value="todos">Todos</option>
+                            {% endif %}
+                            <option style="background-color: rgb(165, 164, 164); color: black;" disabled>CLIENTE
+                            </option>
+                            {% if escolha == "nome" %}
+                            <option value="nome" selected>Nome</option>
+                            {% else %}
+                            <option value="nome">Nome</option>
+                            {% endif %}
+                            {% if escolha == "id" %}
+                            <option value="id" selected>ID</option>
+                            {% else %}
+                            <option value="id">ID</option>
+                            {% endif %}
+                            {% if escolha == "fone" %}
+                            <option value="fone" selected>Telefone</option>
+                            {% else %}
+                            <option value="fone">Telefone</option>
+                            {% endif %}
+                            {% if escolha == "cpf" %}
+                            <option value="cpf" selected>CPF</option>
+                            {% else %}
+                            <option value="cpf">CPF</option>
+                            {% endif %}
+                            {% if escolha == "rg" %}
+                            <option value="rg" selected>RG</option>
+                            {% else %}
+                            <option value="rg">RG</option>
+                            {% endif %}
+                            {% if escolha == "email" %}
+                            <option value="email" selected>Email</option>
+                            {% else %}
+                            <option value="email">Email</option>
+                            {% endif %}
+                            {%if Adicionar %}
+                            {%else%}
+                            <option style="background-color: rgb(165, 164, 164); color: black;" disabled>CARRO
+                            </option>
+                            {% if escolha == "placa" %}
+                            <option value="placa" selected>Placa</option>
+                            {% else %}
+                            <option value="placa">Placa</option>
+                            {% endif %}
+                            {% if escolha == "modelo" %}
+                            <option value="modelo" selected>Modelo</option>
+                            {% else %}
+                            <option value="modelo">Modelo</option>
+                            {% endif %}
+                            {% endif %}
+                            <option style="background-color: rgb(165, 164, 164); color: black;" disabled>EMPRESA
+                            </option>
+                            {% if escolha == "razaoSocial" %}
+                            <option value="razaoSocial" selected>R/Social</option>
+                            {% else %}
+                            <option value="razaoSocial">R/Social</option>
+                            {% endif %}
+                            {% if escolha == "nomeFantasia" %}
+                            <option value="nomeFantasia" selected>N/Fantasia</option>
+                            {% else %}
+                            <option value="nomeFantasia">N/Fantasia</option>
+                            {% endif %}
+                            {% if escolha == "cnpj" %}
+                            <option value="cnpj" selected>CNPJ</option>
+                            {% else %}
+                            <option value="cnpj">CNPJ</option>
+                            {% endif %}
+
+                        </select>
+                        {%if Adicionar %}
+                        <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+                        <button id="search-button" formaction="/searchAdicionarCliente">Buscar</button>
+                        {%else%}
+                        <button id="search-button" formaction="/search">Buscar</button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            {%if Adicionar %}
+            {%if Adicionar.status == "Editor"%}
+            <div class="botao-add">
+                <a href="{{url_for('finalizarEdit', id=Adicionar.id)}}" class="button-pequeno cor-alerta">Retornar</a>
+            </div>
+            {%else%}
+            <div class="botao-add">
+                <a href="{{url_for('AbrirServiço', id=Adicionar.id,tratatar='tratatar')}}"
+                    class="button-pequeno cor-alerta">Retornar {{Adicionar.status}}</a>
+            </div>
+            {%endif%}
+            {% else %}
+            <div class="botao-add">
+                <a href="{{url_for('addCliente')}}" class="button-pequeno cor-ok">Adicionar Cliente</a>
+            </div>
+            {% endif %}
+            <div class="mobile-table">
+                <table class="mobile-table">
+                    <thead>
+                        <tr>
+                            <th>NOME</th>
+                            <th>TELEFONE</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for cliente in clientes %}
+
+                        <tr onclick="loadDynamicContent({{ cliente.id }})">
+
+                            {% if cliente.razaoSocial %}
+                            <td class="redutor">{{cliente.nomeFantasia}} (PJ)</td>
+                            {% else %}
+                            <td class="redutor">{{ cliente.nome }}</td>
+                            {% endif %}
+                            <td>{{ cliente.fone }}</td>
+                        </tr>
+                        <tr class="row-details">
+                            <td colspan="5">
+                                <table class="nested-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="4"
+                                                style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                                Dados Cliente</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="lado-div">
+                                                    <img src="{{ url_for('static', filename='imagens/' + cliente.foto) }}"
+                                                        alt="{{ cliente.nome }}" class="image-Pequena">
+                                                    <div style="width: 100%; text-align: center;">
+                                                        <h4>ENDEREÇO</h4>
+                                                        <hr>
+                                                        <span style="font-size: 80%;">{{cliente.rua}} {{cliente.nuCasa}}
+                                                            {{cliente.complemento }} {{cliente.cidade }}
+                                                            {{cliente.estado}}
+                                                            {{cliente.cep}}</span>
+                                                        {%if Adicionar %}
+                                                        {%else%}
+                                                        <div style="margin-top: 20px;">
+                                                            <input type="button"
+                                                                onclick="window.location.href='{{url_for('servicoDoCliente', id=cliente.id)}}';"
+                                                                class="cor-ok" value="Serviços do cliente">
+                                                        </div>
+                                                        {%endif%}
+
+                                                    </div>
+
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>ID</th>
+                                            <td colspan="3">{{ cliente.id }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td colspan="3">{{ cliente.statu }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>2°Telefone</th>
+                                            <td colspan="3">{{ cliente.fone1 }}</td>
+                                        </tr>
+                                        {% if cliente.cnpj %}
+                                        <tr>
+                                            <th>Nome/Social</th>
+                                            <td colspan="3">{{ cliente.razaoSocial }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>CNPJ</th>
+                                            <td colspan="3">{{cliente.cnpj}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <td colspan="3">{{cliente.nome}}</td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <th>CPF</th>
+                                            <td colspan="3">{{cliente.cpf}}</td>
+                                        </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <th>E-mail</th>
+                                            <td colspan="3">{{ cliente.email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nacido</th>
+                                            <td colspan="3">{{ cliente.niver }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Data/Cadastro</th>
+                                            <td colspan="3" class="dataFormatada">{{ cliente.data_criado }}</td>
+                                        </tr>
+                                        {%if Adicionar %}
+                                        <tr>
+                                            <th colspan="4">
+                                                <div class="button-container">
+                                                    <form
+                                                        action="/adicinar_cliente_os/{{ Adicionar.id }}/{{ cliente.id }}"
+                                                        method="POST">
+                                                        <input type="hidden" name="_method" value="ADICIONAR">
+                                                        <input type="submit" class="cor-ok"
+                                                            value="Adicionar ao Serviço">
+                                                    </form>
+                                                </div>
+                            </td>
+                        </tr>
+                        {%else%}
+                        <tr>
+                            <th colspan="4">
+                                <div class="button-container">
+                                    {%if session["nivel"] >= 4%}
+                                    {% if cliente.razaoSocial %}
+                                    <input type="button"
+                                        onclick="showDiv('cliente', '{{cliente.id}}', '{{cliente.razaoSocial}}')"
+                                        class="cor-cancelar" style="margin-bottom: 10px;" value="Apagar">
+                                    {% else %}
+                                    <input type="button"
+                                        onclick="showDiv('cliente', '{{cliente.id}}', '{{cliente.nome}}')"
+                                        class="cor-cancelar" style="margin-bottom: 10px;" value="Apagar">
+                                    {% endif %}
+                                    {%else%}
+                                    {%endif%}
+
+                                    <input type="button"
+                                        onclick="window.location.href='{{url_for('atulizcliente', id=cliente.id)}}';"
+                                        class="cor-alerta" style="margin-bottom: 10px;" value="Editar">
+                                    <input type="button"
+                                        onclick="window.location.href='{{url_for('addVeiculo', id=cliente.id)}}';"
+                                        class="cor-ok" style="margin-bottom: 10px;" value="Adicionar Carro">
+                                </div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="4"
+                                style="border-top: 10px solid #fbf9f9 !important;color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                CARROS
+                            </th>
+                        </tr>
+                        {% set sem_carro_list = [] %}
+                        {% set com_carro_list = [] %}
+                        {% for veiculo in veiculos %}
+                        {% if veiculo.cliente_id == cliente.id %}
+                        {% set com_carro = 1 %}
+                        <tr>
+                            <th>Placa</th>
+                            <th style="width: 25%;">Carro</th>
+                            <th>KM</th>
+                            <th>Chassi</th>
+                        </tr>
+                        <tr>
+                            <td>{{ veiculo.placa }}</td>
+                            <td>{{ veiculo.carro.marca }}/ {{ veiculo.carro.modelo }}/ {{
+                                veiculo.carro.ano
+                                }}/
+                                {{ veiculo.carro.motor }}</td>
+                            <td>{{ veiculo.km }}</td>
+                            <td style="width: 200px; word-break: break-all;">{{veiculo.chassi}}</td>
+                        </tr>
+                        <tr>
+                            {%if session["nivel"] >= 4%}
+                            <td colspan="1">
+                                <input type="submit" onclick="showDiv('veiculo', '{{veiculo.id}}', '{{veiculo.placa}}')"
+                                    class="cor-cancelar" value="Apagar">
+                            </td>
+                            {%else%}
+                            {%endif%}
+                            <td colspan="3"><a href="{{url_for('atulizveiculo',id=veiculo.id)}}"><input type="submit"
+                                        class="cor-alerta" name="" value="Editar"></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><a href="{{url_for('fazer_os_carro',id=veiculo.id)}}"><input type="submit"
+                                        class="cor-ok" name="" value="Criar O.S"></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">-----------</td>
+                        </tr>
+                        {% set _ = com_carro_list.append(com_carro) %}
+                        {% endif %}
+                        {% endfor %}
+                        {% if com_carro_list|length <= 0 %} <tr>
+                            <td colspan="3" style="text-align: center;">Não há CARRO Registrado</td>
+                            {% endif %}
+                            {% endif %}
+                    </tbody>
+                </table>
+                </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                {% if clientes.has_prev %}
+                {% if Adicionar %}
+                {% if busca %}
+                <form action="{{ url_for('searchAdicionarCliente', page=clientes.prev_num) }}" method="POST">
+                    <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button type="submit">&lt;</button>
+                </form>
+                {%else%}
+                <a href="{{ url_for('EscolhaCliente',id=Adicionar.id, page=clientes.next_num) }}">&lt;</a>
+                {% endif %}
+                {% else %}
+                {% if busca %}
+                <form action="{{ url_for('search', page=clientes.next_num) }}" method="POST">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button type="submit">&lt;</button>
+                </form>
+                {%else%}
+                <a href="{{ url_for('clientes', page=clientes.prev_num) }}">&lt;</a>
+                {% endif %}
+                {% endif %}
+                {% endif %}
+                {% if clientes.total > 10 %}
+                {% for page_num in clientes.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+                {% if page_num %}
+                {% if clientes.page == page_num %}
+                {% if Adicionar %}
+                {%if busca %}
+                <form action="{{ url_for('searchAdicionarCliente', page=page_num) }}" method="POST">
+                    <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button class="paginationActive" type="submit">{{ page_num }}</button>
+                </form>
+                {%else%}
+                <a class="paginationActive" href="{{ url_for('EscolhaCliente',id=Adicionar.id, page=page_num) }}">{{
+                    page_num
+                    }}</a>
+                {% endif %}
+                {% else %}
+                {% if busca %}
+                <form action="{{ url_for('search', page=page_num) }}" method="POST">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button class="paginationActive" type="submit">{{ page_num }}</button>
+                </form>
+                {%else%}
+                <a class="paginationActive" href="{{ url_for('clientes', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+                {% endif %}
+                {% else %}
+                {% if Adicionar %}
+                {%if busca %}
+                <form action="{{ url_for('searchAdicionarCliente', page=page_num) }}" method="POST">
+                    <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button type="submit">{{ page_num }}</button>
+                </form>
+                {%else%}
+                <a href="{{ url_for('EscolhaCliente',id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+                {% else %}
+                {% if busca %}
+                <form action="{{ url_for('search', page=page_num) }}" method="POST">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button type="submit">{{ page_num }}</button>
+                </form>
+                {%else%}
+                <a href="{{ url_for('clientes', page=page_num) }}">{{ page_num }}</a>
+                {% endif %}
+                {% endif %}
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {% if clientes.has_next %}
+                {% if Adicionar %}
+                {% if busca %}
+                <form action="{{ url_for('searchAdicionarCliente', page=clientes.next_num) }}" method="POST">
+                    <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button type="submit">&gt;</button>
+                </form>
+                {%else%}
+                <a href="{{ url_for('EscolhaCliente',id=Adicionar.id, page=clientes.next_num) }}">&gt;</a>
+                {% endif %}
+                {% else %}
+                {% if busca %}
+                <form action="{{ url_for('search', page=clientes.next_num) }}" method="POST">
+                    <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                    <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                    <button type="submit">&gt;</button>
+                </form>
+                {%else%}
+                <a href="{{ url_for('clientes', page=clientes.next_num) }}">&gt;</a>
+                {% endif %}
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="child-container">
+    </div>
+</div>
+{% endblock content %}

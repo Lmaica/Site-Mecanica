@@ -1,0 +1,274 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Mão de Obra</h2>
+<div id="search-container">
+    <div class="search-box">
+        <form style="display: flex; width: 98%;" method="POST">
+            {% if busca %}
+            <input class="anular " value="{{busca}}" type="text" id="searchinput" placeholder="Buscar Mão de Obra"
+                autofocus="autofocus" name="search_string" aria-label="searchMaoObras">
+            {% else %}
+            <input class="anular" type="text" id="searchinput" placeholder="Buscar Mão de Obra" autofocus="autofocus"
+                name="search_string" aria-label="searchMaoObras">
+            {% endif %}
+
+            <select class="anular searchselector" id="searchselector" name="searchselector" onchange="alterarFormato()">
+                <option style="background-color: rgb(165, 164, 164); color: black;" disabled>Mão de Obra
+                </option>
+                {% if escolha == "todos" %}
+                <option value="todos" selected>Todos</option>
+                {% else %}
+                <option value="todos">Todos</option>
+                {% endif %}
+                {% if escolha == "nome" %}
+                <option value="nome" selected>Nome</option>
+                {% else %}
+                <option value="nome">Nome</option>
+                {% endif %}
+                {% if escolha == "categoria" %}
+                <option value="categoria" selected>Categoria</option>
+                {% else %}
+                <option value="categoria">Categoria</option>
+                {% endif %}
+                {% if escolha == "marca" %}
+                <option value="marca" selected>Marca</option>
+                {% else %}
+                <option value="marca">Marca</option>
+                {% endif %}
+                {% if escolha == "modelo" %}
+                <option value="modelo" selected>Modelo</option>
+                {% else %}
+                <option value="modelo">Modelo</option>
+                {% endif %}
+            </select>
+            {% if Adicionar %}
+            <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+            <button id="search-button" formaction="/searchMDOAdicionar">Buscar</button>
+            {% else %}
+            <button id="search-button" formaction="/searchMaoObras">Buscar</button>
+            {%endif%}
+
+        </form>
+    </div>
+</div>
+{% if Adicionar %}
+{%if Adicionar.status == "Editar"%}
+<div class="botao-add">
+    <a href="{{url_for('finalizarEdit', id=Adicionar.id)}}" class="button-pequeno cor-alerta">Retornar</a>
+</div>
+{%else%}
+<div class="botao-add">
+    <a href="{{url_for('AbrirServiço', id=Adicionar.id,tratatar='tratatar')}}"
+        class="button-pequeno cor-alerta">Retornar {{Adicionar.status}}</a>
+</div>
+{%endif%}
+{% else %}
+<div class="botao-add">
+    <a href="{{url_for('addMaoObras')}}" class="button-pequeno cor-ok">Adicionar Mão de Obra</a>
+</div>
+{% endif %}
+
+<div class="mobile-table">
+    <table class="mobile-table">
+        <thead>
+            <tr>
+                <th>NOME SERVIÇO</th>
+                <th>CARRO COMPATIVOS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for MaoObra in MaoObras %}
+            <tr>
+                <td>{{ MaoObra.nomemaoobra.nome }}</td>
+                {%if MaoObra.marca == 'TODOS' %}
+                <td>{{ MaoObra.marca }}</td>
+                {%elif MaoObra.modelo == 'TODOS' %}
+                <td>{{ MaoObra.marca }}/ {{ MaoObra.modelo }}</td>
+                {%elif MaoObra.anoFin == 'TODOS' or MaoObra.anoIni == 'TODOS' %}
+                <td>{{ MaoObra.marca }}/ {{ MaoObra.modelo }}/ {{ MaoObra.anoIni }} </td>
+                {% else%}
+                <td>{{ MaoObra.marca }}/ {{ MaoObra.modelo }} De {{ MaoObra.anoIni }} até {{MaoObra.anoFin }}/
+                    {{MaoObra.motor }} </td>
+                {% endif %}
+            </tr>
+            <tr class="row-details">
+                <td colspan="5">
+                    <table class="nested-table">
+                        <thead>
+                            <tr>
+                                <th colspan="4"
+                                    style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                    Dados Mão de Obra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <td colspan="3">{{ MaoObra.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Categoria</th>
+                                <td colspan="3">{{ MaoObra.catmaoobra.nome }}</td>
+                            </tr>
+                            <tr>
+                                <th>Preço</th>
+                                <td colspan="3">{{ MaoObra.preso }}</td>
+                            </tr>
+                            <tr>
+                                <th>Tempo de Serviço</th>
+                                <td colspan="3">HR: {{ MaoObra.tempo }}:00</td>
+                            </tr>
+                            <tr>
+                                <th>Descrição</th>
+                                <td colspan="3">{{ MaoObra.obs }}</td>
+                            </tr>
+                            <tr>
+                                <th>Data/Cadastro</th>
+                                <td colspan="3" class="dataFormatada">{{ MaoObra.data_criado }}</td>
+                            </tr>
+                            <tr>
+
+                                <td style="background-color: rgb(77, 77, 77);" colspan="4">
+                                    {% if Adicionar %}
+                                    <div class="button-container">
+                                        <form id="meu-formulario-{{ MaoObra.id }}" action="/adicinar_item_MaoObra"
+                                            method="PUT" onsubmit="enviarFormularioMDO('{{ MaoObra.id }}', event)">
+                                            <input type="hidden" id="numero_serviço" name="numero_servico"
+                                                value="{{ Adicionar.id }}">
+                                            <input type="hidden" id="numero_mdo" name="numero_mdo"
+                                                value="{{ MaoObra.id }}">
+                                            <input type="submit"
+                                                onclick="enviarFormularioMDO('{{ MaoObra.id }}', event)" class="cor-ok"
+                                                value="Adicionar ao Serviço">
+                                        </form>
+                                    </div>
+                                    {% else %}
+                                    <div class="button-container">
+                                        {%if session["nivel"] >= 4%}
+                                        <a href="#"><input type="submit"
+                                                onclick="showDiv('MaoObras', '{{MaoObra.id}}', '{{MaoObra.nomemaoobra.nome}} Com ID {{MaoObra.id}}')"
+                                                class="cor-cancelar" value="Apagar"></a>
+                                        {%else%}
+                                        {%endif%}
+                                        <a href="{{url_for('atulizMaoObra', id=MaoObra.id)}}"><input type="submit"
+                                                class="cor-alerta" name="" value="Editar"></a>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    {% if MaoObras.has_prev %}
+    {% if Adicionar %}
+    {% if busca %}
+    <form action="{{ url_for('searchMDOAdicionar', page=MaoObras.prev_num) }}" method="POST">
+        <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {%else%}
+    <a href="{{ url_for('EscolhaMDO',id=Adicionar.id, page=MaoObras.next_num) }}">&lt;</a>
+    {% endif %}
+    {% else %}
+    {% if busca %}
+    <form action="{{ url_for('searchMaoObras', page=MaoObras.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {%else%}
+    <a href="{{ url_for('MaoObras', page=MaoObras.prev_num) }}">&lt;</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% if MaoObras.total > 10 %}
+    {% for page_num in MaoObras.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_num %}
+    {% if MaoObras.page == page_num %}
+    {% if Adicionar %}
+    {%if busca %}
+    <form action="{{ url_for('searchMDOAdicionar', page=page_num) }}" method="POST">
+        <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {%else%}
+    <a class="paginationActive" href="{{ url_for('EscolhaMDO',id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% else %}
+    {% if busca %}
+    <form action="{{ url_for('searchMaoObras', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {%else%}
+    <a class="paginationActive" href="{{ url_for('MaoObras', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% else %}
+    {% if Adicionar %}
+    {%if busca %}
+    <form action="{{ url_for('searchMDOAdicionar', page=page_num) }}" method="POST">
+        <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {%else%}
+    <a href="{{ url_for('EscolhaMDO',id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% else %}
+    {% if busca %}
+    <form action="{{ url_for('searchMaoObras', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {%else%}
+    <a href="{{ url_for('MaoObras', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if MaoObras.has_next %}
+    {% if Adicionar %}
+    {% if busca %}
+    <form action="{{ url_for('searchMDOAdicionar', page=MaoObras.next_num) }}" method="POST">
+        <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {%else%}
+    <a href="{{ url_for('EscolhaMDO',id=Adicionar.id, page=MaoObras.next_num) }}">&gt;</a>
+    {% endif %}
+    {% else %}
+    {% if busca %}
+    <form action="{{ url_for('searchMaoObras', page=MaoObras.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {%else%}
+    <a href="{{ url_for('MaoObras', page=MaoObras.next_num) }}">&gt;</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+</div>
+
+{% endblock content %}

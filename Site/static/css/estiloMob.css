@@ -1,0 +1,1412 @@
+@media (max-width: 760px) {
+
+    /* 1 Esteticas Gerais do programa */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: "Lato";
+        margin: 0;
+        padding: 0;
+        background-color: #D3D6E1;
+        overflow: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        text-align: center;
+    }
+
+    a {
+        line-height: 30px;
+        text-decoration: none;
+    }
+
+    header {
+        top: 0;
+    }
+
+
+    label {
+        display: block;
+        margin-top: 10px;
+    }
+
+    input,
+    textarea,
+    text {
+        width: 100%;
+        padding: 5px;
+        font-size: 16pl;
+        text-transform: uppercase;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        white-space: normal;
+    }
+
+    input[type="button"] {
+        text-transform: none;
+    }
+
+    input[type="submit"] {
+        text-transform: none;
+    }
+
+    img {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    input[type="button"]:hover {
+
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+
+        cursor: pointer;
+    }
+
+    legend {
+        font-weight: bold;
+        font-size: 20pl;
+    }
+
+    /* 2 Estilos Reaproveitados dentro do Site */
+    .semselect2 {
+        width: 40%;
+        height: 30px;
+        font-size: 20pl;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        text-align: center;
+    }
+
+    .lado-div {
+        display: flex;
+        padding: 5px;
+    }
+
+    .lado-a-lado {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+    }
+
+    .lado-a-lado label {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-bottom: 10px;
+    }
+
+    .lado-a-lado input[type="text"] {
+        width: 150px;
+        text-align: right;
+        padding: 5px;
+    }
+
+    .anular {
+        text-transform: none;
+    }
+
+    .retira {
+        display: none;
+    }
+
+    .no-click {
+        pointer-events: none;
+        filter: blur(1px);
+        overflow: hidden;
+    }
+
+    #content {
+        position: absolute;
+        overflow: auto;
+        top: 0;
+        width: 100%;
+        height: 91.9vh;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+
+    td.truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+
+    /* 3 Estilo do Botão do menu Estilo Hamburger e para fechar X*/
+    .ChecMenu {
+        background: rgba(0, 0, 0, 0.559);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        position: fixed;
+        top: 5px;
+        right: 2px;
+        z-index: 9999;
+    }
+
+    .hamburguer {
+        position: relative;
+        display: block;
+        border-radius: 10px;
+        background: #ffffff;
+        width: 30px;
+        height: 5px;
+        top: 29px;
+        left: 15px;
+        transition: 0.5s ease-in-out;
+    }
+
+    .hamburguer:before,
+    .hamburguer:after {
+        background: #fcfcfc;
+        content: '';
+        border-radius: 10px;
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        transition: 0.5s ease-in-out;
+    }
+
+    .hamburguer:before {
+        top: -10px;
+    }
+
+    .hamburguer:after {
+        bottom: -10px;
+    }
+
+    #menuButton {
+        display: none;
+    }
+
+
+    input:checked~label .hamburguer {
+        transform: rotate(45deg);
+    }
+
+    input:checked~label .hamburguer:before {
+        transform: rotate(90deg);
+        top: 0;
+    }
+
+    input:checked~label .hamburguer:after {
+        transform: rotate(90deg);
+        bottom: 0;
+    }
+
+    /* 4 estilo Menu lateral*/
+    #menu {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100%;
+
+        color: #fff;
+        transition: left 0.3s ease-in-out;
+        z-index: 2;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    #menu div {
+        position: relative;
+        top: 0;
+        height: 160px;
+        margin-bottom: 10px;
+        padding-top: 10px;
+    }
+
+    #menu div h4 {
+        padding: 5px;
+        border-radius: 20%;
+    }
+
+    #menu div p {
+        padding-top: 10px;
+        padding-left: 20px;
+        border-radius: 20%;
+    }
+
+    #menu div a {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        padding-left: 5px;
+    }
+
+
+    #menu ul {
+        list-style-type: none;
+    }
+
+    #menu>ul>li {
+        cursor: pointer;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        margin-bottom: 10px;
+        align-items: center;
+    }
+
+    #menu a {
+        display: flex;
+        text-decoration: none;
+        color: #fff;
+        justify-content: center;
+    }
+
+    #menu li:hover {
+        width: 100%;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        background-color: #383636;
+    }
+
+    #menu.active {
+        left: 0;
+    }
+
+    #menu img {
+        right: 0;
+        padding-right: 1px;
+        display: flex;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        height: 35px;
+    }
+
+    /* 5 estilo Sube Menu dados que se expandem dentro do menu*/
+    .submenu {
+        display: none;
+    }
+
+    .submenu.active {
+        display: block;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+
+
+    /* 6 Esteticas para botãos */
+
+    .button-grande {
+        white-space: nowrap;
+        width: 100%;
+        padding: 10px 32px;
+        text-align: center;
+        font-size: 16pl;
+        margin: 10px 2px;
+        border-radius: 50px;
+    }
+
+    .button-medio {
+        white-space: nowrap;
+        width: 70%;
+        padding: 10px 32px;
+        text-align: center;
+        font-size: 16pl;
+        margin: 10px 2px;
+        border-radius: 50px;
+
+    }
+
+    .button-pequeno {
+        white-space: nowrap;
+        width: 40%;
+        padding: 9px 10px;
+        text-align: center;
+        font-size: 16pl;
+        margin: 10px 2px;
+        border-radius: 50px;
+    }
+
+    .cor-ok {
+        background-color: #1b5505 !important;
+        color: #fff;
+    }
+
+    .cor-alerta {
+        background-color: #555a0e !important;
+        color: #fff;
+    }
+
+    .cor-cancelar {
+        background-color: #8b0000 !important;
+        color: #fff;
+    }
+
+    /* 7 Container para botãos  */
+    .button-container {
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    .button-container a {
+        display: block;
+        text-align: center;
+        padding-bottom: 15px;
+    }
+
+    .button-container a input {
+        width: 100%;
+    }
+
+    /* 8 estilo para container De Formularios */
+    .containerForm {
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        margin: 10px 2px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        text-align: center;
+        align-items: center;
+        padding: 5px;
+        background-color: rgb(222, 221, 220);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .divCentro {
+        margin-left: 50%;
+        transform: translate(-50%);
+        display: block;
+        padding: auto;
+        text-align: center;
+    }
+
+    .arrow {
+        font-size: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+
+    /* 9 Estilos Cheque Box Do cliente PJ e CPF */
+    .caixacheckbox {
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+        display: flex;
+        width: 100%;
+        margin: 10px 2px;
+        border: 2px solid #100f0f4a;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        text-align: center;
+        align-items: center;
+        padding: 10px;
+        background-color: rgb(222, 221, 220);
+    }
+
+    .caixacheckbox input {
+        display: none;
+    }
+
+    .estilopj {
+        width: 50%;
+        text-align: center;
+        background-color: white;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    .estilocpf {
+        width: 50%;
+        text-align: center;
+        background-color: gb(222, 221, 220);
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+    }
+
+    /*10 Estilos Tabela de dados expansiva */
+    .mobile-table {
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 12px;
+        border: solid 1px;
+    }
+
+    .botao-add {
+        padding-bottom: 10px;
+        text-align: right
+    }
+
+    .mobile-table table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .mobile-table th, .mobile-table td {
+        height: 40px;
+        text-align: center;
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .mobile-table td {
+        font-size: 14pl;
+        border-left: 0.20px solid rgba(0, 0, 0, 0.485);
+        border-right: 0.20px solid rgba(0, 0, 0, 0.485);
+        border-bottom: 1px solid #ddd;
+    }
+
+
+    .mobile-table th {
+        background-color: #696868;
+        width: 20%;
+        font-size: 16pl;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .mobile-table>tbody>tr:nth-child(2n+1):hover,
+    .mobile-table>tbody>tr:nth-child(2n+1):hover {
+        background-color: #626262;
+        cursor: pointer;
+    }
+
+    .row-details {
+        display: none;
+    }
+
+    .row-details.visible {
+        display: table-row;
+        border-bottom: 20px solid #bababa
+    }
+
+    .row-details.visible td {
+        padding: 0;
+        border: none;
+        vertical-align: top;
+        height: 100%;
+    }
+
+    .row-details.visible td>div {
+        height: 100%;
+        width: 100%;
+        padding: px;
+        box-sizing: border-box;
+    }
+
+    .mobile-table>tbody>tr:nth-child(4n+1),
+    .mobile-table>tbody>tr:nth-child(4n+1) {
+        background-color: #bababa;
+    }
+
+    .nested-table>tbody>tr:nth-child(2n+1),
+    .nested-table>tbody>tr:nth-child(2n+1) {
+        background-color: #bababa;
+    }
+
+    .nested-table {
+        height: 100%;
+        width: 100%;
+    }
+
+    .nested-table td,
+    .nested-table th {
+        height: 20px !important;
+        border: 1px solid #b3b3b3 !important;
+        padding: 0px 0px !important;
+    }
+
+
+    /*11 Estilos Paginação da Tabela de dados expansiva */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .pagination a {
+        font-size: 14pl;
+        line-height: 15px;
+        color: white;
+        display: inline-block;
+        padding: 8px 12px;
+        transition: background-color 0.3s;
+        border-top-left-radius: 50px;
+        border-top-right-radius: 50px;
+        border-bottom-left-radius: 50px;
+        border-bottom-right-radius: 50px;
+        margin: 0 4px;
+        font-weight: bold;
+        background-color: #454545;
+        border: 2px solid #4c4b4b;
+    }
+
+    .pagination button {
+        font-size: 14pl;
+        line-height: 15px;
+        color: white;
+        display: inline-block;
+        padding: 8px 12px;
+        transition: background-color 0.3s;
+        border-radius: 50%;
+        margin: 0 4px;
+        font-weight: bold;
+        background-color: #454545;
+        border: 2px solid #4c4b4b;
+    }
+
+    .paginationActive {
+        background-color: rgb(86, 124, 9) !important;
+        border-color: rgb(86, 124, 9) !important;
+    }
+
+    /*12 Estilos de Mensagem flutuantes */
+    #DivFlutante {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #222222;
+        color: #fff;
+        box-shadow: 0 4px 8px 0 #222;
+        width: 350px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        z-index: 999;
+    }
+
+    .DivFlutanteCabeça {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .DivFlutanteCabeça h3 {
+        padding: 10px;
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .DivFlutanteConte {
+        margin-bottom: 0;
+        font-size: 10pl;
+        padding: 20px;
+        padding-top: 10px;
+    }
+
+    /* 13 Estilos confirmar antes de deletar */
+    #DivDelet {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #222222;
+        color: #fff;
+        box-shadow: 0 4px 8px 0 #222;
+        width: 350px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        z-index: 9999;
+        /* Valor alto para garantir que fique à frente */
+    }
+
+
+    .DivDeletCabeça {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .DivDeletCabeça h3 {
+        padding: 10px;
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 24px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .DivDeletConte {
+        margin-bottom: 0;
+        font-size: 10pl;
+        padding: 20px;
+        padding-top: 10px;
+        text-align: center;
+    }
+
+    /* 14 Estilos do botão de feichar da div flutuantes */
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .close-btn:hover {
+        color: #ff5252;
+    }
+
+    /*15 estilo do Buscador*/
+    #search-container {
+        display: flex;
+        align-items: center;
+        justify-content: left;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .search-box {
+        background-color: #424242;
+        border-radius: 50px;
+        display: flex;
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.595);
+        padding: 3px;
+        width: 100%;
+    }
+
+    .search-box input[type="text"] {
+        background-color: transparent;
+        border: none;
+        color: #fff;
+        font-size: 16pl;
+        padding: 3px;
+        outline: none;
+    }
+
+    .search-box input[type="text"]::placeholder {
+        color: #a9a9a9;
+    }
+
+    .search-box button {
+        background-color: #126409;
+        border: none;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 16pl;
+        padding: 12px;
+        transition: background-color 0.3s ease;
+    }
+
+    .search-box button:hover {
+        background-color: #2aa74f;
+    }
+
+    .search-box select {
+        text-align: right;
+        background-color: transparent;
+        border: none;
+        color: #fff;
+        font-size: 16pl;
+        outline: none;
+    }
+
+    .search-box select option {
+        text-align: center;
+        background-color: #424242;
+        color: #fff;
+    }
+
+    /* 16 Estilos Escolhas de imagens dinamicas */
+    .file-input {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        padding: 10px 20px;
+        border: 2px solid #ccc;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        background-color: #f1f1f1;
+        color: #555;
+        font-size: 16pl;
+        transition: all 0.3s ease;
+    }
+
+    .file-input input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-input:hover {
+        background-color: #e1e1e1;
+        border-color: #999;
+    }
+
+    .file-input:active {
+        background-color: #ddd;
+    }
+
+    .file-input label {
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .file-input .file-name {
+        margin-left: 10px;
+    }
+
+    .file-input img {
+        min-width: 100%;
+        max-width: 100%;
+        max-height: 150px;
+        min-height: 30%;
+        height: auto;
+        display: block;
+        margin-top: 10px;
+    }
+
+    .image-Pequena {
+        min-width: 30%;
+        max-width: 30%;
+        max-height: 110px;
+        min-height: 30%;
+        margin: 5px;
+    }
+
+
+
+    /*18 Tabela para notas*/
+    .product-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 12px;
+        background-color: #bebebe;
+    }
+
+    .product-table span {
+        right: 10px;
+    }
+
+    .product-table table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+
+    }
+
+    .product-table th, .product-table td {
+        height: 30px;
+        text-align: center;
+        padding: 0px 5px 0px 0px;
+    }
+
+    .product-table td {
+        font-size: 14pl;
+        padding-right: 10px;
+        padding-left: 10px;
+
+    }
+
+
+    .product-table th {
+        background-color: #696868;
+        font-size: 16pl;
+
+    }
+
+    .peca-card {
+        border: 1px solid #ccc;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .peca-card div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 5px;
+    }
+
+    .peca-Nome {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .peca-Nome {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .peca-Nome span {
+        display: flex;
+        flex-direction: column;
+        max-width: 200px;
+        overflow-wrap: break-word;
+    }
+
+
+    .peca-Nome div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #somaTotal {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 120%;
+        margin: 15px;
+        background-color: #fefefe;
+        border-radius: 100px;
+        font-weight: bold;
+        padding: 10px;
+        color: #008337;
+    }
+
+    #somaTotal strong {
+        color: #000000;
+    }
+
+    /* mensagem dinamica JS */
+    #MensagemServiço {
+        background-color: #f44336;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 10px;
+        font-size: 14px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /*Pagina de Erro*/
+    .error-container {
+        text-align: center;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .error-container h1 {
+
+        font-size: 48px;
+    }
+
+    .error-container p {
+        color: #fff;
+        font-size: 24px;
+    }
+
+    .error-container a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .error-container a:hover {
+        text-decoration: underline;
+    }
+
+    /*pensagem dinamica pelo JS*/
+    .custom-validation-message {
+        color: #f00;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 5px;
+        padding: 5px;
+    }
+
+    /*valor total do caixa*/
+    .div-valor-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 120%;
+        margin: 15px;
+        background-color: #fefefe;
+        border-radius: 100px;
+        font-weight: bold;
+        padding: 10px;
+        color: #008337;
+    }
+
+    .div-valor-total strong {
+        color: #060606;
+        margin-left: auto;
+        white-space: nowrap;
+    }
+
+
+    /* Estilo personalizado para o Select2 */
+    .select2-container .select2-selection {
+        background-color: #f2f0f2 !important;
+        z-index: 9999 !important;
+
+    }
+
+    .select2-container .select2-search .select2-search__field,
+    .select2-results__option {
+        background-color: #696969 !important;
+        color: #ffffff !important;
+        z-index: 9999 !important;
+    }
+
+    .select2-results__option {
+        text-align: center !important;
+        background-color: #fffdfd !important;
+        color: #000000 !important;
+        z-index: 9999 !important;
+    }
+
+    .select2-results__option:first-child {
+        background-color: #696969 !important;
+        border-radius: 10px;
+        color: #000000 !important;
+        text-align: center !important;
+        z-index: 9999 !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        background-color: #696969 !important;
+        border-color: #696969;
+        color: #ffffff !important;
+    }
+
+
+    .select2-results__option:hover {
+        border-radius: 10px;
+        background-color: #b5b5b5 !important;
+        color: #ffffff !important;
+        z-index: 9999 !important;
+    }
+
+    /* Estilo Graficos */
+    .graficos-container {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        width: 100%;
+        height: 70vh;
+        border: 1px solid #000;
+        background: linear-gradient(to bottom left, #ababab, #c6c5c5, #ababab, #c6c5c5, #ababab, #c6c5c5, #ababab, #c6c5c5);
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        box-shadow: 3px 3px 7px 3px rgba(0, 0, 0, 0.636);
+        text-align: center;
+        max-width: 100%;
+    }
+
+
+    .gaugeChart {
+        width: 100%;
+        height: 80vh;
+    }
+
+    @media (max-width: 430px) {
+        .graficos-container {
+            height: 53vh;
+        }
+
+        .gaugeChart {
+            width: 100%;
+            height: 60vh;
+        }
+    }
+
+    @media (max-width: 350px) {
+        .graficos-container {
+            height: 60vh;
+        }
+
+        .gaugeChart {
+            width: 100%;
+            height: 70vh;
+        }
+    }
+
+    /*LEMPRETES*/
+    .fundo-container {
+        max-height: 300px;
+        margin-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        display: block;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        border: 1px solid #000;
+        background: linear-gradient(to bottom left, #ababab, #c6c5c5, #ababab, #c6c5c5, #ababab, #c6c5c5, #ababab, #c6c5c5);
+        border-radius: 8px;
+        box-shadow: 3px 3px 7px 3px rgba(0, 0, 0, 0.636);
+        text-align: center;
+    }
+
+
+    .fundo-container h3 {
+        margin-bottom: 5px;
+        font-size: 25px;
+        width: 100%;
+        background-color: #7e7d7d;
+        color: #fbfbfb;
+    }
+
+    .lembretes {
+        text-align: center;
+        overflow: auto;
+        white-space: normal;
+        height: 200px;
+    }
+
+    .lembrete {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .lembrete-conteudo {
+        margin-bottom: 10px;
+        display: flex;
+    }
+
+    .lembrete-titulo {
+        text-transform: uppercase;
+        text-decoration: underline;
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .lembrete-msg {
+        margin: 0;
+    }
+
+    .lembrete-rodape {
+        font-size: 12px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+    }
+
+    .lembrete:nth-child(odd) {
+        background-color: #8d8d8d;
+        color: #050505;
+    }
+
+    .lembrete:nth-child(even) {
+        background-color: #c4c3c3;
+        color: #050505;
+    }
+
+    /*menu inferior*/
+    #DadosBaixo {
+        display: flex;
+
+        position: absolute;
+        width: 100%;
+        height: 8%;
+        bottom: 0;
+        top: auto;
+        border-top: 1px solid #ffffff00;
+    }
+
+    .borda-item {
+        position: relative;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+        height: 100%;
+        display: flex;
+    }
+
+    .menu-item {
+        position: relative;
+        align-items: center;
+        text-align: center;
+        margin: 20%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        border-radius: 50px;
+    }
+
+    .menu-item:not(:last-child) {
+        border-right: 1px solid rgba(255, 255, 255, 0.081);
+    }
+
+    .menu-item img {
+        position: relative;
+        left: 50%;
+        transform: translate(-50%);
+        background-color: rgba(219, 3, 3, 0);
+        height: 100%;
+        padding: 5px;
+        align-items: center;
+        text-align: center;
+    }
+
+    /*cabeça de pagina*/
+
+    .cabeçario-pagina {
+        font-size: 25px;
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.636);
+        position: relative;
+        text-transform: uppercase;
+        border-radius: 50px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        width: 100%;
+        height: 50px;
+        text-align: center;
+
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* menu inical */
+    #MenuInicial {
+        display: flex;
+        color: #fff;
+    }
+
+
+    #MenuInicial ul {
+        width: 100%;
+        padding: 10px;
+        list-style-type: none;
+    }
+
+    #MenuInicial>ul>li {
+        width: 100%;
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.636);
+        cursor: pointer;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        margin-bottom: 10px;
+        align-items: center;
+    }
+
+    #MenuInicial a {
+        display: flex;
+        text-decoration: none;
+        color: #fff;
+        justify-content: center;
+    }
+
+    #MenuInicial li:hover {
+        width: 100%;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        background-color: #383636;
+    }
+
+    #MenuInicial img {
+        width: 20%;
+        right: 0;
+        padding-right: 1px;
+        display: flex;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        height: 50px;
+    }
+
+    .ocultar_div {
+        display: none;
+    }
+
+    /* Somente para descktop */
+    .lado-lado-desk {
+        display: block;
+    }
+
+    /* 17 estilo para o Estilo Desktop não enfluenciar no Mobile*/
+    .container-lado {
+        display: flex;
+    }
+
+    .estilo-dinamico {
+        display: block;
+        width: 100%;
+    }
+
+    .duas-div-lado-lado {
+        display: block;
+        padding: 5px;
+    }
+
+    .lado-div {
+        display: flex;
+        padding: 5px;
+    }
+
+    .child-container {
+        display: none;
+    }
+
+    .div_admistrador {
+        width: 100%;
+        border: solid;
+        padding: 5px;
+        text-align: center;
+        border-radius: 50px;
+        background-color: rgb(170, 170, 170);
+    }
+
+    .div_admistrador_flutuante {
+        overflow: auto;
+        height: 95vh;
+        width: 90%;
+    }
+
+
+    /* Para serviços pdf */
+
+    .nota-servico {
+        display: none;
+        padding: 20px;
+        background-color: #ffffff;
+    }
+
+
+    .nota-servico h2 {
+        color: #000000;
+        border-bottom: 2px solid #000000;
+    }
+
+    .nota-servico h3 {
+        color: #000000;
+        border-bottom: 1px solid #000000;
+    }
+
+    .nota-servico p {
+        padding: 2px;
+        margin: 0px 0;
+    }
+
+    .nota-servico table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .nota-servico th,
+    .nota-servico td {
+        padding: 5px;
+        text-align: left;
+    }
+
+    .nota-servico th {
+        background-color: #fffdfd;
+        color: #000000;
+    }
+
+
+    .nota-servico table tr:nth-child(even) {
+        background-color: #ffffff;
+    }
+
+    .nota-servico table tr:nth-child(odd) {
+        background-color: #e2e2e2;
+    }
+
+    .nota-servico .info-group {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 0;
+        margin: 0;
+    }
+
+    .nota-servico .company-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .nota-servico .company-logo {
+        margin-right: 20px;
+    }
+
+    .nota-servico .company-container div {
+        flex-grow: 1;
+    }
+
+    .nota-servico .rodape {
+        background-color: #6a6a6a;
+        padding: 5px;
+        text-align: right;
+        font-size: 20px;
+    }
+
+    .nota-servico .adireita {
+        text-align: right;
+    }
+
+    .nota-servico .lado {
+        font-size: 15px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .nota-servico img {
+        width: 140px;
+        height: 140px;
+    }
+
+}

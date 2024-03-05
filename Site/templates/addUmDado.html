@@ -1,0 +1,67 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+{% include '_menssagem.html'%}
+{% include 'NavAdimin.html' %}
+<form accept="" method="post">
+    <fieldset class="containerForm">
+        {% if atulizar %}
+        <h2 class="cabeçario-pagina">Atulizar {{produto}}</h2>
+        {% else %}
+        <h2 class="cabeçario-pagina">Adicionar {{produto}}</h2>
+        {% endif %}
+        <form accept="" method="post">
+
+            {% if perfil == 'ValorMDO' %}
+            <div>
+                <input class="inputReais" id="preso" name="preso" type="text" placeholder="R$ 0,00"
+                    style="font-size: 20px;" value="" required>
+            </div>
+            {%elif perfil == 'MetaLiquida' or perfil == 'MetaBruta' or perfil == 'MetaMecanico' or perfil == 'MetaVendedor' %}
+            <div id="MensagemServiço" class="retira"></div>
+            <div>
+                <label for="meta">Meta:</label>
+                <input class="inputReais" id="meta" name="meta" type="text" placeholder="R$ 0,00"
+                    style="font-size: 20px;" value="" required>
+            </div>
+            <div>
+                <label for="bonos">Bonos:</label>
+                <input class="inputReais" id="bonos" name="bonos" type="text" placeholder="R$ 0,00"
+                    style="font-size: 20px;" value="" required>
+            </div>
+            {% else %}
+            <input type="text" name="nome" style="text-align: center;" value="{{dado.nome}}" required>
+            {% endif %}
+
+            <div class="containerForm">
+                {% if atulizar %}
+                <input type="submit" onclick="return ValidarMaior();" value="ATULIZAR" class="button-grande cor-ok">
+                {% else %}
+                <input type="submit" onclick="return ValidarMaior();" value="CADASTRAR" class="button-grande cor-ok">
+                {% endif %}
+                <a href="{{url_for(perfil)}}" class="button-medio cor-cancelar">CANCELAR</a>
+            </div>
+        </form>
+    </fieldset>
+</form>
+
+
+<script>
+    function ValidarMaior() {
+        const metaValue = parseFloat(document.getElementById('meta').value.replace(/[^0-9]/g, ''));
+        const bonosValue = parseFloat(document.getElementById('bonos').value.replace(/[^0-9]/g, ''));
+        console.log(metaValue);
+        console.log(bonosValue);
+        if (metaValue > bonosValue) {
+            const MensagemServico = document.getElementById('MensagemServiço');
+            MensagemServico.classList.remove('retira');
+            MensagemServico.innerHTML = 'O Valor de Bonos não pode ser menor que a Meta!!!';
+            return false;
+        } else {
+            return true;
+        }
+    }
+</script>
+
+
+{% endblock content %}

@@ -1,0 +1,15 @@
+{
+    "cores": {
+        "principal_botao": "#8f0000",
+        "principal_principal": "#9e0000",
+        "principal_secundaria": "linear-gradient(to bottom right, rgb(124, 45, 45), rgb(84, 5, 5), rgb(124, 45, 45))",
+        "principal_letras": "#fffafa",
+        "meschagem": 0.5
+    },
+    "fontes": {
+        "fonte_principal": "'Palatino Linotype', 'Book Antiqua', Palatino, serif"
+    },
+    "icones": {
+        "img_cor": 77
+    }
+}

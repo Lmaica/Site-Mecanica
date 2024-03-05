@@ -1,0 +1,174 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+{% include '_menssagem.html'%}
+{% include 'NavAdimin.html' %}
+{% if atulizar %}
+<h2 class="cabeçario-pagina">Atulizar {{produto}}</h2>
+{% else %}
+<h2 class="cabeçario-pagina">Adicionar {{produto}}</h2>
+{% endif %}
+{% from "_formularioAjuda.html" import render_field %}
+<form action="" method="POST" enctype="multipart/form-data">
+
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados da Mão de Obra</legend>
+                <span style="font-size: 80%;">(Dados Obrigatorios)</span>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+
+            <label for="nomemaoobra">Nome da Mao de Obra:</label>
+            <select name="nomemaoobra" id="nomemaoobra">
+                <option value="">---Selecione Nome da M.O---</option>
+                {% if MaoObra %}
+                <option value="{{ MaoObra.nomemaoobra.id }}" selected>{{ MaoObra.nomemaoobra.nome }}</option>
+                {% endif %}
+                {%for nomemaoobra in nomemaoobras%}
+                <option value="{{nomemaoobra.id}}">{{nomemaoobra.nome}}</option>
+                {%endfor%}
+            </select>
+            <label for="hora">Horas de Serviço:</label>
+            <select name="hora" id="hora">
+                <option value="">---Selecione Hora---</option>
+                {% if MaoObra %}
+                <option value="{{ MaoObra.tempo }}" selected>Hr: {{ MaoObra.tempo }}:00</option>
+                {% endif %}
+                {%for a in range(1, 48)%}
+                <option value="{{a}}">Hr: {{a}}:00</option>
+                {%endfor%}
+            </select>
+            <label for="carro">Adicione a Categoria da M.O</label>
+            <select name="categoria" id="categoria" class="form-control" required>
+                <option value="">--Selecione a categoria--</option>
+                {% if MaoObra %}
+                <option value="{{ MaoObra.catmaoobra.id }}" selected>{{ MaoObra.catmaoobra.nome }}</option>
+                {% endif %}
+                {%for categoria in categorias%}
+                <option value="{{categoria.id}}">{{categoria.nome}}</option>
+                {%endfor%}
+            </select>
+            {% if MaoObra %}
+            <label for="descrisao">Descrição:</label>
+            <textarea id="descrisao" name="descrisao" rows="4" cols="50" required>{{MaoObra.obs}}</textarea>
+            {% else %}
+            <label for="descrisao">Descrição:</label>
+            <textarea id="descrisao" name="descrisao" rows="4" cols="50" required></textarea>
+            {% endif %}
+
+            <div class="lado-a-lado">
+                {% if MaoObra %}
+                <label for="preso">Preço</label>
+                <input class="inputReais" id="preso" name="preso" type="text" placeholder="R$ 0,00"
+                    value="{{MaoObra.preso}}" required>
+                {% else %}
+                <label for="preso">Preço</label>
+                <input class="inputReais" id="preso" name="preso" type="text" placeholder="R$ 0,00" value="" required>
+                {% endif %}
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Carros Compativeis</legend>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+
+            <div>
+                <label for="marcaT">Marca:</label>
+                <select id="marcaT" name="marcaT">
+                    <option value="TODOS">--Selecione marca--</option>
+                    {% if MaoObra %}
+                    <option value="{{ MaoObra.marca }}" selected>{{ MaoObra.marca }}</option>
+                    {% for marca in marcas %}
+                    <option value="{{ marca }}">{{ marca }}</option>
+                    {% endfor %}
+                    {% else %}
+                    {% for marca in marcas %}
+                    <option value="{{ marca }}">{{ marca }}</option>
+                    {% endfor %}
+                    {% endif %}
+                </select>
+            </div>
+            <div>
+                {% if MaoObra %}
+                <label for="modeloT">Modelo:</label>
+                <select id="modeloT" name="modeloT">
+                    <option value="{{ MaoObra.modelo }}" selected>{{ MaoObra.modelo }}</option>
+                    {% for modelo in modelos %}
+                    <option value="{{ modelo }}">{{ modelo }}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                <label for="modeloT">Modelo:</label>
+                <select id="modeloT" name="modeloT" disabled>
+                    <option value="TODOS">--Selecione modelo--</option>
+                </select>
+                {% endif %}
+
+            </div>
+            <div>
+                {% if MaoObra %}
+                <label for="anoIniT">Ano Inicil:</label>
+                <select id="anoIniT" name="anoIniT">
+                    <option value="{{ MaoObra.anoIni }}" selected>{{ MaoObra.anoIni }}</option>
+                    {% for anI in anosI %}
+                    <option value="{{ anI }}">{{ anI }}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                <label for="anoIniT">Ano inicil:</label>
+                <select id="anoIniT" name="anoIniT" disabled>
+                    <option value="TODOS">--Selecione Do ano--</option>
+                </select>
+                {% endif %}
+            </div>
+            <div>
+                {% if MaoObra %}
+                <label for="anoFinT">Ano Final:</label>
+                <select id="anoFinT" name="anoFinT">
+                    <option value="{{ MaoObra.anoFin }}" selected>{{ MaoObra.anoFin }}</option>
+                    {% for anF in anosF %}
+                    <option value="{{ anF }}">{{ anF }}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                <label for="anoFinT">Ano Final:</label>
+                <select id="anoFinT" name="anoFinT" disabled>
+                    <option value="TODOS">--Selecione Ate o ano--</option>
+                </select>
+                {% endif %}
+            </div>
+            <div>
+                {% if MaoObra %}
+                <label for="motorT">Motor:</label>
+                <select id="motorT" name="motorT">
+                    <option value="{{ MaoObra.motor }}" selected>{{ MaoObra.motor }}</option>
+                    {% for motor in motors %}
+                    <option value="{{ motor }}">{{ motor }}</option>
+                    {% endfor %}
+                </select>
+                {% else %}
+                <label for="motorT">Motor:</label>
+                <select id="motorT" name="motorT" disabled>
+                    <option value="TODOS">--Selecione motor--</option>
+                </select>
+                {% endif %}
+
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <input type="submit" value="Adicionar" class="button-grande cor-ok">
+        <a href="{{url_for('MaoObras')}}" class="button-medio cor-cancelar">CANCELAR</a>
+    </fieldset>
+</form>
+
+
+{% endblock content %}

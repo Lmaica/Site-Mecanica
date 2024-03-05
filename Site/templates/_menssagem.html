@@ -1,0 +1,328 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+{% if category == "confime" %}
+<div id="DivFlutante">
+    <div class="cor-cancelar DivFlutanteCabeça">
+        <h3>AVISO!!!</h3>
+        <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+    </div>
+    <div class="DivFlutanteConte">
+        <p>{{ message }}</p>
+    </div>
+    <div style="padding: 0px 10px 10px 10px;" class="lado-a-lado">
+        <a href=""><input type="submit" onclick="ButunDivFlutante()" class="button-grande cor-cancelar" name=""
+                value="Cancelar"></a>
+        <a href="{{ url_for('atulizMDOvalor') }}">
+            <input type="submit" class="button-grande cor-ok" name="" value="Modficar">
+        </a>
+    </div>
+</div>
+{% elif category == "Aprovado" %}
+<div id="DivFlutante">
+    <div class="cor-ok DivFlutanteCabeça">
+        <h3>APROVAR!!!</h3>
+        <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+    </div>
+    <div class="DivFlutanteConte">
+        <form action="/aprovarServiço/{{ message }}" method="POST">
+            <div class="DivFlutanteConte">
+                <p>Qual o KM do Veiculo???</p>
+            </div>
+            <input type="number" name="kmAtualiza" id="kmAtualiza" required>
+            <span style="font-size: 14px; font-family: Arial, sans-serif;">Km Anterior: {{Serviço.veiculo_os.km}}</span>
+            <div style="padding: 0px 10px 10px 10px;" class="lado-a-lado">
+                <input type="button" onclick="ButunDivFlutante()" class="button-grande cor-cancelar" value="Cancelar">
+                <input type="submit" class="button-grande cor-ok" name="" value="Continuar">
+            </div>
+        </form>
+    </div>
+</div>
+{% elif category == "Finalizado" %}
+<div id="DivFlutante" class="div_admistrador_flutuante">
+    <div class="cor-ok DivFlutanteCabeça">
+        <h3>FINALIZAR!!!</h3>
+        <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+    </div>
+    <div class="DivFlutanteConte">
+        <form action="/finalizarServiço/{{ message }}" method="POST">
+            <div>
+                {% if items_data_peças %}
+                <div style="background-color: black; border-radius: 20px; padding: 5px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>|</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        {% for item_peça in items_data_peças %}
+                        <tbody>
+                            <tr>
+                                <td>{{ loop.index }}&rpar;{{ item_peça.nome}}</td>
+                                <td></td>
+                                <td style="color: brown;">{{ item_peça.pago}}</td>
+                            </tr>
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="lado-a-lado" style="background-color: brown; border-radius: 20px; width: 100%;">
+                    <label for="gasto">Valor Gasto:</label>
+                    <input type="text" name="gasto" id="gasto" class="inputReais" value="{{valor_total_pago}}">
+                </div>
+                </fieldset>
+                {% else %}
+                {% endif %}
+
+            </div>
+            <div style=" width: 100%; background-color: green; border-radius: 20px; padding: 5px;">
+                <div id="somaTotal" style="height: 25px;">Total:<strong></strong> R$ 0.00</div>
+                <div id="adicioneados">
+                    <!-- O novo par de seleção e entrada será adicionado aqui -->
+                </div>
+
+                <div class="lado-a-lado">
+                    <button type="button" class="button-pequeno cor-cancelar"
+                        onclick="apagarUltimaDiv()">Apagar</button>
+                    <button type="button" class="button-medio" style="background-color: blue; color: wheat;"
+                        onclick="criarCopia()">Add mais Carteira</button>
+                </div>
+            </div>
+            <div>
+                <label for="kmAtualiza">Adicione o KM:</label>
+                <input type="number" name="kmAtualiza" id="kmAtualiza" required>
+            </div>
+            <span style="font-size: 14px; font-family: Arial, sans-serif;">Km Anterior: {{Serviço.veiculo_os.km}}</span>
+            <div style="padding: 0px 5px 5px 5px;" class="lado-a-lado">
+                <input type="button" style="padding: 10px;" onclick="ButunDivFlutante()"
+                    class="button-grande cor-cancelar" value="Cancelar">
+                <input type="submit" class="button-grande cor-ok" name="" value="Continuar">
+            </div>
+            <input type="hidden" id="valordaspesas" name="valordaspesas" value="R$ 0,00">
+            <input type="hidden" id="valortodos" name="valortodos" value="R$ 0,00">
+
+        </form>
+    </div>
+</div>
+
+<script>
+    window.onload = criarCopia;
+
+    // Função para criar uma cópia exata do código HTML e adicionar à div específica
+    function criarCopia() {
+        // Obtém a div específica onde a cópia será anexada
+        var adicioneados = document.getElementById("adicioneados");
+
+        // Cria um novo elemento div
+        var novaDiv = document.createElement("div");
+
+        // Define o conteúdo HTML da nova div
+        novaDiv.innerHTML = `
+                <hr>
+                <div>
+                    <label  for="carteira">Adicione Carteira:</label>
+                    <select name="carteira" id="carteira"
+                        style="width: 100%; height: 30px;font-size: 20pl;border-top-left-radius: 10px;border-top-right-radius: 10px; border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;text-align: center;"
+                        required>
+                        <option value="">Selecione a Carteira</option>
+                        {%for carteira in carteiras%}
+                        <option value="{{carteira.id}}">{{carteira.nome}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                <div class="lado-a-lado">
+                    <label for="pago">Valor Pago:</label>
+                    <input type="text" name="pago" class="variosInputReal" placeholder="R$ 0,00" value="" required>
+                </div>
+                <label for="pago">Detale do Pagamento:</label>
+                <input style=" margin-bottom: 10px;" type="text" name="detalesPago"  value=""  required>
+                <hr>
+                `;
+
+
+        // Adiciona a nova div à div específica
+        adicioneados.appendChild(novaDiv);
+
+        // Adiciona funcionalidade do variosInputReal à cópia
+        const inputElement = novaDiv.querySelector(".variosInputReal");
+
+        inputElement.addEventListener("click", function () {
+            inputElement.setSelectionRange(inputElement.value.length, inputElement.value.length);
+        });
+
+        inputElement.addEventListener("input", function (event) {
+            const onlyDigits = inputElement.value.replace(/\D/g, "").padStart(3, "0");
+            const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2);
+            const formattedValue = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(digitsFloat);
+            inputElement.value = inputElement.value === "" ? "R$ 0,00" : formattedValue;
+        });
+    }
+    function atualizarVisibilidadeBotao() {
+
+        var adicioneados = document.getElementById("adicioneados");
+
+        var apagarBotao = document.getElementById("apagarBotao");
+        apagarBotao.style.display = adicioneados.children.length >= 2 ? "block" : "none";
+    }
+
+    function apagarUltimaDiv() {
+        var adicioneados = document.getElementById("adicioneados");
+
+        if (adicioneados.children.length >= 2) {
+            var ultimaDiv = adicioneados.lastChild;
+
+            adicioneados.removeChild(ultimaDiv);
+            atualizarVisibilidadeBotao();
+        } else {
+        }
+    }
+
+    // Chama a função de atualização ao carregar a página
+    window.onload = function () {
+        criarCopia();
+        atualizarVisibilidadeBotao();
+    };
+</script>
+
+{% elif category == "itensServiço" %}
+<div id="DivFlutante">
+    <div class="cor-ok DivFlutanteCabeça">
+        <h3>Adicionar Item!!!</h3>
+        <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+    </div>
+    <div class="DivFlutanteConte">
+        <div>
+            <form action="/AddItensManual/{{ message }}" method="POST">
+                <div style="background-color: rgb(157, 157, 158); color: black; border-radius: 10px; padding: 10px; ">
+                    <div class="lado-a-lado">
+                        <label for="tipo">Tipo:</label>
+                        <select name="tipo" class="semselect2 searchselector" required>
+                            <option value="">Selecione Tipo</option select>
+                            <option value="Peça">Peça</option>
+                            <option value="Mão de Obra">Mão de Obra</option>
+                        </select>
+                    </div>
+                    <div class="lado-a-lado">
+                        <label for="Codigo">Codigo:</label>
+                        <input style="height: 30px; margin-top: 10px;" type="text" name="Codigo" id="Codigo" required>
+                    </div>
+                    <label for="NomeItens">Nome Peças:</label>
+                    <input type="text" name="NomeItens" id="NomeItens" required>
+                    <div class="lado-a-lado">
+                        <label for="unidad">Quantidade:</label>
+                        <input style="text-align: center;width: 50px ;height: 30px; margin-top: 10px;" type="number"
+                            name="unidad" value="1" min="1" required>
+                    </div>
+                    <div class="lado-a-lado">
+                        <label for="lado">Lado:</label>
+                        <select name="lado" class="semselect2 searchselector">
+                            <option value="S">Sem Lado</option>
+                            <option value="L/D">Direita</option>
+                            <option value="L/E">Esquerda</option>
+                        </select>
+                    </div>
+                    <div class="lado-a-lado">
+                        <label for="custo">Valor Custo:</label>
+                        <input style="height: 30px; margin-top: 10px;" type="text" name="custo" id="custo"
+                            class="inputReais" placeholder="R$ 0,00">
+                    </div>
+
+                    <div class="lado-a-lado">
+                        <label for="venda">Valor Venda:</label>
+                        <input style="height: 30px; margin-top: 10px;" type="text" name="venda" id="venda"
+                            class="inputReais" placeholder="R$ 0,00" required>
+                    </div>
+
+                    <div style="padding: 0px 5px 5px 5px;" class="lado-a-lado">
+                        <input type="button" style="padding: 10px;" onclick="ButunDivFlutante()"
+                            class="button-grande cor-cancelar" value="Cancelar">
+                        <input type="submit" class="button-grande cor-ok" name="" value="Continuar">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function atualizarCampos() {
+            var tipoSelecionado = document.querySelector('select[name="tipo"]').value;
+            var custoLabel = document.querySelector('label[for="custo"]');
+            var custoInput = document.getElementById('custo');
+            var ladoLabel = document.querySelector('label[for="lado"]');
+            var ladoSelect = document.querySelector('select[name="lado"]');
+            var quantidadeLabel = document.querySelector('label[for="unidad"]');
+            var quantidadeInput = document.querySelector('input[name="unidad"]');
+            var codigoLabel = document.querySelector('label[for="Codigo"]');
+            var codigoInput = document.getElementById('Codigo');
+
+            if (tipoSelecionado === "Mão de Obra") {
+                custoInput.removeAttribute("required");
+                ladoSelect.removeAttribute("required");
+                quantidadeInput.removeAttribute("required");
+                codigoInput.removeAttribute("required");
+                custoLabel.style.display = "none";
+                custoInput.style.display = "none";
+                ladoLabel.style.display = "none";
+                ladoSelect.style.display = "none";
+                quantidadeLabel.style.display = "none";
+                quantidadeInput.style.display = "none";
+                codigoLabel.style.display = "none";
+                codigoInput.style.display = "none";
+            } else {
+                custoInput.setAttribute("required", true);
+                ladoSelect.setAttribute("required", true);
+                quantidadeInput.setAttribute("required", true);
+                codigoInput.setAttribute("required", true);
+                custoLabel.style.display = "block";
+                custoInput.style.display = "block";
+                ladoLabel.style.display = "block";
+                ladoSelect.style.display = "block";
+                quantidadeLabel.style.display = "block";
+                quantidadeInput.style.display = "block";
+                codigoLabel.style.display = "block";
+                codigoInput.style.display = "block";
+            }
+        }
+
+        document.querySelector('select[name="tipo"]').addEventListener("change", atualizarCampos);
+
+        atualizarCampos();
+    });
+</script>
+
+
+{% elif category == "Longin_Erro" or category == "message" %}
+<div class="aviso">
+    <p>{{ message }}</p>
+</div>
+{% elif category == "Longin_Erro_Utrapado" or category == "message" %}
+<div class="aviso">
+    <p>{{ message }}</p>
+</div>
+<script>
+    var aviso = document.querySelector('.aviso');
+    var message = aviso.querySelector('p').textContent;
+    if (message === 'Faça o seu LOGIN') {
+        aviso.style.display = 'none';
+    } else {
+        aviso.style.display = 'block';
+    }
+</script>
+{% else %}
+<div id="DivFlutante">
+    <div class="{{ category }} DivFlutanteCabeça">
+        <h3>AVISO!!!</h3>
+        <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+    </div>
+    <div class="DivFlutanteConte">
+        <p>{{ message }}</p>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
