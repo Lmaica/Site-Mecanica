@@ -25,7 +25,6 @@
 </head>
 
 <body>
-    <h1>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</h1>
     <header id="NavAdmin">
         <input id="menuButton" type="checkbox" />
         <label for="menuButton">
@@ -200,7 +199,7 @@
                     <hr>
                 </ul>
             </li>
-            <li class="principalCorUnica"><a href="{{url_for('configurar')}}" ><img
+            <li class="principalCorUnica"><a href="{{url_for('configurar')}}"><img
                         src="{{ url_for('static', filename='img/config.png') }}" alt="">
                     <p>Configurar</p>
                 </a>
@@ -259,6 +258,7 @@
         {%else%}
         {%endif%}
     </footer>
+    <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
 
     <script src="{{url_for('static',filename='js/JavS.js')}}"></script>
     <script src="{{url_for('static',filename='js/JsStyle.js')}}"></script>
