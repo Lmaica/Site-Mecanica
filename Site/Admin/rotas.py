@@ -36,11 +36,12 @@ from Site.Carros.modelos import Carro
 from Site.Clientes.modelos import Veiculo
 from sqlalchemy.sql import text
 from Site.Caixa.modelos import Caixa,Catcaixa
-#import win32com.client as win32
 import random
 import string
-#import pythoncom
 from email_validator import validate_email, EmailNotValidError
+#import pythoncom
+#import win32com.client as win32
+import time
 
 def get_results_dict(query_results, date_extractor, *value_columns):
     from collections import defaultdict

@@ -1,5 +1,27 @@
+var menu = document.getElementById('menu');
+var content = document.getElementById('content');
+var menuButton = document.getElementById('menuButton');
+var NavAdmin = document.getElementById('NavAdmin');
+var DadosBaixo = document.getElementById('DadosBaixo');
+window.addEventListener("beforeunload", function () {
+    console.log("A página está prestes a começar a carregar.");
+    showLoader();
+});
+
+
+function showLoader() {
+    document.getElementById("loader").style.display = "block";
+    menu.classList.add('no-click');
+    content.classList.add('no-click');
+    menuButton.classList.add('no-click');
+    NavAdmin.classList.add('no-click');
+    DadosBaixo.classList.add('no-click');
+}
+
+
+
+// Atulizar Configuração
 $(document).ready(function () {
-    // Exemplo de dados a serem enviados
     var dados = {};
     var body = document.body;
     var principalCorMesclada = document.getElementsByClassName('principalCorMesclada');
@@ -571,11 +593,7 @@ function enviarFormularioMDO(idMDO, event) {
 }
 
 //Função do menu para mobile 
-var menu = document.getElementById('menu');
-var content = document.getElementById('content');
-var menuButton = document.getElementById('menuButton');
-var NavAdmin = document.getElementById('NavAdmin');
-var DadosBaixo = document.getElementById('DadosBaixo');
+
 
 menuButton.addEventListener('change', toggleMenu);
 
