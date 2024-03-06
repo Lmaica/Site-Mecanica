@@ -4,7 +4,6 @@ var menuButton = document.getElementById('menuButton');
 var NavAdmin = document.getElementById('NavAdmin');
 var DadosBaixo = document.getElementById('DadosBaixo');
 window.addEventListener("beforeunload", function () {
-    console.log("A página está prestes a começar a carregar.");
     showLoader();
 });
 
@@ -16,6 +15,10 @@ function showLoader() {
     menuButton.classList.add('no-click');
     NavAdmin.classList.add('no-click');
     DadosBaixo.classList.add('no-click');
+    setTimeout(function () {
+        location.reload();
+    }, 10000); // 5000 milissegundos = 5 segundos
+
 }
 
 
