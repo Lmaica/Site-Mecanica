@@ -640,7 +640,7 @@ window.addEventListener('DOMContentLoaded', function () {
         { id: 'cnpj', format: 'XX.XXX.XXX/XXXX-XX', maxLength: 14 },
         { id: 'niver', format: 'XX/XX/XXXX', maxLength: 8 },
         { id: 'cep', format: 'XXXXX-XXX', maxLength: 8 },
-        { id: 'rg', format: 'XXXXXXXX', maxLength: 8 },
+        { id: 'rg', format: 'XXXXXXXXXXXXXXX', maxLength: 15 },
         { id: 'nufor', format: 'XXXXXXXX', maxLength: 8 }
     ];
 
@@ -856,7 +856,7 @@ function alterarFormato() {
         searchinput.maxLength = 14;
         searchinput.addEventListener("input", validarCPF);
     } else if (searchselector === "rg") {
-        searchinput.maxLength = 8;
+        searchinput.maxLength = 15;
         searchinput.addEventListener("input", validarRG);
     } else if (searchselector === "id") {
         searchinput.maxLength = 8;

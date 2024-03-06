@@ -322,7 +322,7 @@ def salvar_config():
 @app.route("/configurar")
 @login_required
 @nome_required
-@verificacao_nivel(4)
+@verificacao_nivel(6)
 def configurar():
     config = load_config()
     return render_template("Admin/configure.html",cores=config['cores'], fontes=config['fontes'], icones=config['icones'])
@@ -983,7 +983,7 @@ def atulizUser(id):
                     if not valor_campo:
                         flash(f"O campo {campo} está vazio!","cor-alerta")
                         condicao_encontrada_vazio = False
-                        return redirect(url_for("atulizUser", id=current_user.id))
+                        return redirect(url_for("atulizUser", id=users.id))
                 if condicao_encontrada and condicao_encontrada_vazio:
                     if request.files.get("image_1"):
                         if users.foto != "foto.jpg":

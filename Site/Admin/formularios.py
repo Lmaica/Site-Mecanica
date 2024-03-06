@@ -96,10 +96,6 @@ class RegistrationForm(FlaskForm):
     )
     rg = StringFieldfone = StringField(
         "RG: ",
-        [
-            validators.Optional(),
-            validators.Length(min=8, message="RG invalido. Ex: XXXXXXXX"),
-        ],
     )
     razaoSocial = StringField("Razão Social:")
     nomeFantasia = StringField("Nome Social:")
