@@ -1,5 +1,4 @@
 {% extends 'layouts.html' %}
-
 {% block content %}
 {%if status == 'cliente'%}
 <h2 class="cabeçario-pagina">Serviços do Cliente</h2>
@@ -30,7 +29,7 @@
                 {% else %}
                 <option value="id">ID</option>
                 {% endif %}
-                {%if status == 'cliente' or status == 'meus serviço'%}
+                {%if status == 'cliente' or status == 'meus servico'%}
                 {% if escolha == "modelo" %}
                 <option value="modelo" selected>Modelo</option>
                 {% else %}
@@ -56,7 +55,7 @@
             </select>
             {%if status == 'cliente'%}
             <button id="search-button" formaction="/searchservicoDoCliente/{{cliente_id.id}}">Buscar</button>
-            {%elif status == 'meus serviço'%}
+            {%elif status == 'meus servico'%}
             <button id="search-button" formaction="/searchservicoRelatorios">Buscar</button>
             {%else%}
             <button id="search-button" formaction="/searchServiso/{{status}}">Buscar</button>
@@ -69,11 +68,11 @@
 {%if status == 'cliente'%}
 <h2>{{ cliente_id.nome }}</h2>
 
-{%elif status == 'meus serviço'%}
+{%elif status == 'meus servico'%}
 <h2>Todos os seus Seviços</h2>
 {%else%}
 <div class="botao-add">
-    <a href="{{url_for('AddServiço')}}" class="button-pequeno cor-ok">Adicionar Orçamento</a>
+    <a href="{{url_for('AddServico')}}" class="button-pequeno cor-ok">Adicionar Orçamento</a>
 </div>
 {%endif%}
 <div class="mobile-table">
@@ -197,7 +196,7 @@
                                 </td>
                                 {%endif%}
                                 <td colspan="3"><a
-                                        href="{{url_for('AbrirServiço',id=item.id,tratatar='alertar')}}"><input
+                                        href="{{url_for('AbrirServico',id=item.id,tratatar='alertar')}}"><input
                                             type="submit" class="button-grande cor-ok" name="" value="Abrir"></a>
                                 </td>
                             </tr>
@@ -263,7 +262,7 @@
     {% endif %}
 
 </div>
-{%elif status == 'meus serviço'%}
+{%elif status == 'meus servico'%}
 <div class="pagination">
     {% if servisos.has_prev %}
     {% if busca %}

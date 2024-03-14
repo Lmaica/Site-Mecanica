@@ -1,9 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
-import locale
 from Site import db
 from datetime import datetime
 import json
-from Site.Serviços.modelos import Serviso
+from Site.Servicos.modelos import Serviso
 from datetime import datetime, timezone
 
 
@@ -169,21 +168,21 @@ class Redutor_codigo:
         return condicao_encontrada
 
     def extract_data(serviso, get_Cliente, search_value):
-        items_data_serviços = []
-        for serviço in serviso:
-            cliente_os = json.loads(serviço.cliente)
-            veiculo_os = json.loads(serviço.veiculo)
+        items_data_servicos = []
+        for servico in serviso:
+            cliente_os = json.loads(servico.cliente)
+            veiculo_os = json.loads(servico.veiculo)
             for item in cliente_os["itens"]:
                 serv_nome_cliente = item.get("nome")
                 cli_id = item.get("cli_id")
                 if serv_nome_cliente is not None:
-                    items_data_serviços.append(
+                    items_data_servicos.append(
                         {
-                            "id": serviço.id,
+                            "id": servico.id,
                             "nome": serv_nome_cliente,
-                            "status": serviço.status,
-                            "data": serviço.data_criado,
-                            "dataFin": serviço.data_finalizada,
+                            "status": servico.status,
+                            "data": servico.data_criado,
+                            "dataFin": servico.data_finalizada,
                         }
                     )
                 else:
@@ -191,26 +190,26 @@ class Redutor_codigo:
                         for item_vei in veiculo_os["itens"]:
                             veic_id = item_vei.get("veic_id")
                             if int(getCli.id) == int(cli_id):
-                                items_data_serviços.append(
+                                items_data_servicos.append(
                                     {
-                                        "id": serviço.id,
+                                        "id": servico.id,
                                         "id_cliente": getCli.id,
                                         "nome": getCli.nome,
                                         "veiculo_id": veic_id,
-                                        "status": serviço.status,
-                                        "data": serviço.data_criado,
-                                        "dataFin": serviço.data_finalizada,
+                                        "status": servico.status,
+                                        "data": servico.data_criado,
+                                        "dataFin": servico.data_finalizada,
                                     }
                                 )
 
-        return items_data_serviços
+        return items_data_servicos
 
     def Redutor_codigo_seriviços(cliente_os_id, veiculo_os_id, user_os_id):
         dadosJson = {"itens": []}
         get_Serviso = Serviso(
             status="Orçamento",
             cliente_veiculo=json.dumps(dadosJson),
-            peça_os=json.dumps(dadosJson),
+            peca_os=json.dumps(dadosJson),
             mo_os=json.dumps(dadosJson),
             cliente_os_id=cliente_os_id,
             veiculo_os_id=veiculo_os_id,

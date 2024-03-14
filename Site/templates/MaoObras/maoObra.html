@@ -59,7 +59,7 @@
 </div>
 {%else%}
 <div class="botao-add">
-    <a href="{{url_for('AbrirServiço', id=Adicionar.id,tratatar='tratatar')}}"
+    <a href="{{url_for('AbrirServico', id=Adicionar.id,tratatar='tratatar')}}"
         class="button-pequeno cor-alerta">Retornar {{Adicionar.status}}</a>
 </div>
 {%endif%}
@@ -134,7 +134,7 @@
                                     <div class="button-container">
                                         <form id="meu-formulario-{{ MaoObra.id }}" action="/adicinar_item_MaoObra"
                                             method="PUT" onsubmit="enviarFormularioMDO('{{ MaoObra.id }}', event)">
-                                            <input type="hidden" id="numero_serviço" name="numero_servico"
+                                            <input type="hidden" id="numero_servico" name="numero_servico"
                                                 value="{{ Adicionar.id }}">
                                             <input type="hidden" id="numero_mdo" name="numero_mdo"
                                                 value="{{ MaoObra.id }}">

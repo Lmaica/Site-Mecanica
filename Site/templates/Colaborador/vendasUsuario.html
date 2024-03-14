@@ -227,8 +227,8 @@
 
     <div style="background-color: #eeeaea; padding: 5px;"></div>
     <div class="div-botoes">
-        <a href="{{url_for('AbrirServiço',id=item.id,tratatar='alertar')}}"><input type="submit"
-                class="button-grande cor-ok" name="" value="Abrir Serviço"></a>
+        <a href="{{url_for('AbrirServio',id=item.id,tratatar='alertar')}}"><input type="submit"
+                class="button-grande cor-ok" name="" value="Abrir Servio"></a>
         <a><input type="submit" class="button-grande cor-alerta" onclick="gerarPDF({{ loop.index - 1 }})" name=""
                 value="PDF"></a>
     </div>
@@ -281,7 +281,7 @@
                     <td> {{ item.obs }}</td>
                 </tr>
                 <tr>
-                    <th>Km do Serviço:</th>
+                    <th>Km do Servio:</th>
                     <td>{{ item.km_final }}</td>
                 </tr>
                 <tr>

@@ -6,11 +6,11 @@
     <div class="search-box">
         <form style="display: flex; width: 98%;" method="POST">
             {% if busca %}
-            <input class="anular " value="{{busca}}" type="text" id="searchinput" placeholder="Buscar Peças"
-                autofocus="autofocus" name="search_string" aria-label="searchPeças">
+            <input class="anular " value="{{busca}}" type="text" id="searchinput" placeholder="Buscar Pecas"
+                autofocus="autofocus" name="search_string" aria-label="searchPecas">
             {% else %}
-            <input class="anular" type="text" id="searchinput" placeholder="Buscar Peças" autofocus="autofocus"
-                name="search_string" aria-label="searchPeças">
+            <input class="anular" type="text" id="searchinput" placeholder="Buscar Pecas" autofocus="autofocus"
+                name="search_string" aria-label="searchPecas">
             {% endif %}
 
             <select class="anular searchselector" id="searchselector" name="searchselector" onchange="alterarFormato()">
@@ -37,7 +37,7 @@
                 <option value="codigo_debarra">Codigo de Barra</option>
                 {% endif %}
                 {% if escolha == "marca" %}
-                <option value="marca" selected>Marca Peças</option>
+                <option value="marca" selected>Marca Pecas</option>
                 {% else %}
                 <option value="marca">Marca</option>
                 {% endif %}
@@ -54,9 +54,9 @@
             </select>
             {% if Adicionar %}
             <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
-            <button id="search-button" formaction="/searchPeçasAdicionar">Buscar</button>
+            <button id="search-button" formaction="/searchPecasAdicionar">Buscar</button>
             {% else %}
-            <button id="search-button" formaction="/searchPeças">Buscar</button>
+            <button id="search-button" formaction="/searchPecas">Buscar</button>
             {% endif %}
         </form>
     </div>
@@ -68,13 +68,13 @@
 </div>
 {%else%}
 <div class="botao-add">
-    <a href="{{url_for('AbrirServiço', id=Adicionar.id,tratatar='tratatar')}}"
+    <a href="{{url_for('AbrirServico', id=Adicionar.id,tratatar='tratatar')}}"
         class="button-pequeno cor-alerta">Retornar {{Adicionar.status}}</a>
 </div>
 {%endif%}
 {% else %}
 <div class="botao-add">
-    <a href="{{url_for('addPeças')}}" class="button-pequeno cor-ok">Adicionar Peça</a>
+    <a href="{{url_for('addPecas')}}" class="button-pequeno cor-ok">Adicionar Peca</a>
 </div>
 {% endif %}
 
@@ -87,10 +87,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for Peça in Peças %}
+            {% for Peca in Pecas %}
             <tr>
-                <td>{{ Peça.codigo }}</td>
-                <td>{{ Peça.nome }}</td>
+                <td>{{ Peca.codigo }}</td>
+                <td>{{ Peca.nome }}</td>
             </tr>
             <tr class="row-details">
                 <td colspan="5">
@@ -99,54 +99,54 @@
                             <tr>
                                 <th colspan="4"
                                     style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
-                                    Dados Peças</th>
+                                    Dados Pecas</th>
                             </tr>
                         </thead>
                         <tbody>
                             <div class="lado-a-lado ">
-                                <img src="{{ url_for('static', filename='imagens/' + Peça.image_1) }}"
-                                    alt="{{ Peça.nome }}" class="image-Pequena">
-                                <img src="{{ url_for('static', filename='imagens/' + Peça.image_2) }}"
-                                    alt="{{ Peça.nome }}" class="image-Pequena">
-                                <img src="{{ url_for('static', filename='imagens/' + Peça.image_3) }}"
-                                    alt="{{ Peça.nome }}" class="image-Pequena">
+                                <img src="{{ url_for('static', filename='imagens/' + Peca.image_1) }}"
+                                    alt="{{ Peca.nome }}" class="image-Pequena">
+                                <img src="{{ url_for('static', filename='imagens/' + Peca.image_2) }}"
+                                    alt="{{ Peca.nome }}" class="image-Pequena">
+                                <img src="{{ url_for('static', filename='imagens/' + Peca.image_3) }}"
+                                    alt="{{ Peca.nome }}" class="image-Pequena">
                             </div>
                             <tr>
                                 <th>ID</th>
-                                <td colspan="3">{{ Peça.id }}</td>
+                                <td colspan="3">{{ Peca.id }}</td>
                             </tr>
                             <tr>
                                 <th>Codigo/Barra</th>
-                                <td colspan="3">{{ Peça.codigo_debarra }}</td>
+                                <td colspan="3">{{ Peca.codigo_debarra }}</td>
                             </tr>
 
                             <tr>
                                 <th>Fornecedor</th>
-                                <td colspan="3">{{ Peça.fornecedor.nome }}</td>
+                                <td colspan="3">{{ Peca.fornecedor.nome }}</td>
                             </tr>
                             <tr>
                                 <th>Marca</th>
-                                <td colspan="3">{{ Peça.marca.nome }}</td>
+                                <td colspan="3">{{ Peca.marca.nome }}</td>
                             </tr>
                             <tr>
                                 <th>Custo</th>
-                                <td colspan="3">{{ Peça.pago }}</td>
+                                <td colspan="3">{{ Peca.pago }}</td>
                             </tr>
                             <tr>
                                 <th>Preço</th>
-                                <td colspan="3">{{ Peça.preso }}</td>
+                                <td colspan="3">{{ Peca.preso }}</td>
                             </tr>
                             <tr>
                                 <th>Em Estoque</th>
-                                <td colspan="3">{{ Peça.estoque }}</td>
+                                <td colspan="3">{{ Peca.estoque }}</td>
                             </tr>
                             <tr>
                                 <th>Descrição</th>
-                                <td colspan="3">{{ Peça.descrisao }}</td>
+                                <td colspan="3">{{ Peca.descrisao }}</td>
                             </tr>
                             <tr>
                                 <th>Data/Cadastro</th>
-                                <td colspan="3" class="dataFormatada">{{ Peça.data_criado }}</td>
+                                <td colspan="3" class="dataFormatada">{{ Peca.data_criado }}</td>
                             </tr>
                             <tr>
                                 <th colspan="4">Carros Compativeis</th>
@@ -154,11 +154,11 @@
                             <tr>
                                 <td colspan="4">
                                     <ul>
-                                        {% for item in Peça.carro %}
+                                        {% for item in Peca.carro %}
                                         <li>{{ item }}</li>
                                         {% endfor %}
                                     </ul>
-                                    {% if Peça.carro|length == 0 %}
+                                    {% if Peca.carro|length == 0 %}
                                     <ul>
                                         <li>Compativeis com Todos Carros</li>
                                     </ul>
@@ -170,8 +170,8 @@
 
                                     {% if Adicionar %}
                                     <div class="button-container">
-                                        <form id="meu-formulario-{{ Peça.id }}" action="/adicinar_item_peça"
-                                            method="PUT" onsubmit="enviarFormulario('{{ Peça.id }}', event)">
+                                        <form id="meu-formulario-{{ Peca.id }}" action="/adicinar_item_peca"
+                                            method="PUT" onsubmit="enviarFormulario('{{ Peca.id }}', event)">
                                             <div class="lado-a-lado">
                                                 <label for="nu">Quantidade:</label>
                                                 <input style="text-align: center;width: 50px; font-size: 120%;"
@@ -185,13 +185,13 @@
                                                     <option value="L/E">Esquerda</option>
                                                 </select>
                                             </div>
-                                            <input type="hidden" id="numero_serviço" name="numero_servico"
+                                            <input type="hidden" id="numero_servico" name="numero_servico"
                                                 value="{{ Adicionar.id }}">
-                                            <input type="hidden" id="numero_peça" name="numero_peca"
-                                                value="{{ Peça.id }}">
+                                            <input type="hidden" id="numero_peca" name="numero_peca"
+                                                value="{{ Peca.id }}">
 
-                                            <input type="submit" onclick="enviarFormulario('{{ Peça.id }}', event)"
-                                                class="cor-ok" value="Adicionar ao Serviço">
+                                            <input type="submit" onclick="enviarFormulario('{{ Peca.id }}', event)"
+                                                class="cor-ok" value="Adicionar ao Servico">
 
                                         </form>
                                     </div>
@@ -199,12 +199,12 @@
                                     <div class="button-container">
                                         {%if session["nivel"] >= 4%}
                                         <a href="#"><input type="submit"
-                                                onclick="showDiv('Peças', '{{Peça.id}}', '{{Peça.nome}}')"
+                                                onclick="showDiv('Pecas', '{{Peca.id}}', '{{Peca.nome}}')"
                                                 class="cor-cancelar" value="Apagar"></a>
                                         {%else%}
                                         {%endif%}
 
-                                        <a href="{{url_for('atulizPeças', id=Peça.id)}}"><input type="submit"
+                                        <a href="{{url_for('atulizPecas', id=Peca.id)}}"><input type="submit"
                                                 class="cor-alerta" name="" value="Editar"></a>
                                     </div>
                                     {% endif %}
@@ -222,104 +222,104 @@
 </div>
 
 <div class="pagination">
-    {% if Peças.has_prev %}
+    {% if Pecas.has_prev %}
     {% if Adicionar %}
     {% if busca %}
-    <form action="{{ url_for('searchPeçasAdicionar', page=Peças.prev_num) }}" method="POST">
+    <form action="{{ url_for('searchPecasAdicionar', page=Pecas.prev_num) }}" method="POST">
         <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&lt;</button>
     </form>
     {%else%}
-    <a href="{{ url_for('EscolhaPeças',id=Adicionar.id, page=Peças.next_num) }}">&lt;</a>
+    <a href="{{ url_for('EscolhaPecas',id=Adicionar.id, page=Pecas.next_num) }}">&lt;</a>
     {% endif %}
     {% else %}
     {% if busca %}
-    <form action="{{ url_for('searchPeças', page=Peças.next_num) }}" method="POST">
+    <form action="{{ url_for('searchPecas', page=Pecas.next_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&lt;</button>
     </form>
     {%else%}
-    <a href="{{ url_for('Peças', page=Peças.prev_num) }}">&lt;</a>
+    <a href="{{ url_for('Pecas', page=Pecas.prev_num) }}">&lt;</a>
     {% endif %}
     {% endif %}
     {% endif %}
-    {% if Peças.total > 10 %}
-    {% for page_num in Peças.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if Pecas.total > 10 %}
+    {% for page_num in Pecas.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
     {% if page_num %}
-    {% if Peças.page == page_num %}
+    {% if Pecas.page == page_num %}
     {% if Adicionar %}
     {%if busca %}
-    <form action="{{ url_for('searchPeçasAdicionar', page=page_num) }}" method="POST">
+    <form action="{{ url_for('searchPecasAdicionar', page=page_num) }}" method="POST">
         <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button class="paginationActive" type="submit">{{ page_num }}</button>
     </form>
     {%else%}
-    <a class="paginationActive" href="{{ url_for('EscolhaPeças',id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
+    <a class="paginationActive" href="{{ url_for('EscolhaPecas',id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
     {% endif %}
     {% else %}
     {% if busca %}
-    <form action="{{ url_for('searchPeças', page=page_num) }}" method="POST">
+    <form action="{{ url_for('searchPecas', page=page_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button class="paginationActive" type="submit">{{ page_num }}</button>
     </form>
     {%else%}
-    <a class="paginationActive" href="{{ url_for('Peças', page=page_num) }}">{{ page_num }}</a>
+    <a class="paginationActive" href="{{ url_for('Pecas', page=page_num) }}">{{ page_num }}</a>
     {% endif %}
     {% endif %}
     {% else %}
     {% if Adicionar %}
     {%if busca %}
-    <form action="{{ url_for('searchPeçasAdicionar', page=page_num) }}" method="POST">
+    <form action="{{ url_for('searchPecasAdicionar', page=page_num) }}" method="POST">
         <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">{{ page_num }}</button>
     </form>
     {%else%}
-    <a href="{{ url_for('EscolhaPeças',id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
+    <a href="{{ url_for('EscolhaPecas',id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
     {% endif %}
     {% else %}
     {% if busca %}
-    <form action="{{ url_for('searchPeças', page=page_num) }}" method="POST">
+    <form action="{{ url_for('searchPecas', page=page_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">{{ page_num }}</button>
     </form>
     {%else%}
-    <a href="{{ url_for('Peças', page=page_num) }}">{{ page_num }}</a>
+    <a href="{{ url_for('Pecas', page=page_num) }}">{{ page_num }}</a>
     {% endif %}
     {% endif %}
     {% endif %}
     {% endif %}
     {% endfor %}
     {% endif %}
-    {% if Peças.has_next %}
+    {% if Pecas.has_next %}
     {% if Adicionar %}
     {% if busca %}
-    <form action="{{ url_for('searchPeçasAdicionar', page=Peças.next_num) }}" method="POST">
+    <form action="{{ url_for('searchPecasAdicionar', page=Pecas.next_num) }}" method="POST">
         <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&gt;</button>
     </form>
     {%else%}
-    <a href="{{ url_for('EscolhaPeças',id=Adicionar.id, page=Peças.next_num) }}">&gt;</a>
+    <a href="{{ url_for('EscolhaPecas',id=Adicionar.id, page=Pecas.next_num) }}">&gt;</a>
     {% endif %}
     {% else %}
     {% if busca %}
-    <form action="{{ url_for('searchPeças', page=Peças.next_num) }}" method="POST">
+    <form action="{{ url_for('searchPecas', page=Pecas.next_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&gt;</button>
     </form>
     {%else%}
-    <a href="{{ url_for('Peças', page=Peças.next_num) }}">&gt;</a>
+    <a href="{{ url_for('Pecas', page=Pecas.next_num) }}">&gt;</a>
     {% endif %}
     {% endif %}
     {% endif %}

@@ -98,12 +98,12 @@ with app.app_context():
 
         db.session.commit()
     if User.query.count() == 0:
-        hash_senha = bcrypt.generate_password_hash("MUDAR.EMAIL@teste.com")
+        hash_senha = bcrypt.generate_password_hash("MUDAR.EMAIL@MUDAR.com")
         cadastrar = User(
             nome="",
             apelido="",
             fone="",
-            email="MUDAR.EMAIL@teste.com",
+            email="MUDAR.EMAIL@MUDAR.com",
             senha=hash_senha,
             foto="foto.jpg",
             nivel="DONO",

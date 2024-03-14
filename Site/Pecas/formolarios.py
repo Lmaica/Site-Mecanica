@@ -7,7 +7,7 @@ from wtforms import (
 from flask_wtf import FlaskForm
 
 
-class Addpeças(FlaskForm):
+class Addpecas(FlaskForm):
     nome = StringField("Nome:", [validators.DataRequired()])
     codigo = StringField("Codigo da Peça:", [validators.DataRequired()])
     codigo_debarra = StringField("Codigo de Barra:")

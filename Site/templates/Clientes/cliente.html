@@ -1,5 +1,6 @@
 {% extends 'layouts.html' %}
 {% block content %}
+
 <div class="duas-div-lado-lado">
     <div class="container-lado">
         <div class="estilo-dinamico">
@@ -104,7 +105,7 @@
             </div>
             {%else%}
             <div class="botao-add">
-                <a href="{{url_for('AbrirServiço', id=Adicionar.id,tratatar='tratatar')}}"
+                <a href="{{url_for('AbrirServico', id=Adicionar.id,tratatar='tratatar')}}"
                     class="button-pequeno cor-alerta">Retornar {{Adicionar.status}}</a>
             </div>
             {%endif%}

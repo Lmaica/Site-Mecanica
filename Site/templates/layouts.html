@@ -113,8 +113,8 @@
                 </a>
                 <ul class="principalCorMesclada submenu">
                     <hr>
-                    <li><a href="{{url_for('Peças')}}">Peças</a></li>
-                    <li><a href="{{url_for('Marca_das_Peças')}}">Marcas</a></li>
+                    <li><a href="{{url_for('Pecas')}}">Peças</a></li>
+                    <li><a href="{{url_for('Marca_das_Pecas')}}">Marcas</a></li>
                     <hr>
                 </ul>
             </li>
@@ -136,7 +136,7 @@
             {%endif%}
             {%if session["nivel"] >= 2%}
             <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
-                        src="{{ url_for('static', filename='img/serviço.png') }}" alt="">
+                        src="{{ url_for('static', filename='img/servico.png') }}" alt="">
                     <p>Serviços<i>&#8595;</i></p>
                 </a>
                 <ul class="principalCorMesclada submenu">
@@ -239,7 +239,7 @@
         {%if session["nivel"] >= 2%}
         <div class="borda-item">
             <a href="{{url_for('servisos',status='Orçamento')}}" class="principalCorUnica menu-item"><img
-                    src="{{ url_for('static', filename='img/serviço.png') }}" alt=""></a>
+                    src="{{ url_for('static', filename='img/servico.png') }}" alt=""></a>
         </div>
         {%else%}
         {%endif%}

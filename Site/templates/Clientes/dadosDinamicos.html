@@ -165,7 +165,7 @@
 
     <div style="background-color: #eeeaea; padding: 5px;"></div>
     <div class="div-botoes">
-        <a href="{{url_for('AbrirServiço',id=item.id,tratatar='alertar')}}"><input type="submit"
+        <a href="{{url_for('AbrirServico',id=item.id,tratatar='alertar')}}"><input type="submit"
                 class="button-grande cor-ok" name="" value="Abrir Serviço"></a>
         <a><input type="submit" class="button-grande cor-alerta" onclick="gerarPDF({{ loop.index - 1 }})" name=""
                 value="PDF"></a>
@@ -292,7 +292,7 @@
                 </tbody>
             </table>
             <div class="rodape">Total: {{ item.valor_total }}</div>
-            <input type="hidden" class="peças_json" value="{{item.peça_os}}">
+            <input type="hidden" class="peças_json" value="{{item.peca_os}}">
             <input type="hidden" class="mdo_json" value="{{ item.mo_os }}">
         </div>
     </div>

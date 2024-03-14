@@ -13,7 +13,7 @@ class Serviso(db.Model):
     data_finalizada = db.Column(
         db.DateTime, default=datetime.now(timezone.utc).astimezone(), nullable=False
     )
-    peça_os = db.Column(db.String, nullable=False)
+    peca_os = db.Column(db.String, nullable=False)
     mo_os = db.Column(db.String, nullable=False)
 
     obs = db.Column(db.String, nullable=False, default="")

@@ -7,10 +7,10 @@ from flask import (
     current_app,
     jsonify,
 )
-from .formolarios import Addpeças
+from .formolarios import Addpecas
 from Site import db, app, photos, nome_required, verificacao_nivel
 from Site.Global.fun_global import Calculos_gloabal, Redutor_codigo, Edit_global
-from .modelos import Marcapeça, Peça
+from .modelos import Marcapeca, Peca
 import secrets
 import os
 from Site.Fornecedor.modelos import Fornecedor
@@ -21,28 +21,28 @@ import string
 from faker import Faker 
 from sqlalchemy import or_
 
-@app.route("/lopPeças/<int:numero>")
+@app.route("/lopPecas/<int:numero>")
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def lopPeças(numero):
+def lopPecas(numero):
     fake = Faker('pt_BR')
     def gerar_codigo_ficticio():
         return ''.join(random.choices(string.ascii_uppercase + string.digits, k=11))
     for _ in range(numero):
-        cadastrar = Marcapeça(
+        cadastrar = Marcapeca(
             nome=fake.name().upper(),
         )
 
         db.session.add(cadastrar)
     db.session.commit()
 
-    lista_marcas = Marcapeça.query.all()
+    lista_marcas = Marcapeca.query.all()
 
     if not lista_marcas:
         return "Lista de marcas vazia."
 
-    for peça in lista_marcas:
+    for peca in lista_marcas:
         codigo_barra = random.randint(0, 1000000000000)
         
         valor_pago_int = random.randint(0, 1000)
@@ -52,7 +52,7 @@ def lopPeças(numero):
 
         estoque = random.randint(0, 100)
 
-        criar = Peça(
+        criar = Peca(
             nome=fake.sentence(nb_words=2, variable_nb_words=True).upper(),
             codigo=gerar_codigo_ficticio().upper(), 
             codigo_debarra=codigo_barra,
@@ -61,7 +61,7 @@ def lopPeças(numero):
             estoque=estoque,
             carro=[],
             descrisao=fake.sentence(),
-            marca_id=peça.id,
+            marca_id=peca.id,
             fornecedor_id=1,
             image_1="foto.jpg",
             image_2="foto.jpg",
@@ -72,85 +72,85 @@ def lopPeças(numero):
 
     db.session.commit()
 
-    return redirect("/Peças")
+    return redirect("/Pecas")
 
 
-@app.route("/Marca_das_Peças")
+@app.route("/Marca_das_Pecas")
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def Marca_das_Peças():
+def Marca_das_Pecas():
     try:
         page = request.args.get("page", 1, type=int)
-        marcaPesa = Marcapeça.query.order_by(Marcapeça.id.desc()).paginate(
+        marcaPesa = Marcapeca.query.order_by(Marcapeca.id.desc()).paginate(
             page=page, per_page=10
         )
         return render_template(
             "/umDado.html",
             perfils=marcaPesa,
-            perfil="Marca_das_Peças",
-            produto="Marca das Peças",
+            perfil="Marca_das_Pecas",
+            produto="Marca das Pecas",
         )
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/addMarca_das_Peças", methods=["GET", "POST"])
+@app.route("/addMarca_das_Pecas", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def addMarca_das_Peças():
+def addMarca_das_Pecas():
     return Redutor_codigo.handle_generic_add(
-        request, Marcapeça, "nome", "Marca_das_Peças"
+        request, Marcapeca, "nome", "Marca_das_Pecas"
     )
 
 
-@app.route("/atulizMarca_das_Peças/<int:id>", methods=["GET", "POST"])
+@app.route("/atulizMarca_das_Pecas/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def atulizMarca_das_Peças(id):
+def atulizMarca_das_Pecas(id):
     return Redutor_codigo.handle_generic_update(
-        request, Marcapeça, id, "nome", "Marca_das_Peças"
+        request, Marcapeca, id, "nome", "Marca_das_Pecas"
     )
 
 
-@app.route("/deleteMarca_das_Peças/<int:id>", methods=["GET", "POST"])
+@app.route("/deleteMarca_das_Pecas/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(4)
-def deleteMarca_das_Peças(id):
+def deleteMarca_das_Pecas(id):
     return Redutor_codigo.handle_generic_delete(
-        request, Marcapeça, id, "nome", "Marca_das_Peças"
+        request, Marcapeca, id, "nome", "Marca_das_Pecas"
     )
 
 
-@app.route("/searchMarca_das_Peças", methods=["GET", "POST"])
+@app.route("/searchMarca_das_Pecas", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def searchMarca_das_Peças():
-    return Redutor_codigo.search_generic(Marcapeça, "Marca_das_Peças")
+def searchMarca_das_Pecas():
+    return Redutor_codigo.search_generic(Marcapeca, "Marca_das_Pecas")
 
 
-# Peças
+# Pecas
 
 
-@app.route("/Peças")
+@app.route("/Pecas")
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def Peças():
+def Pecas():
     try:
         page = request.args.get("page", 1, type=int)
-        getPeça = Peça.query.order_by(Peça.id).paginate(page=page, per_page=10)
-        CatPeça = Marcapeça.query.all()
+        getPeca = Peca.query.order_by(Peca.id).paginate(page=page, per_page=10)
+        CatPeca = Marcapeca.query.all()
         fornecedors = Fornecedor.query.all()
         return render_template(
-            "Peças/Peça.html",
-            Peças=getPeça,
-            marcas=CatPeça,
+            "Pecas/Peca.html",
+            Pecas=getPeca,
+            marcas=CatPeca,
             fornecedors=fornecedors,
         )
     except Exception as erro:
@@ -158,23 +158,23 @@ def Peças():
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/addPeças", methods=["GET", "POST"])
+@app.route("/addPecas", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def addPeças():
+def addPecas():
     try:
         marcas = Edit_global.remove_repetidos(
             [carro.marca for carro in Carro.query.distinct(Carro.marca).all()]
         )
-        marcasPro = Marcapeça.query.all()
+        marcasPro = Marcapeca.query.all()
         fornecedors = Fornecedor.query.all()
-        form = Addpeças()
+        form = Addpecas()
         if form.validate_on_submit():
             carro = request.form.getlist("carros")
             marcaPro = request.form.get("marcaPro")
             fornecedor = request.form.get("fornecedor")
-            filtro = Peça.query.filter_by(codigo=form.codigo.data.strip()).first()
+            filtro = Peca.query.filter_by(codigo=form.codigo.data.strip()).first()
             if filtro:
                 flash(
                     f"O Codigo {filtro.codigo} Jã esta cadastrado!!!",
@@ -199,7 +199,7 @@ def addPeças():
                     )
                 except:
                     image_3 = "foto.jpg"
-                addpro = Peça(
+                addpro = Peca(
                     nome=form.nome.data.upper().strip(),
                     codigo=form.codigo.data.strip(),
                     codigo_debarra=form.codigo_debarra.data.strip(),
@@ -216,11 +216,11 @@ def addPeças():
                 )
                 db.session.add(addpro)
                 db.session.commit()
-                return redirect(url_for("Peças"))
+                return redirect(url_for("Pecas"))
         return render_template(
-            "/Peças/addpeça.html",
+            "/Pecas/addpeca.html",
             form=form,
-            produto="Peça",
+            produto="Peca",
             marcasPro=marcasPro,
             marcas=marcas,
             fornecedors=fornecedors,
@@ -230,99 +230,99 @@ def addPeças():
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/atulizPeças/<int:id>", methods=["GET", "POST"])
+@app.route("/atulizPecas/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def atulizPeças(id):
+def atulizPecas(id):
     try:
-        getPeça = Peça.query.get_or_404(id)
-        form = Addpeças(request.form)
+        getPeca = Peca.query.get_or_404(id)
+        form = Addpecas(request.form)
         marcas = Edit_global.remove_repetidos(
             [carro.marca for carro in Carro.query.distinct(Carro.marca).all()]
         )
-        marcasPro = Marcapeça.query.all()
+        marcasPro = Marcapeca.query.all()
         fornecedors = Fornecedor.query.all()
         carro = request.form.getlist("carros")
         marcaPro = request.form.get("marcaPro")
         fornecedor = request.form.get("fornecedor")
         if request.method == "POST":
-            filtro = Peça.query.filter_by(codigo=form.codigo.data.strip()).first()
-            if filtro and filtro.codigo != "" and filtro.id != getPeça.id:
+            filtro = Peca.query.filter_by(codigo=form.codigo.data.strip()).first()
+            if filtro and filtro.codigo != "" and filtro.id != getPeca.id:
                 flash(
                     f"O Codigo {filtro.codigo} Jã esta cadastrado!!!",
                     "cor-alerta",
                 )
             else:
                 if request.files.get("image_1"):
-                    if getPeça.image_1 != "foto.jpg":
+                    if getPeca.image_1 != "foto.jpg":
                         try:
                             os.unlink(
                                 os.path.join(
                                     current_app.root_path,
-                                    "static/imagens/" + getPeça.image_1,
+                                    "static/imagens/" + getPeca.image_1,
                                 )
                             )
-                            getPeça.image_1 = photos.save(
+                            getPeca.image_1 = photos.save(
                                 request.files.get("image_1"),
                                 name=secrets.token_hex(10) + "...",
                             )
                         except:
-                            getPeça.image_1 = "foto.jpg"
+                            getPeca.image_1 = "foto.jpg"
                     else:
                         try:
-                            getPeça.image_1 = photos.save(
+                            getPeca.image_1 = photos.save(
                                 request.files.get("image_1"),
                                 name=secrets.token_hex(10) + "...",
                             )
                         except:
-                            getPeça.image_1 = "foto.jpg"
+                            getPeca.image_1 = "foto.jpg"
                 if request.files.get("image_2"):
-                    if getPeça.image_2 != "foto.jpg":
+                    if getPeca.image_2 != "foto.jpg":
                         try:
                             os.unlink(
                                 os.path.join(
                                     current_app.root_path,
-                                    "static/imagens/" + getPeça.image_2,
+                                    "static/imagens/" + getPeca.image_2,
                                 )
                             )
-                            getPeça.image_2 = photos.save(
+                            getPeca.image_2 = photos.save(
                                 request.files.get("image_1"),
                                 name=secrets.token_hex(10) + "...",
                             )
                         except:
-                            getPeça.image_2 = "foto.jpg"
+                            getPeca.image_2 = "foto.jpg"
                     else:
                         try:
-                            getPeça.image_2 = photos.save(
+                            getPeca.image_2 = photos.save(
                                 request.files.get("image_2"),
                                 name=secrets.token_hex(10) + "...",
                             )
                         except:
-                            getPeça.image_2 = "foto.jpg"
+                            getPeca.image_2 = "foto.jpg"
                 if request.files.get("image_3"):
-                    if getPeça.image_3 != "foto.jpg":
+                    if getPeca.image_3 != "foto.jpg":
                         try:
                             os.unlink(
                                 os.path.join(
                                     current_app.root_path,
-                                    "static/imagens/" + getPeça.image_3,
+                                    "static/imagens/" + getPeca.image_3,
                                 )
                             )
-                            getPeça.image_3 = photos.save(
+                            getPeca.image_3 = photos.save(
                                 request.files.get("image_1"),
                                 name=secrets.token_hex(10) + "...",
                             )
                         except:
-                            getPeça.image_3 = "foto.jpg"
+                            getPeca.image_3 = "foto.jpg"
                     else:
                         try:
-                            getPeça.image_3 = photos.save(
+                            getPeca.image_3 = photos.save(
                                 request.files.get("image_3"),
                                 name=secrets.token_hex(10) + "...",
                             )
                         except:
-                            getPeça.image_3 = "foto.jpg"
+                            getPeca.image_3 = "foto.jpg"
 
                 attributes = [
                     "nome",
@@ -336,18 +336,18 @@ def atulizPeças(id):
 
                 for attribute in attributes:
                     setattr(
-                        getPeça,
+                        getPeca,
                         attribute,
                         getattr(form, attribute).data.upper().strip(),
                     )
 
-                getPeça.fornecedor_id = fornecedor
-                getPeça.marca_id = marcaPro
-                getPeça.carro = carro
+                getPeca.fornecedor_id = fornecedor
+                getPeca.marca_id = marcaPro
+                getPeca.carro = carro
 
                 db.session.commit()
                 flash(f"A Peça, Foi Atulizado com Sucesso!!!", "cor-ok")
-                return redirect("/Peças")
+                return redirect("/Pecas")
         attributes = [
             "nome",
             "codigo",
@@ -359,33 +359,33 @@ def atulizPeças(id):
         ]
 
         for attribute in attributes:
-            getattr(form, attribute).data = getattr(getPeça, attribute)
+            getattr(form, attribute).data = getattr(getPeca, attribute)
 
         return render_template(
-            "/Peças/addpeça.html",
-            produto="Peça",
+            "/Pecas/addpeca.html",
+            produto="Peca",
             atulizar="atulizar",
             form=form,
             marcasPro=marcasPro,
             marcas=marcas,
             fornecedors=fornecedors,
-            Peça=getPeça,
+            Peca=getPeca,
         )
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/deletePeças/<int:id>", methods=["GET", "POST"])
+@app.route("/deletePecas/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(4)
-def deletePeças(id):
+def deletePecas(id):
     try:
-        getPeça = Peça.query.get_or_404(id)
+        getPeca = Peca.query.get_or_404(id)
         if request.method == "POST":
             try:
-                db.session.delete(getPeça)
+                db.session.delete(getPeca)
                 db.session.commit()
                 flash(
                     f"A Peça foi Deletada com Sucesso!!!",
@@ -405,11 +405,11 @@ def deletePeças(id):
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/searchPeças", methods=["GET", "POST"])
+@app.route("/searchPecas", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def searchPeças():
+def searchPecas():
     try:
         if request.method == "POST":
             page = request.args.get("page", 1, type=int)
@@ -419,12 +419,12 @@ def searchPeças():
             escolha = str(request.form.get("searchselector"))
             busca = search_value = form["search_string"]
             if escolha == "marca":
-                getPeça = Peça.query.filter(
-                    Peça.marca.has(Marcapeça.nome.like(search))
+                getPeca = Peca.query.filter(
+                    Peca.marca.has(Marcapeca.nome.like(search))
                 ).paginate(page=page, per_page=4)
             elif escolha == "fornecedor":
-                getPeça = Peça.query.filter(
-                    Peça.fornecedor.has(Fornecedor.nome.like(search))
+                getPeca = Peca.query.filter(
+                    Peca.fornecedor.has(Fornecedor.nome.like(search))
                 ).paginate(page=page, per_page=4)
             elif escolha == "todos":
                 search_terms = search.split()  
@@ -432,43 +432,43 @@ def searchPeças():
                 for term in search_terms:
                     conditions.append(
                         or_(
-                            Peça.id.like(f'%{term}%'),
-                            Peça.codigo.like(f'%{term}%'),
-                            Peça.codigo_debarra.like(f'%{term}%'),
-                            Peça.nome.like(f'%{term}%'),
-                            Peça.pago.like(f'%{term}%'),
-                            Peça.preso.like(f'%{term}%'),
-                            Peça.estoque.like(f'%{term}%'),
-                            Peça.carro.like(f'%{term}%'),
-                            Peça.descrisao.like(f'%{term}%'),
-                            Peça.data_criado.like(f'%{term}%'),
-                            Peça.marca.has(Marcapeça.nome.like(f'%{term}%')),
-                            Peça.fornecedor.has(Fornecedor.nome.like(f'%{term}%')),
+                            Peca.id.like(f'%{term}%'),
+                            Peca.codigo.like(f'%{term}%'),
+                            Peca.codigo_debarra.like(f'%{term}%'),
+                            Peca.nome.like(f'%{term}%'),
+                            Peca.pago.like(f'%{term}%'),
+                            Peca.preso.like(f'%{term}%'),
+                            Peca.estoque.like(f'%{term}%'),
+                            Peca.carro.like(f'%{term}%'),
+                            Peca.descrisao.like(f'%{term}%'),
+                            Peca.data_criado.like(f'%{term}%'),
+                            Peca.marca.has(Marcapeca.nome.like(f'%{term}%')),
+                            Peca.fornecedor.has(Fornecedor.nome.like(f'%{term}%')),
                         )
                     )
-                getPeça = (
-                    Peça.query.filter(
+                getPeca = (
+                    Peca.query.filter(
                         *conditions
                     )
-                    .order_by(Peça.id.desc())
+                    .order_by(Peca.id.desc())
                     .paginate(page=page, per_page=10)
                 )
             else:
-                getPeça = (
-                    Peça.query.filter(getattr(Peça, escolha).like(search))
-                    .order_by(Peça.id.desc())
+                getPeca = (
+                    Peca.query.filter(getattr(Peca, escolha).like(search))
+                    .order_by(Peca.id.desc())
                     .paginate(page=page, per_page=10)
                 )
-            marcaPesa = Marcapeça.query.all()
+            marcaPesa = Marcapeca.query.all()
             return render_template(
-                "Peças/Peça.html",
-                Peças=getPeça,
+                "Pecas/Peca.html",
+                Pecas=getPeca,
                 busca=busca,
                 escolha=escolha,
-                CatPeça=marcaPesa,
+                CatPeca=marcaPesa,
             )
         else:
-            return redirect("Peças")
+            return redirect("Pecas")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)

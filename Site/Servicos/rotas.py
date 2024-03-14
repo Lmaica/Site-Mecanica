@@ -10,7 +10,7 @@ from Site import db, app, nome_required, verificacao_nivel
 from .modelos import Serviso
 from Site.Global.fun_global import Calculos_gloabal, Redutor_codigo
 from Site.Fornecedor.modelos import Fornecedor
-from Site.Peças.modelos import Marcapeça, Peça
+from Site.Pecas.modelos import Marcapeca, Peca
 from Site.MaoObra.modelos import Maoobra, Catmaoobra, Nomemaoobra
 from Site.Clientes.modelos import Cliente, Veiculo
 from Site.Carros.modelos import Carro
@@ -23,7 +23,7 @@ from Site.Admin.modelos import User
 from .formularios import Responsaveis
 from flask_login import login_required, current_user
 
-# Dados do Serviços
+# Dados do Serviços 
 @app.route("/servisos/<string:status>", methods=["GET", "POST"])
 @login_required
 @nome_required
@@ -92,7 +92,7 @@ def servisos(status):
                     .paginate(page=page, per_page=10)
                 )
         return render_template(
-            "Serviços/Serviços.html",
+            "Servicos/Servicos.html",
             status=status,
             servisos=servisos,
         )
@@ -220,7 +220,7 @@ def searchServiso(status):
                             Serviso.cliente_veiculo.like(f'%{term}%'),
                             Serviso.data_criado.like(f'%{term}%'),
                             Serviso.data_finalizada.like(f'%{term}%'),
-                            Serviso.peça_os.like(f'%{term}%'),
+                            Serviso.peca_os.like(f'%{term}%'),
                             Serviso.mo_os.like(f'%{term}%'),
                             Serviso.obs.like(f'%{term}%'),
                             Serviso.km_final.like(f'%{term}%'),
@@ -274,7 +274,7 @@ def searchServiso(status):
                         .paginate(page=page, per_page=10)
                     )
             return render_template(
-                "Serviços/Serviços.html",
+                "Servicos/Servicos.html",
                 status=status,
                 servisos=get_servisos,
                 busca=busca,
@@ -335,19 +335,19 @@ def deleteServisos(id):
                     return jsonify()
                 elif filtro2:
                     if servisos.status == "Aprovado":
-                        peças_os = json.loads(servisos.peça_os)
-                        getPeça = Peça.query.order_by(Peça.id)
-                        for peça_um in getPeça:
-                            for item in peças_os["itens"]:
-                                peçaid = item.get("peça_id")
-                                peçaParaEstoque = item.get("em_estoque")
-                                if peçaid == peça_um.id:
-                                    peça_modificar = Peça.query.get_or_404(peça_um.id)
-                                    if int(peçaParaEstoque) != 0:
-                                        valor_atual = int(peçaParaEstoque) + int(
-                                            peça_modificar.estoque
+                        pecas_os = json.loads(servisos.peca_os)
+                        getPeca = Peca.query.order_by(Peca.id)
+                        for peca_um in getPeca:
+                            for item in pecas_os["itens"]:
+                                pecaid = item.get("peca_id")
+                                pecaParaEstoque = item.get("em_estoque")
+                                if pecaid == peca_um.id:
+                                    peca_modificar = Peca.query.get_or_404(peca_um.id)
+                                    if int(pecaParaEstoque) != 0:
+                                        valor_atual = int(pecaParaEstoque) + int(
+                                            peca_modificar.estoque
                                         )
-                                        peça_modificar.estoque = valor_atual
+                                        peca_modificar.estoque = valor_atual
                                         db.session.commit()
                     db.session.delete(servisos)
                     db.session.commit()
@@ -375,11 +375,11 @@ def deleteServisos(id):
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/AddServiço", methods=["GET", "POST"])
+@app.route("/AddServico", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def AddServiço():
+def AddServico():
     num_items = Serviso.query.count()
     if num_items == 0:
         Redutor_codigo.Redutor_codigo_seriviços(0, 0, 0)
@@ -389,15 +389,15 @@ def AddServiço():
     if len(Cliente_os_atual["itens"]) > 0 or get_serviso.cliente_os_id > 0:
         Redutor_codigo.Redutor_codigo_seriviços(0, 0, 0)
     filtro = Serviso.query.order_by(desc(Serviso.id)).first()
-    Serviço = filtro
-    return redirect(f"/AbrirServiço/{Serviço.id}/tratatar")
+    Servico = filtro
+    return redirect(f"/AbrirServico/{Servico.id}/tratatar")
 
 
-@app.route("/AbrirServiço/<int:id>/<string:tratatar>", methods=["GET", "POST"])
+@app.route("/AbrirServico/<int:id>/<string:tratatar>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def AbrirServiço(id, tratatar):
+def AbrirServico(id, tratatar):
     form = Responsaveis()
     get_serviso = Serviso.query.get_or_404(id)
     if tratatar == "alertar" and get_serviso.status != "Finalizado":
@@ -406,13 +406,13 @@ def AbrirServiço(id, tratatar):
             "cor-alerta",
         )
     if not get_serviso:
-        return "Serviço não encontrado", 404
+        return "Servico não encontrado", 404
 
-    peça_os = json.loads(get_serviso.peça_os)
-    getPeças = Peça.query.order_by(Peça.id).all()
+    peca_os = json.loads(get_serviso.peca_os)
+    getPecas = Peca.query.order_by(Peca.id).all()
     mo_os = json.loads(get_serviso.mo_os)
     get_MDO = Maoobra.query.order_by(Maoobra.id).all()
-    carteira_serviço = json.loads(get_serviso.carteira_id)
+    carteira_servico = json.loads(get_serviso.carteira_id)
     carteiras = Carteirabanco.query.filter().all()
     Cliente_os_atual = json.loads(get_serviso.cliente_veiculo)
     nome_cliente_os, nome_telefone_os, nome_email_os = "", "", ""
@@ -430,21 +430,21 @@ def AbrirServiço(id, tratatar):
             motor = item.get("motor")
             km = item.get("km")
 
-    items_data_peças = []
+    items_data_pecas = []
     soma_pagos = []
-    soma_peças = []
+    soma_pecas = []
     soma_total = []
-    if "itens" in peça_os:
-        for item in peça_os["itens"]:
-            peça_id = item.get("peça_id")
+    if "itens" in peca_os:
+        for item in peca_os["itens"]:
+            peca_id = item.get("peca_id")
             un = item.get("un")
-            peça_nome = item.get("peça_nome")
+            peca_nome = item.get("peca_nome")
             lado = item.get("lado")
             valor_final = item.get("valor_final")
-            peça_codigo = item.get("peça_codigo")
+            peca_codigo = item.get("peca_codigo")
             valor_custo = item.get("valor_custo")
-            if peça_id is not None:
-                if len(getPeças) == 0 :
+            if peca_id is not None:
+                if len(getPecas) == 0 :
                     Pagosoma = Calculos_gloabal.valor_para_Calculos(
                         valor_custo
                     ) * int(un)
@@ -452,13 +452,13 @@ def AbrirServiço(id, tratatar):
                     soma_pagos.append(Pagosoma)
                     somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
                     soma_do_valor = int(un) * somar_dados_uni
-                    soma_peças.append(soma_do_valor)
+                    soma_pecas.append(soma_do_valor)
                     soma_total.append(soma_do_valor)
                     soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
-                    items_data_peças.append(
+                    items_data_pecas.append(
                                 {
-                                    "codigo": peça_codigo,
-                                    "nome": peça_nome,
+                                    "codigo": peca_codigo,
+                                    "nome": peca_nome,
                                     "preso": valor_final,
                                     "pago_total": soma_formarmatado,
                                     "pago": PagoFor,
@@ -466,23 +466,23 @@ def AbrirServiço(id, tratatar):
                                     "lado": lado,
                                 }
                             )
-                for getPeça in getPeças:
+                for getPeca in getPecas:
                     Pagosoma = Calculos_gloabal.valor_para_Calculos(
-                        getPeça.pago
+                        getPeca.pago
                     ) * int(un)
                     PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
                     soma_pagos.append(Pagosoma)
-                    if getPeça.id == peça_id:
+                    if getPeca.id == peca_id:
                         if get_serviso.status != "Orçamento":
                             somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
                             soma_do_valor = int(un) * somar_dados_uni
-                            soma_peças.append(soma_do_valor)
+                            soma_pecas.append(soma_do_valor)
                             soma_total.append(soma_do_valor)
                             soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
-                            items_data_peças.append(
+                            items_data_pecas.append(
                                     {
-                                        "codigo": peça_codigo,
-                                        "nome": peça_nome,
+                                        "codigo": peca_codigo,
+                                        "nome": peca_nome,
                                         "preso": valor_final,
                                         "pago_total": soma_formarmatado,
                                         "pago": PagoFor,
@@ -491,16 +491,16 @@ def AbrirServiço(id, tratatar):
                                     }
                                 )
                         else:
-                            somar_dados_uni = Calculos_gloabal.valor_para_Calculos(getPeça.preso)
+                            somar_dados_uni = Calculos_gloabal.valor_para_Calculos(getPeca.preso)
                             soma_do_valor = int(un) * somar_dados_uni
-                            soma_peças.append(soma_do_valor)
+                            soma_pecas.append(soma_do_valor)
                             soma_total.append(soma_do_valor)
                             soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
-                            items_data_peças.append(
+                            items_data_pecas.append(
                                 {
-                                    "codigo": getPeça.codigo,
-                                    "nome": getPeça.nome,
-                                    "preso": getPeça.preso,
+                                    "codigo": getPeca.codigo,
+                                    "nome": getPeca.nome,
+                                    "preso": getPeca.preso,
                                     "pago_total": soma_formarmatado,
                                     "pago": PagoFor,
                                     "un": un,
@@ -514,13 +514,13 @@ def AbrirServiço(id, tratatar):
                         PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
                         somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
                         soma_do_valor = int(un) * somar_dados_uni
-                        soma_peças.append(soma_do_valor)
+                        soma_pecas.append(soma_do_valor)
                         soma_total.append(soma_do_valor)
                         soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
-                        items_data_peças.append(
+                        items_data_pecas.append(
                                     {
-                                        "codigo": peça_codigo,
-                                        "nome": peça_nome,
+                                        "codigo": peca_codigo,
+                                        "nome": peca_nome,
                                         "preso": valor_final,
                                         "pago_total": soma_formarmatado,
                                         "pago": PagoFor,
@@ -574,11 +574,11 @@ def AbrirServiço(id, tratatar):
                             }
                         )
     SomarPago = sum(soma_pagos)
-    SomarPeças = sum(soma_peças)
+    SomarPecas = sum(soma_pecas)
     SomarTotal = sum(soma_total)
 
     valor_total_pago = Calculos_gloabal.format_valor_moeda(SomarPago)
-    valor_total_peças = Calculos_gloabal.format_valor_moeda(SomarPeças)
+    valor_total_pecas = Calculos_gloabal.format_valor_moeda(SomarPecas)
     valor_total_total = Calculos_gloabal.format_valor_moeda(SomarTotal)
 
     status = get_serviso.status
@@ -611,27 +611,27 @@ def AbrirServiço(id, tratatar):
     form.vendedor.choices = vendedor_choices
     
     items_data_carteira = []
-    if "itens" in carteira_serviço:
-        for item_carteira in carteira_serviço["itens"]:
-            carteira_id_serviço = item_carteira.get("carteira_id")
-            carteira_preso_serviço = item_carteira.get("valor_recebido")
-            carteira_detales_serviço = item_carteira.get("detalesPago")
-            if carteira_id_serviço is not None:
+    if "itens" in carteira_servico:
+        for item_carteira in carteira_servico["itens"]:
+            carteira_id_servico = item_carteira.get("carteira_id")
+            carteira_preso_servico = item_carteira.get("valor_recebido")
+            carteira_detales_servico = item_carteira.get("detalesPago")
+            if carteira_id_servico is not None:
                 for getcarteira in carteiras:
-                    if int(getcarteira.id) == int(carteira_id_serviço):
+                    if int(getcarteira.id) == int(carteira_id_servico):
                         items_data_carteira.append(
                             {
-                                "carteira_id":carteira_id_serviço,
+                                "carteira_id":carteira_id_servico,
                                 "carteira_nome":getcarteira.nome,
-                                "valor_recebido":carteira_preso_serviço,
-                                "detalesPago":carteira_detales_serviço,
+                                "valor_recebido":carteira_preso_servico,
+                                "detalesPago":carteira_detales_servico,
                             }
                         )
     return render_template(
-        "/Serviços/addServiços.html",
-        Serviço=get_serviso,
+        "/Servicos/addServicos.html",
+        Servico=get_serviso,
         status=status,
-        items_data_peças=items_data_peças,
+        items_data_pecas=items_data_pecas,
         items_data_MDO=items_data_MDO,
         nome_cliente_os=nome_cliente_os,
         nome_telefone_os=nome_telefone_os,
@@ -646,12 +646,12 @@ def AbrirServiço(id, tratatar):
         form=form,
         carteiras=carteiras,
         items_data_carteira=items_data_carteira,
-        valor_total_peças=valor_total_peças,
+        valor_total_pecas=valor_total_pecas,
         valor_total_total=valor_total_total,
     )
 
 
-# Peças do Serviços
+# Pecas do Serviços
 @app.route("/AddItensManual/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
@@ -668,20 +668,20 @@ def AddItensManual(id):
             custo = request.form.get("custo")
             venda = request.form.get("venda")
             codigo = '*' +  codigo
-            if tipo == 'Peça':
-                peça_os_atual = json.loads(get_serviso.peça_os)
+            if tipo == 'Peca':
+                peca_os_atual = json.loads(get_serviso.peca_os)
                 novo_item = {
-                    "peça_id": 0,
-                    "peça_codigo": codigo,
-                    "peça_nome": NomeItens,
+                    "peca_id": 0,
+                    "peca_codigo": codigo,
+                    "peca_nome": NomeItens,
                     "un": unidad,
                     "lado": lado,
                     "em_estoque": 0,
                     "valor_custo": custo,
                     "valor_final": venda,
                 }
-                peça_os_atual["itens"].append(novo_item)
-                get_serviso.peça_os = json.dumps(peça_os_atual)
+                peca_os_atual["itens"].append(novo_item)
+                get_serviso.peca_os = json.dumps(peca_os_atual)
             else: 
                 MaoObra_os_atual = json.loads(get_serviso.mo_os)
                 novo_item = {
@@ -693,34 +693,34 @@ def AddItensManual(id):
                 get_serviso.mo_os = json.dumps(MaoObra_os_atual)
             db.session.commit()
             if get_serviso.id == 0:
-                return redirect(f"/AbrirServiço/0/Editar")
+                return redirect(f"/AbrirServico/0/Editar")
             else:
-                return redirect(f"/AbrirServiço/{get_serviso.id}/tratatar")
-        flash(f"{get_serviso.id}", "itensServiço")
+                return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
+        flash(f"{get_serviso.id}", "itensServico")
         if get_serviso.id == 0:
-                return redirect(f"/AbrirServiço/0/Editar")
+                return redirect(f"/AbrirServico/0/Editar")
         else:
-            return redirect(f"/AbrirServiço/{get_serviso.id}/tratatar")
+            return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
-@app.route("/EscolhaPeças/<int:id>", methods=["GET", "POST"])
+@app.route("/EscolhaPecas/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def EscolhaPeças(id):
+def EscolhaPecas(id):
     try:
         get_serviso = Serviso.query.get_or_404(id)
         page = request.args.get("page", 1, type=int)
-        getPeça = Peça.query.order_by(Peça.id.desc()).paginate(page=page, per_page=10)
-        CatPeça = Marcapeça.query.all()
+        getPeca = Peca.query.order_by(Peca.id.desc()).paginate(page=page, per_page=10)
+        CatPeca = Marcapeca.query.all()
         fornecedors = Fornecedor.query.all()
         return render_template(
-            "/Peças/Peça.html",
+            "/Pecas/Peca.html",
             Adicionar=get_serviso,
-            Peças=getPeça,
-            marcas=CatPeça,
+            Pecas=getPeca,
+            marcas=CatPeca,
             fornecedors=fornecedors,
         )
     except Exception as erro:
@@ -729,29 +729,29 @@ def EscolhaPeças(id):
 
 
 @app.route(
-    "/adicinar_item_peça", methods=["PUT"]
+    "/adicinar_item_peca", methods=["PUT"]
 )
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def adicinar_item_peça():
-    id_serviço = request.form.get("numero_servico")
-    id_peça = request.form.get("numero_peca")
-    get_serviso = Serviso.query.get_or_404(id_serviço)
+def adicinar_item_peca():
+    id_servico = request.form.get("numero_servico")
+    id_peca = request.form.get("numero_peca")
+    get_serviso = Serviso.query.get_or_404(id_servico)
     if get_serviso.id != 0 and get_serviso.status == "Finalizado":
-        return redirect(f"/AbrirServiço/{get_serviso.id}/tratatar")
+        return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
     else:
-        getPeça = Peça.query.get_or_404(id_peça)
+        getPeca = Peca.query.get_or_404(id_peca)
         numero = request.form.get("unidad")
         lado = request.form.get("lado")
-        peça_os_atual = json.loads(get_serviso.peça_os)
+        peca_os_atual = json.loads(get_serviso.peca_os)
         if not Serviso:
-            return "Serviço não encontrado", 404
-        if len(peça_os_atual["itens"]) > 0:
-            for item in peça_os_atual["itens"]:
-                peçaid = item.get("peça_id")
-                if peçaid == getPeça.id:
-                    flash=f"A Peça com ID {getPeça.id} Já foi adicionado ao Orçamento!!!"
+            return "Servico não encontrado", 404
+        if len(peca_os_atual["itens"]) > 0:
+            for item in peca_os_atual["itens"]:
+                pecaid = item.get("peca_id")
+                if pecaid == getPeca.id:
+                    flash=f"A Peça com ID {getPeca.id} Já foi adicionado ao Orçamento!!!"
                     response_data = {
                         "success": True,
                         "message": flash,
@@ -760,28 +760,28 @@ def adicinar_item_peça():
                     return jsonify(response_data)
         valor_estoque = 0
         if get_serviso.status == "Aprovado":
-            if getPeça.estoque != 0:
-                valor_atual = int(getPeça.estoque) - int(numero)
-                if int(getPeça.estoque) > int(numero):
+            if getPeca.estoque != 0:
+                valor_atual = int(getPeca.estoque) - int(numero)
+                if int(getPeca.estoque) > int(numero):
                     valor_estoque = numero
                 else:
-                    valor_estoque = getPeça.estoque
+                    valor_estoque = getPeca.estoque
                 if valor_atual < 0:
                     valor_atual = 0
-                getPeça.estoque = valor_atual
+                getPeca.estoque = valor_atual
                 db.session.commit()
         novo_item = {
-            "peça_id": getPeça.id,
-            "peça_codigo": getPeça.codigo,
-            "peça_nome": getPeça.nome,
+            "peca_id": getPeca.id,
+            "peca_codigo": getPeca.codigo,
+            "peca_nome": getPeca.nome,
             "un": numero,
             "lado": lado,
             "em_estoque": valor_estoque,
-            "valor_custo": getPeça.pago,
-            "valor_final": getPeça.preso,
+            "valor_custo": getPeca.pago,
+            "valor_final": getPeca.preso,
         }
-        peça_os_atual["itens"].append(novo_item)
-        get_serviso.peça_os = json.dumps(peça_os_atual)
+        peca_os_atual["itens"].append(novo_item)
+        get_serviso.peca_os = json.dumps(peca_os_atual)
 
         db.session.commit()
         flash = f"A Peça foi Adicionada com Sucesso!!!"
@@ -795,11 +795,11 @@ def adicinar_item_peça():
 
 
 
-@app.route("/atualizar_uni_peças/<int:servico_id>/<int:item_id>", methods=["PUT"])
+@app.route("/atualizar_uni_pecas/<int:servico_id>/<int:item_id>", methods=["PUT"])
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def atualizar_uni_peças(servico_id, item_id):
+def atualizar_uni_pecas(servico_id, item_id):
     try:
         servico = Serviso.query.get(servico_id)
         quantity = int(request.form.get("un"))
@@ -808,44 +808,44 @@ def atualizar_uni_peças(servico_id, item_id):
         if servico.id != 0 and servico.status == "Finalizado":
             pass
         else:
-            peça_os_atual = json.loads(servico.peça_os)
+            peca_os_atual = json.loads(servico.peca_os)
 
-            if item_id < 0 or item_id >= len(peça_os_atual.get("itens", [])):
+            if item_id < 0 or item_id >= len(peca_os_atual.get("itens", [])):
                 flash(
                     "Índice do item inválido. Consulte o Desenvolvedor!!!",
                     "cor-cancelar",
                 )
 
-            em_id = peça_os_atual["itens"][item_id]["peça_id"]
-            em_estoque = peça_os_atual["itens"][item_id]["em_estoque"]
-            em_uni = peça_os_atual["itens"][item_id]["un"]
+            em_id = peca_os_atual["itens"][item_id]["peca_id"]
+            em_estoque = peca_os_atual["itens"][item_id]["em_estoque"]
+            em_uni = peca_os_atual["itens"][item_id]["un"]
             if servico.status == "Aprovado":
-                getPeça = Peça.query.get(em_id)
-                if getPeça:
+                getPeca = Peca.query.get(em_id)
+                if getPeca:
                     if int(quantity) < int(em_uni):
                         if int(em_estoque) > 0 and int(em_estoque) >= int(em_uni):
-                            valor_estoque = int(getPeça.estoque) + 1
+                            valor_estoque = int(getPeca.estoque) + 1
                         else:
                             em_estoque = em_estoque
-                            valor_estoque = getPeça.estoque
+                            valor_estoque = getPeca.estoque
                         if int(em_estoque) >= int(em_uni):
                             em_estoque = int(em_estoque) - 1
                     elif int(quantity) > int(em_uni):
-                        if int(getPeça.estoque) > 0:
+                        if int(getPeca.estoque) > 0:
                             em_estoque = int(em_estoque) + 1
                         else:
                             em_estoque = em_estoque
-                            valor_estoque = getPeça.estoque
-                        valor_estoque = int(getPeça.estoque) - 1
+                            valor_estoque = getPeca.estoque
+                        valor_estoque = int(getPeca.estoque) - 1
                     if em_estoque < 0:
                         em_estoque = 0
                     if valor_estoque < 0:
                         valor_estoque = 0
-                    getPeça.estoque = valor_estoque
+                    getPeca.estoque = valor_estoque
                     db.session.commit()
-            peça_os_atual["itens"][item_id]["em_estoque"] = em_estoque
-            peça_os_atual["itens"][item_id]["un"] = quantity
-            servico.peça_os = json.dumps(peça_os_atual)
+            peca_os_atual["itens"][item_id]["em_estoque"] = em_estoque
+            peca_os_atual["itens"][item_id]["un"] = quantity
+            servico.peca_os = json.dumps(peca_os_atual)
             db.session.commit()
         return jsonify({"message": "Item atualizado com sucesso"})
     except Exception as erro:
@@ -853,11 +853,11 @@ def atualizar_uni_peças(servico_id, item_id):
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/atualizar_lado_peças/<int:servico_id>/<int:item_id>", methods=["PUT"])
+@app.route("/atualizar_lado_pecas/<int:servico_id>/<int:item_id>", methods=["PUT"])
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def atualizar_lado_peças(servico_id, item_id):
+def atualizar_lado_pecas(servico_id, item_id):
     servico = Serviso.query.get(servico_id)
     lado = str(request.form.get("lado"))
 
@@ -866,16 +866,16 @@ def atualizar_lado_peças(servico_id, item_id):
     if servico.id != 0 and servico.status == "Finalizado":
         pass
     else:
-        peça_os_atual = json.loads(servico.peça_os)
+        peca_os_atual = json.loads(servico.peca_os)
 
-        if item_id < 0 or item_id >= len(peça_os_atual.get("itens", [])):
+        if item_id < 0 or item_id >= len(peca_os_atual.get("itens", [])):
             flash(
                 "Índice do item inválido. Consulte o Desenvolvedor!!!", "cor-cancelar"
             )
 
-        peça_os_atual["itens"][item_id]["lado"] = lado
+        peca_os_atual["itens"][item_id]["lado"] = lado
 
-        servico.peça_os = json.dumps(peça_os_atual)
+        servico.peca_os = json.dumps(peca_os_atual)
 
         db.session.commit()
 
@@ -883,12 +883,12 @@ def atualizar_lado_peças(servico_id, item_id):
 
 
 @app.route(
-    "/apagar_item_peças/<int:servico_id>/<int:item_index>", methods=["POST", "DELETE"]
+    "/apagar_item_pecas/<int:servico_id>/<int:item_index>", methods=["POST", "DELETE"]
 )
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def apagar_item_peças(servico_id, item_index):
+def apagar_item_pecas(servico_id, item_index):
     try:
         servico = Serviso.query.get(servico_id)
         if not servico:
@@ -897,43 +897,43 @@ def apagar_item_peças(servico_id, item_index):
                 "cor-cancelar",
             )
         if servico.id != 0 and servico.status == "Finalizado":
-            return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+            return redirect(f"/AbrirServico/{servico.id}/tratatar")
         else:
-            peça_os_atual = json.loads(servico.peça_os)
-            em_id = int(peça_os_atual["itens"][item_index]["peça_id"])
-            em_estoque = peça_os_atual["itens"][item_index]["em_estoque"]
+            peca_os_atual = json.loads(servico.peca_os)
+            em_id = int(peca_os_atual["itens"][item_index]["peca_id"])
+            em_estoque = peca_os_atual["itens"][item_index]["em_estoque"]
 
-            if item_index < 0 or item_index >= len(peça_os_atual.get("itens", [])):
+            if item_index < 0 or item_index >= len(peca_os_atual.get("itens", [])):
                 flash(
                     f"Algo deu Errado Consulte o Desenvovedor!!!",
                     "cor-cancelar",
                 )
             if servico.status == "Aprovado":
-                getPeça = Peça.query.get(em_id)
-                if getPeça:
-                    if getPeça.estoque != 0:
-                        valor_atual = int(em_estoque) + int(getPeça.estoque)
-                        getPeça.estoque = valor_atual
+                getPeca = Peca.query.get(em_id)
+                if getPeca:
+                    if getPeca.estoque != 0:
+                        valor_atual = int(em_estoque) + int(getPeca.estoque)
+                        getPeca.estoque = valor_atual
                         db.session.commit()
 
-            peça_os_atual["itens"].pop(item_index)
-            servico.peça_os = json.dumps(peça_os_atual)
+            peca_os_atual["itens"].pop(item_index)
+            servico.peca_os = json.dumps(peca_os_atual)
 
             db.session.commit()
             if servico.status == "Editar":
-                return redirect(f"/AbrirServiço/{servico.id}/Editar")
+                return redirect(f"/AbrirServico/{servico.id}/Editar")
             else:
-                return redirect(f"/AbrirServiço/{servico.id}/dados")
+                return redirect(f"/AbrirServico/{servico.id}/dados")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-@app.route("/searchPeçasAdicionar", methods=["GET", "POST"])
+@app.route("/searchPecasAdicionar", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(2)
-def searchPeçasAdicionar():
+def searchPecasAdicionar():
     try:
         if request.method == "POST":
             id = request.form.get("id")
@@ -945,27 +945,27 @@ def searchPeçasAdicionar():
             escolha = str(request.form.get("searchselector"))
             busca = search_value = form["search_string"]
             if escolha == "marca":
-                get_Peças = Peça.query.filter(
-                    Peça.marca.has(Marcapeça.nome.like(search))
+                get_Pecas = Peca.query.filter(
+                    Peca.marca.has(Marcapeca.nome.like(search))
                 ).paginate(page=page, per_page=4)
             elif escolha == "fornecedor":
-                get_Peças = Peça.query.filter(
-                    Peça.fornecedor.has(Fornecedor.nome.like(search))
+                get_Pecas = Peca.query.filter(
+                    Peca.fornecedor.has(Fornecedor.nome.like(search))
                 ).paginate(page=page, per_page=4)
             else:
-                get_Peças = (
-                    Peça.query.filter(getattr(Peça, escolha).like(search))
-                    .order_by(Peça.id.desc())
+                get_Pecas = (
+                    Peca.query.filter(getattr(Peca, escolha).like(search))
+                    .order_by(Peca.id.desc())
                     .paginate(page=page, per_page=10)
                 )
-            marcaPesa = Marcapeça.query.all()
+            marcaPesa = Marcapeca.query.all()
             return render_template(
-                "Peças/Peça.html",
+                "Pecas/Peca.html",
                 Adicionar=get_serviso,
-                Peças=get_Peças,
+                Pecas=get_Pecas,
                 busca=busca,
                 escolha=escolha,
-                CatPeça=marcaPesa,
+                CatPeca=marcaPesa,
             )
         else:
             return redirect("EscolhaMDOs")
@@ -974,7 +974,7 @@ def searchPeçasAdicionar():
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-# Mao de obra Para serviço
+# Mao de obra Para servico
 @app.route("/EscolhaMDO/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
@@ -988,7 +988,7 @@ def EscolhaMDO(id):
         MDO_os_atual = json.loads(get_serviso.mo_os)
 
         if not Serviso:
-            return "Serviço não encontrado", 404
+            return "Servico não encontrado", 404
 
         novo_item = {
             "MDO_id": getMDO.id,
@@ -1024,16 +1024,16 @@ def EscolhaMDO(id):
 @nome_required
 @verificacao_nivel(2)
 def adicinar_item_MaoObra():
-    id_serviço = request.form.get("numero_servico")
+    id_servico = request.form.get("numero_servico")
     id_mdo = request.form.get("numero_mdo")
-    get_serviso = Serviso.query.get_or_404(id_serviço)
+    get_serviso = Serviso.query.get_or_404(id_servico)
     getMaoObra = Maoobra.query.get_or_404(id_mdo)
     MaoObra_os_atual = json.loads(get_serviso.mo_os)
 
     if not Serviso:
-        return "Serviço não encontrado", 404
+        return "Servico não encontrado", 404
     if get_serviso.id != 0 and get_serviso.status == "Finalizado":
-        return redirect(f"/AbrirServiço/{get_serviso.id}/tratatar")
+        return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
     else:
         if len(MaoObra_os_atual["itens"]) > 0:
             for item in MaoObra_os_atual["itens"]:
@@ -1125,7 +1125,7 @@ def apagar_item_mos(servico_id, item_index):
                 "cor-cancelar",
             )
         if servico.id != 0 and servico.status == "Finalizado":
-            return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+            return redirect(f"/AbrirServico/{servico.id}/tratatar")
         else:
             mo_os_atual = json.loads(servico.mo_os)
             if item_index < 0 or item_index >= len(mo_os_atual.get("itens", [])):
@@ -1138,9 +1138,9 @@ def apagar_item_mos(servico_id, item_index):
             servico.mo_os = json.dumps(mo_os_atual)
             db.session.commit()
             if servico.status == "Editar":
-                return redirect(f"/AbrirServiço/{servico.id}/Editar")
+                return redirect(f"/AbrirServico/{servico.id}/Editar")
             else:
-                return redirect(f"/AbrirServiço/{servico.id}/dados")
+                return redirect(f"/AbrirServico/{servico.id}/dados")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
@@ -1300,7 +1300,7 @@ def adicinar_cliente_os(Ser_id, cli_id):
         if not servico:
             flash("Algo deu Errado. Consulte o Desenvolvedor!!!", "cor-cancelar")
         if servico.id != 0 and servico.status == "Finalizado":
-            return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+            return redirect(f"/AbrirServico/{servico.id}/tratatar")
         else:
             servico.cliente_os_id = cli_id
             servico.user_os_id = user.id
@@ -1312,7 +1312,7 @@ def adicinar_cliente_os(Ser_id, cli_id):
             if servico.status == "Editar":
                 return redirect(f"/finalizarEdit/{servico.id}/Editar")
             else:
-                return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+                return redirect(f"/AbrirServico/{servico.id}/tratatar")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
@@ -1330,14 +1330,14 @@ def EscolhaVeiculo(servico_id, cli_id):
         get_serviso = Serviso.query.get_or_404(servico_id)
         veiculos = Veiculo.query.filter_by(cliente_id=cli_id).all()
         if get_serviso.id != 0 and get_serviso.status == "Finalizado":
-            return redirect(f"/AbrirServiço/{get_serviso.id}/tratatar")
+            return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
         else:
             if len(veiculos) == 0:
                 flash("Não a Veiculo registrado para esse Cliente!!!", "cor-alerta")
                 if get_serviso.status == "Editar":
                     return redirect(f"/finalizarEdit/{get_serviso.id}/Editar")
                 else:
-                    return redirect(f"/AbrirServiço/{get_serviso.id}/tratatar")
+                    return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
             elif len(veiculos) == 1:
                 for a in veiculos:
                     get_serviso.veiculo_os_id = a.id
@@ -1346,10 +1346,10 @@ def EscolhaVeiculo(servico_id, cli_id):
                 if get_serviso.status == "Editar":
                     return redirect(f"/finalizarEdit/{get_serviso.id}/Editar")
                 else:
-                    return redirect(f"/AbrirServiço/{get_serviso.id}/tratatar")
+                    return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
             else:
                 return render_template(
-                    "Serviços/AddVeiculoServ.html",
+                    "Servicos/AddVeiculoServ.html",
                     get_serviso=get_serviso,
                     veiculos=veiculos,
                 )
@@ -1370,7 +1370,7 @@ def adicinar_veiculo_os(Ser_id, veic_id):
         if not servico:
             flash("Algo deu Errado. Consulte o Desenvolvedor!!!", "cor-cancelar")
         if servico.id != 0 and servico.status == "Finalizado":
-            return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+            return redirect(f"/AbrirServico/{servico.id}/tratatar")
         else:
             servico.veiculo_os_id = veic_id
             db.session.commit()
@@ -1378,7 +1378,7 @@ def adicinar_veiculo_os(Ser_id, veic_id):
             if servico.status == "Editar":
                 return redirect(f"/finalizarEdit/{servico.id}/Editar")
             else:
-                return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+                return redirect(f"/AbrirServico/{servico.id}/tratatar")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
@@ -1397,7 +1397,7 @@ def retirarVeiculo(servico_id):
                 "cor-cancelar",
             )
         if servico.id != 0 and servico.status == "Finalizado":
-            return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+            return redirect(f"/AbrirServico/{servico.id}/tratatar")
         else:
             veiculo_os_atual = json.loads(servico.veiculo)
 
@@ -1408,7 +1408,7 @@ def retirarVeiculo(servico_id):
             if servico.status == "Finalizado":
                 return redirect(f"/finalizarEdit/{servico.id}")
             else:
-                return redirect(f"/AbrirServiço/{servico.id}/tratatar")
+                return redirect(f"/AbrirServico/{servico.id}/tratatar")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
@@ -1476,31 +1476,31 @@ def atualizar_mecanico_os(Ser_id, mecanico):
     return jsonify({"message": "Item atualizado com sucesso"})
 
 
-# SERVIÇOS APROVADOS
-@app.route("/aprovarServiço/<int:id>", methods=["GET", "POST"])
+# SERVIcOS APROVADOS
+@app.route("/aprovarServico/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def aprovarServiço(id):
+def aprovarServico(id):
     try:
         servisoAprovado = Serviso.query.get_or_404(id)
         if servisoAprovado.status == "Aprovado":
-            return redirect(f"/AbrirServiço/{servisoAprovado.id}/tratatar")
-        peças_os = json.loads(servisoAprovado.peça_os)
+            return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
+        pecas_os = json.loads(servisoAprovado.peca_os)
         mos_os = json.loads(servisoAprovado.mo_os)
-        getPeça = Peça.query.order_by(Peça.id)
+        getPeca = Peca.query.order_by(Peca.id)
         getMaoobra = Maoobra.query.order_by(Maoobra.id)
         if servisoAprovado.cliente_os_id > 0 and servisoAprovado.veiculo_os_id > 0:
             if request.method == "POST":
-                for peça_um in getPeça:
-                    if "itens" in peças_os:
-                        for index, item in enumerate(peças_os["itens"]):
-                            peça_id = item.get("peça_id")
-                            if peça_um.id == peça_id:
-                                peças_os["itens"][index]["valor_final"] = peça_um.preso
-                                peças_os["itens"][index]["peça_codigo"] = peça_um.codigo
-                                peças_os["itens"][index]["peça_nome"] = peça_um.nome
-                                servisoAprovado.peça_os = json.dumps(peças_os)
+                for peca_um in getPeca:
+                    if "itens" in pecas_os:
+                        for index, item in enumerate(pecas_os["itens"]):
+                            peca_id = item.get("peca_id")
+                            if peca_um.id == peca_id:
+                                pecas_os["itens"][index]["valor_final"] = peca_um.preso
+                                pecas_os["itens"][index]["peca_codigo"] = peca_um.codigo
+                                pecas_os["itens"][index]["peca_nome"] = peca_um.nome
+                                servisoAprovado.peca_os = json.dumps(pecas_os)
                                 db.session.commit()
                 for mo_um in getMaoobra:
                     if "itens" in mos_os:
@@ -1514,32 +1514,32 @@ def aprovarServiço(id):
                                 servisoAprovado.mo_os = json.dumps(mos_os)
 
                                 db.session.commit()
-                if len(peças_os["itens"]) > 0:
-                    for peça_um in getPeça:
-                        for index, item in enumerate(peças_os["itens"]):
-                            peçaid = item.get("peça_id")
-                            peçaUn = item.get("un")
-                            if peçaid == peça_um.id:
-                                peça_modificar = Peça.query.get_or_404(peça_um.id)
-                                if peça_modificar.estoque != 0:
-                                    valor_atual = int(peça_modificar.estoque) - int(
-                                        peçaUn
+                if len(pecas_os["itens"]) > 0:
+                    for peca_um in getPeca:
+                        for index, item in enumerate(pecas_os["itens"]):
+                            pecaid = item.get("peca_id")
+                            pecaUn = item.get("un")
+                            if pecaid == peca_um.id:
+                                peca_modificar = Peca.query.get_or_404(peca_um.id)
+                                if peca_modificar.estoque != 0:
+                                    valor_atual = int(peca_modificar.estoque) - int(
+                                        pecaUn
                                     )
                                     valor_estoque = 0
-                                    if int(peça_modificar.estoque) > int(peçaUn):
-                                        valor_estoque = peçaUn
+                                    if int(peca_modificar.estoque) > int(pecaUn):
+                                        valor_estoque = pecaUn
                                     else:
-                                        valor_estoque = peça_modificar.estoque
+                                        valor_estoque = peca_modificar.estoque
                                     if valor_atual < 0:
                                         valor_atual = 0
-                                    peça_modificar.estoque = valor_atual
+                                    peca_modificar.estoque = valor_atual
 
                                     db.session.commit()
-                                    peça_os_atual = json.loads(servisoAprovado.peça_os)
-                                    peça_os_atual["itens"][index][
+                                    peca_os_atual = json.loads(servisoAprovado.peca_os)
+                                    peca_os_atual["itens"][index][
                                         "em_estoque"
                                     ] = valor_estoque
-                                    servisoAprovado.peça_os = json.dumps(peça_os_atual)
+                                    servisoAprovado.peca_os = json.dumps(peca_os_atual)
                                     db.session.commit()
                 km = request.form.get("kmAtualiza")
                 veiculo = Veiculo.query.get_or_404(servisoAprovado.veiculo_os_id)
@@ -1551,29 +1551,29 @@ def aprovarServiço(id):
                     f"O Serviço foi Aprovado, com Sucesso!!!",
                     "cor-ok",
                 )
-                return redirect(f"/AbrirServiço/{servisoAprovado.id}/tratatar")
+                return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
             flash(f"{servisoAprovado.id}", "Aprovado")
-            return redirect(f"/AbrirServiço/{servisoAprovado.id}/tratatar")
+            return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
         else:
             flash(
                 f"Para Aprovar o serviço, é necessário adicionar um cliente e veiculo do sistema.",
                 "cor-alerta",
             )
-            return redirect(f"/AbrirServiço/{servisoAprovado.id}/dados")
+            return redirect(f"/AbrirServico/{servisoAprovado.id}/dados")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-# SERVIÇOS FINALIZAR
-@app.route("/finalizarServiço/<int:id>", methods=["GET", "POST"])
+# SERVIcOS FINALIZAR
+@app.route("/finalizarServico/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
 @verificacao_nivel(3)
-def finalizarServiço(id):
+def finalizarServico(id):
     servisoFinalizado = Serviso.query.get_or_404(id)
     if servisoFinalizado.status == "Finalizado":
-        return redirect(f"/AbrirServiço/{servisoFinalizado.id}/tratatar")
+        return redirect(f"/AbrirServico/{servisoFinalizado.id}/tratatar")
     if servisoFinalizado.cliente_os_id > 0 and servisoFinalizado.veiculo_os_id > 0:
         if servisoFinalizado.vendedor_id >= 1 and servisoFinalizado.mecanico_id >= 1:
             if request.method == "POST":
@@ -1676,21 +1676,21 @@ def finalizarServiço(id):
                     f"O Serviço foi Finalizado, com Sucesso!!!",
                     "cor-ok",
                 )
-                return redirect(f"/AbrirServiço/{servisoFinalizado.id}/tratatar")
+                return redirect(f"/AbrirServico/{servisoFinalizado.id}/tratatar")
             flash(f"{servisoFinalizado.id}", "Finalizado")
-            return redirect(f"/AbrirServiço/{servisoFinalizado.id}/tratatar")
+            return redirect(f"/AbrirServico/{servisoFinalizado.id}/tratatar")
         else:
             flash(
                 f"Para Aprovar o serviço, é necessário adicionar um Mecanico e Vendedor do sistema.",
                 "cor-alerta",
             )
-            return redirect(f"/AbrirServiço/{servisoFinalizado.id}/tratatar")
+            return redirect(f"/AbrirServico/{servisoFinalizado.id}/tratatar")
     else:
         flash(
             f"Para Aprovar o serviço, é necessário adicionar um cliente e veiculo do sistema.",
             "cor-alerta",
         )
-        return redirect(f"/AbrirServiço/{servisoFinalizado.id}/tratatar")
+        return redirect(f"/AbrirServico/{servisoFinalizado.id}/tratatar")
 
 
 @app.route("/finalizarEdit/<int:id>", methods=["GET", "POST"])
@@ -1699,7 +1699,7 @@ def finalizarServiço(id):
 @verificacao_nivel(4)
 def finalizarEdit(id):
     if id == 0:
-        return redirect(f"/AbrirServiço/0/Editar")
+        return redirect(f"/AbrirServico/0/Editar")
     else:
         servisos = Serviso.query.get_or_404(id)
         data_hora_atual = datetime.now()
@@ -1728,7 +1728,7 @@ def finalizarEdit(id):
                     filtro_0.cliente_veiculo = servisos.cliente_veiculo
                     filtro_0.data_criado = servisos.data_criado
                     filtro_0.data_finalizada = servisos.data_finalizada
-                    filtro_0.peça_os = servisos.peça_os
+                    filtro_0.peca_os = servisos.peca_os
                     filtro_0.mo_os = servisos.mo_os
                     filtro_0.obs = servisos.obs
                     filtro_0.km_final = servisos.km_final
@@ -1755,7 +1755,7 @@ def finalizarEdit(id):
                         "No momento, não é possível modificar este registro. Por favor, aguarde pelo menos 3 minutos e tente novamente",
                         "cor-cancelar",
                     )
-                    return redirect(f"/AbrirServiço/{id}/tratatar")
+                    return redirect(f"/AbrirServico/{id}/tratatar")
             else:
                 get_Serviso = Serviso(
                     id=0,
@@ -1764,7 +1764,7 @@ def finalizarEdit(id):
                     cliente_veiculo=servisos.cliente_veiculo,
                     data_criado=servisos.data_criado,
                     data_finalizada=servisos.data_finalizada,
-                    peça_os=servisos.peça_os,
+                    peca_os=servisos.peca_os,
                     mo_os=servisos.mo_os,
                     obs=servisos.obs,
                     km_final=servisos.km_final,
@@ -1786,13 +1786,13 @@ def finalizarEdit(id):
                 db.session.add(get_Serviso)
                 db.session.commit()
 
-            return redirect(f"/AbrirServiço/0/Editar")
+            return redirect(f"/AbrirServico/0/Editar")
         else:
             flash(
-                "Os serviços finalizados nos meses anteriores não podem ser modificados.",
+                "Os servicos finalizados nos meses anteriores não podem ser modificados.",
                 "cor-cancelar",
             )
-            return redirect(f"/AbrirServiço/{id}/tratatar")
+            return redirect(f"/AbrirServico/{id}/tratatar")
 
 
 @app.route("/finalizarEditVolt/<int:id>", methods=["GET", "POST"])
@@ -1870,7 +1870,7 @@ def finalizarEditVolt(id):
                 servisoFinalizado.status = 'Finalizado'
                 servisoFinalizado.cliente_veiculo = servisos.cliente_veiculo
                 servisoFinalizado.data_finalizada = servisos.data_finalizada
-                servisoFinalizado.peça_os = servisos.peça_os
+                servisoFinalizado.peca_os = servisos.peca_os
                 servisoFinalizado.mo_os = servisos.mo_os
                 servisoFinalizado.obs = servisos.obs
                 servisoFinalizado.km_final = km
@@ -1907,19 +1907,19 @@ def finalizarEditVolt(id):
                     f"O Serviço foi Editar, com Sucesso!!!",
                     "cor-ok",
                 )
-                return redirect(f"/AbrirServiço/{servisoFinalizado.id}/tratatar")
+                return redirect(f"/AbrirServico/{servisoFinalizado.id}/tratatar")
 
         else:
             flash(
                 f"Para Editar o serviço, é necessário adicionar um Mecanico e Vendedor do sistema.",
                 "cor-alerta",
             )
-            return redirect(f"/AbrirServiço/{servisos.id}/Editar")
+            return redirect(f"/AbrirServico/{servisos.id}/Editar")
     else:
         flash(
             f"Para Editar o serviço, é necessário adicionar um cliente e veiculo do sistema.",
             "cor-alerta",
         )
-        return redirect(f"/AbrirServiço/{servisos.id}/Editar")
+        return redirect(f"/AbrirServico/{servisos.id}/Editar")
 
 

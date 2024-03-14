@@ -28,7 +28,7 @@ from Site.Global.fun_global import (
     Calculos_gloabal,
 )
 from flask_login import login_required, current_user, login_user, logout_user
-from Site.Serviços.modelos import Serviso
+from Site.Servicos.modelos import Serviso
 from datetime import datetime, timedelta 
 from sqlalchemy import and_, or_, desc,func, extract,cast,Integer, Numeric
 import requests
@@ -525,46 +525,50 @@ def verificar_tentativas_login():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginFormulario(request.form)
-    if verificar_tentativas_login():
-        flash('Tentativas esgotadas.Tente mais tarde.', 'Longin_Erro_Utrapado')
-        return render_template("Admin/login.html", form=form)
-    else:
-        if request.method == "POST" and form.validate():
-            user = User.query.filter_by(email=form.email.data).first()
-            empresa = User.query.get(1)
-            if user and bcrypt.check_password_hash(user.senha, form.senha.data):
-                niveis = {
-                    "DONO": 6,
-                    "PERITO": 5,
-                    "ESPECIALISTA": 4,
-                    "COMPETENTE": 3,
-                    "INEXPERIENTE": 2,
-                    "NOVATO": 1,
-                }
-                nivel = niveis.get(user.nivel, 0)
-                session["nome"] = user.nome
-                session["apelido"] = user.apelido
-                session["email"] = user.email
-                session["cargo"] = user.cargo.nome
-                session["nivel"] = nivel
-                endereço = str(empresa.estado) + '-' + str(empresa.cidade).capitalize() + '- Bairro:' + str(empresa.bairro).capitalize() + '- Rua:' + str(empresa.rua).capitalize() + '- N:' + str(empresa.nuCasa)
-                session['dados_empresa_nome'] = empresa.nomeFantasia
-                session['dados_empresa_fone'] = empresa.fone
-                session['dados_empresa_fone1'] = empresa.fone1
-                session['dados_empresa_email'] = empresa.email
-                session['dados_empresa_logo'] = empresa.foto
-                session['dados_empresa_endereço'] = endereço
-                login_user(user)
-                flash(f"Sejá Bem Vindo {user.apelido}", "cor-ok")
-                return redirect(url_for("Admin"))
-            else:
-                session['tentativas_login'] += 1
-                flash("E-mail ou senha inválido", "Longin_Erro")
-                return redirect(url_for("login"))
-        
-        return render_template("Admin/login.html", form=form)
-
+    try:
+        form = LoginFormulario(request.form)
+        if verificar_tentativas_login():
+            flash('Tentativas esgotadas.Tente mais tarde.', 'Longin_Erro_Utrapado')
+            return render_template("Admin/login.html", form=form)
+        else:
+            if request.method == "POST" and form.validate():
+                user = User.query.filter_by(email=form.email.data).first()
+                empresa = User.query.get(1)
+                if user and bcrypt.check_password_hash(user.senha, form.senha.data):
+                    niveis = {
+                        "DONO": 6,
+                        "PERITO": 5,
+                        "ESPECIALISTA": 4,
+                        "COMPETENTE": 3,
+                        "INEXPERIENTE": 2,
+                        "NOVATO": 1,
+                    }
+                    nivel = niveis.get(user.nivel, 0)
+                    session["nome"] = user.nome
+                    session["apelido"] = user.apelido
+                    session["email"] = user.email
+                    session["cargo"] = user.cargo.nome
+                    session["nivel"] = nivel
+                    endereço = str(empresa.estado) + '-' + str(empresa.cidade).capitalize() + '- Bairro:' + str(empresa.bairro).capitalize() + '- Rua:' + str(empresa.rua).capitalize() + '- N:' + str(empresa.nuCasa)
+                    session['dados_empresa_nome'] = empresa.nomeFantasia
+                    session['dados_empresa_fone'] = empresa.fone
+                    session['dados_empresa_fone1'] = empresa.fone1
+                    session['dados_empresa_email'] = empresa.email
+                    session['dados_empresa_logo'] = empresa.foto
+                    session['dados_empresa_endereço'] = endereço
+                    login_user(user)
+                    flash(f"Sejá Bem Vindo {user.apelido}", "cor-ok")
+                    return redirect(url_for("Admin"))
+                else:
+                    session['tentativas_login'] += 1
+                    flash("E-mail ou senha inválido", "Longin_Erro")
+                    return redirect(url_for("login"))
+            
+            return render_template("Admin/login.html", form=form)
+    except:
+        session['tentativas_login'] += 1
+        flash("E-mail ou senha inválido", "Longin_Erro")
+        return redirect(url_for("login"))
 
 @app.route("/user/logaut")
 def user_logaut():
@@ -1632,8 +1636,8 @@ def servicoRelatorios():
         )
     ).order_by(Serviso.data_finalizada.desc()).paginate(page=page, per_page=10)
     return render_template(
-        "Serviços/Serviços.html",
-        status="meus serviço",
+        "Servicos/Servicos.html",
+        status="meus servico",
         servisos=servisos,
     )
 
@@ -1745,8 +1749,8 @@ def searchservicoRelatorios():
                     .paginate(page=page, per_page=10)
                 )
             return render_template(
-                "Serviços/Serviços.html",
-                status="meus serviço",
+                "Servicos/Servicos.html",
+                status="meus servico",
                 cliente_id =user,
                 servisos=servisos,
                 busca=busca,
@@ -1863,7 +1867,7 @@ def carDinamicosUsuario(id):
     
     return render_template(
         "/Colaborador/vendasUsuario.html",
-        status="meus serviço",
+        status="meus servico",
         servisos=servisos,
         ganhos_por_mes=dados_formatados,
     )

@@ -36,7 +36,7 @@
             <select name="fornecedor" id="fornecedor" required>
                 <option value="">--Selecione o Fornecedor--</option>
                 {% if atulizar %}
-                <option value="{{ Peça.fornecedor.id }}" selected>{{ Peça.fornecedor.nome }}</option>
+                <option value="{{ Peca.fornecedor.id }}" selected>{{ Peca.fornecedor.nome }}</option>
                 {% endif %}
                 {%for fornecedor in fornecedors%}
                 <option value="{{fornecedor.id}}">{{fornecedor.nome}}</option>
@@ -47,7 +47,7 @@
             <select name="marcaPro" id="marcaPro" required>
                 <option value="">Selecione a Marca</option>
                 {% if atulizar %}
-                <option value="{{ Peça.marca.id }}" selected>{{ Peça.marca.nome }}</option>
+                <option value="{{ Peca.marca.id }}" selected>{{ Peca.marca.nome }}</option>
                 {% endif %}
                 {%for marcaPro in marcasPro%}
                 <option value="{{marcaPro.id}}">{{marcaPro.nome}}</option>
@@ -101,7 +101,7 @@
             <input type="submit" id="add-button" class="button-pequeno cor-alerta">
             {% if atulizar %}
             <select id="carros" name="carros" class="select2" multiple>
-                {% for item in Peça.carro %}
+                {% for item in Peca.carro %}
                 <option value="{{item}}" selected style="background-color: #ccc; color: #333;">{{item}}</option>
                 {% endfor %}
             </select>
@@ -124,7 +124,7 @@
                 <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
                 <label for="image_1">Adicionar Imagem 1</label>
                 {% if atulizar %}
-                <img src="{{url_for('static',filename='imagens/'+Peça.image_1)}}" id="preview-image-1" src=""
+                <img src="{{url_for('static',filename='imagens/'+Peca.image_1)}}" id="preview-image-1" src=""
                     alt="Preview Image 1" onclick="openFileInput(1)">
                 {% else %}
                 <img id="preview-image-1" src="{{url_for('static',filename='imagens/foto.jpg')}}" alt=""
@@ -135,7 +135,7 @@
                 <input type="file" name="image_2" id="image_2" onchange="previewImage(event, 2)" accept="image/*">
                 <label for="image_2">Adicionar Imagem 2</label>
                 {% if atulizar %}
-                <img src="{{url_for('static',filename='imagens/'+Peça.image_2)}}" id="preview-image-2" src=""
+                <img src="{{url_for('static',filename='imagens/'+Peca.image_2)}}" id="preview-image-2" src=""
                     alt="Preview Image 2" onclick="openFileInput(2)">
                 {% else %}
                 <img id="preview-image-2" src="{{url_for('static',filename='imagens/foto.jpg')}}" alt=""
@@ -146,7 +146,7 @@
                 <input type="file" name="image_3" id="image_3" onchange="previewImage(event, 3)" accept="image/*">
                 <label for="image_3">Adicionar Imagem 3</label>
                 {% if atulizar %}
-                <img src="{{url_for('static',filename='imagens/'+Peça.image_3)}}" id="preview-image-3" src=""
+                <img src="{{url_for('static',filename='imagens/'+Peca.image_3)}}" id="preview-image-3" src=""
                     alt="Preview Image 3" onclick="openFileInput(3)">
                 {% else %}
                 <img id="preview-image-3" src="{{url_for('static',filename='imagens/foto.jpg')}}" alt=""
@@ -161,7 +161,7 @@
         {% else %}
         {{form.submit(class="button-grande cor-ok")}}
         {% endif %}
-        <a href="{{url_for('Peças')}}" class="button-medio cor-cancelar">CANCELAR</a>
+        <a href="{{url_for('Pecas')}}" class="button-medio cor-cancelar">CANCELAR</a>
     </fieldset>
 </form>
 

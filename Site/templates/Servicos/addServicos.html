@@ -2,23 +2,23 @@
 
 {% block content %}
 <h2 class="cabeçario-pagina">{{status}}</h2>
-{% if Serviço.id == 0 %}
+{% if Servico.id == 0 %}
 <div style="background-color: aliceblue; font-size: 20px; display: inline-block; border-radius: 20px; padding: 10px;">
-    <strong>EDITANDO: </strong>{{ Serviço.editor_finalizado_id }}
+    <strong>EDITANDO: </strong>{{ Servico.editor_finalizado_id }}
 </div>
 {%else%}
 <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
     <div
         style="background-color: aliceblue; font-size: 20px; display: inline-block; border-radius: 20px; padding: 10px;">
-        <strong>ID: </strong>{{ Serviço.id }}
+        <strong>ID: </strong>{{ Servico.id }}
     </div>
-    <a><input type="submit" class="button-grande cor-alerta" onclick="gerarPDF({{Serviço.id}})" name="" value="PDF"></a>
+    <a><input type="submit" class="button-grande cor-alerta" onclick="gerarPDF({{Servico.id}})" name="" value="PDF"></a>
 </div>
 {%endif%}
-<input type="hidden" name="Ser_id" id="Ser_id" value="{{ Serviço.id }}">
-<div id="MensagemServiço" class="retira"></div>
+<input type="hidden" name="Ser_id" id="Ser_id" value="{{ Servico.id }}">
+<div id="MensagemServico" class="retira"></div>
 
-<div class="DadosClienteServiço">
+<div class="DadosClienteServico">
     <fieldset class="containerForm">
         <div class="header toggleButton">
             <div class="divCentro">
@@ -31,25 +31,25 @@
             {% if status == 'Finalizado' %}
             {%else%}
             <div style="padding: 5px;">
-                <a href="{{url_for('EscolhaCliente', id=Serviço.id)}}">
+                <a href="{{url_for('EscolhaCliente', id=Servico.id)}}">
                     <input type="submit" class="cor-ok" name="" value="Adicionar Cliente Cadastrado">
                 </a>
             </div>
             {%endif%}
-            {%if Serviço.cliente_os_id > 0%}
-            <span>ID do Cliente : <h3>{{Serviço.cliente_os.id}}</h3></span>
+            {%if Servico.cliente_os_id > 0%}
+            <span>ID do Cliente : <h3>{{Servico.cliente_os.id}}</h3></span>
             <label for="clientName">Nome do Cliente:</label>
-            {% if Serviço.cliente_os.nomeFantasia %}
-            <input type="text" id="clientName" name="clientName" value="{{Serviço.cliente_os.nomeFantasia}}" required
+            {% if Servico.cliente_os.nomeFantasia %}
+            <input type="text" id="clientName" name="clientName" value="{{Servico.cliente_os.nomeFantasia}}" required
                 disabled>
             {% else %}
-            <input type="text" id="clientName" name="clientName" value="{{Serviço.cliente_os.nome}}" required disabled>
+            <input type="text" id="clientName" name="clientName" value="{{Servico.cliente_os.nome}}" required disabled>
             {% endif %}
             <label for="telefone">Telefone:</label>
-            <input type="text" id="telefone" name="telefone" value="{{Serviço.cliente_os.fone}}" required disabled>
+            <input type="text" id="telefone" name="telefone" value="{{Servico.cliente_os.fone}}" required disabled>
 
             <label for="email">Email:</label>
-            <input type="text" class="anular" id="email" name="email" value="{{Serviço.cliente_os.email}}" required
+            <input type="text" class="anular" id="email" name="email" value="{{Servico.cliente_os.email}}" required
                 disabled>
 
             {%else%}
@@ -73,37 +73,37 @@
             <span class="arrow">▼</span>
         </div>
         <div class="containerDados hidden">
-            {%if Serviço.cliente_os_id == 0%}
+            {%if Servico.cliente_os_id == 0%}
             {%else%}
             {% if status == 'Finalizado' %}
             {%else%}
-            <form action="/EscolhaVeiculo/{{ Serviço.id }}/{{Serviço.cliente_os.id}}" method="POST">
+            <form action="/EscolhaVeiculo/{{ Servico.id }}/{{Servico.cliente_os.id}}" method="POST">
                 <input type="hidden" name="_method" value="ADICIONAR">
                 <input type="submit" class="cor-ok" value="Adicionar Carro">
             </form>
             {%endif%}
             {%endif%}
-            {%if Serviço.veiculo_os_id > 0%}
+            {%if Servico.veiculo_os_id > 0%}
             <label for="licensePlate">Placa do Carro:</label>
-            <input type="text" id="licensePlate" name="licensePlate" value="{{Serviço.veiculo_os.placa}}" disabled>
+            <input type="text" id="licensePlate" name="licensePlate" value="{{Servico.veiculo_os.placa}}" disabled>
 
             <label for="carBrand">Marca do Carro:</label>
-            <input type="text" id="carBrand" name="carBrand" value="{{Serviço.veiculo_os.carro.marca}}" disabled>
+            <input type="text" id="carBrand" name="carBrand" value="{{Servico.veiculo_os.carro.marca}}" disabled>
 
             <label for="carModel">Modelo do Carro:</label>
-            <input type="text" id="carModel" name="carModel" value="{{Serviço.veiculo_os.carro.modelo}}" disabled>
+            <input type="text" id="carModel" name="carModel" value="{{Servico.veiculo_os.carro.modelo}}" disabled>
 
             <label for="carYear">Ano do Carro:</label>
-            <input type="text" id="carYear" name="carYear" value="{{Serviço.veiculo_os.carro.ano}}" disabled>
+            <input type="text" id="carYear" name="carYear" value="{{Servico.veiculo_os.carro.ano}}" disabled>
 
             <label for="carEngine">Motor do Carro:</label>
-            <input type="text" id="carEngine" name="carEngine" value="{{Serviço.veiculo_os.carro.motor}}" disabled>
+            <input type="text" id="carEngine" name="carEngine" value="{{Servico.veiculo_os.carro.motor}}" disabled>
 
             <label for="carEngine">KM do Carro:</label>
             {%if status == 'Finalizado' or status == 'Editar Finazados'%}
-            <input type="text" id="carEngine" name="carEngine" value="{{Serviço.km_final}}" disabled>
+            <input type="text" id="carEngine" name="carEngine" value="{{Servico.km_final}}" disabled>
             {%else%}
-            <input type="text" id="carEngine" name="carEngine" value="{{Serviço.veiculo_os.km}}" disabled>
+            <input type="text" id="carEngine" name="carEngine" value="{{Servico.veiculo_os.km}}" disabled>
             {% endif %}
             {% else %}
             <label for="placa">Placa do Carro:</label>
@@ -140,18 +140,18 @@
                 <th>
                     <div style="display: flex; justify-content: space-between;">
                         <div style="padding: 5px;">
-                            <a href="{{url_for('EscolhaMDO', id=Serviço.id)}}" onclick="return validarCampos();">
+                            <a href="{{url_for('EscolhaMDO', id=Servico.id)}}" onclick="return validarCampos();">
                                 <input type="submit" class="cor-ok" name="" value="Add Mão de Obra">
                             </a>
                         </div>
                         <div style="padding: 5px;">
-                            <a href="{{url_for('AddItensManual', id=Serviço.id)}}" onclick="return validarCampos();">
+                            <a href="{{url_for('AddItensManual', id=Servico.id)}}" onclick="return validarCampos();">
                                 <input type="submit" class="cor-alerta" name="" value="Add Item Manualmente">
                             </a>
                         </div>
                         <div style="padding: 5px;">
-                            <a href="{{url_for('EscolhaPeças', id=Serviço.id)}}" onclick="return validarCampos();">
-                                <input type="submit" class="cor-ok" name="" value="Add Peças">
+                            <a href="{{url_for('EscolhaPecas', id=Servico.id)}}" onclick="return validarCampos();">
+                                <input type="submit" class="cor-ok" name="" value="Add Pecas">
                             </a>
                         </div>
                     </div>
@@ -159,42 +159,42 @@
             </tr>
             {%endif%}
 
-            {% if items_data_peças %}
-            {% for item_peça in items_data_peças %}
+            {% if items_data_pecas %}
+            {% for item_peca in items_data_pecas %}
             <tr>
                 <td>
                     <fieldset class="containerForm" style="cursor: pointer;">
                         <div class="peca-Nome toggleButton">
                             <p></p>
-                            <div><strong>{{ loop.index }}&rpar; Nome:</strong><span>{{ item_peça.nome
+                            <div><strong>{{ loop.index }}&rpar; Nome:</strong><span>{{ item_peca.nome
                                     }}</span><span class="arrow">▼</span>
                             </div>
                         </div>
                         <div class="containerDados hidden">
                             <div class="peca-card">
-                                <div><strong>Código:</strong>{{ item_peça.codigo }}</div>
+                                <div><strong>Código:</strong>{{ item_peca.codigo }}</div>
                                 <hr>
                                 <div>
                                     <strong>Unidade:</strong>
                                     {% if status == 'Finalizado' %}
                                     <input class="number-input" data-item-id="{{ loop.index0 }}"
                                         style="text-align: center;width: 50px; font-size: 100%;" type="number" id="un"
-                                        name="un" value="{{ item_peça.un }}" min="1" disabled>
+                                        name="un" value="{{ item_peca.un }}" min="1" disabled>
                                     {%else%}
                                     <input class="number-input" data-item-id="{{ loop.index0 }}"
                                         style="text-align: center;width: 50px; font-size: 100%;" type="number" id="un"
-                                        name="un" value="{{ item_peça.un }}" min="1">
+                                        name="un" value="{{ item_peca.un }}" min="1">
                                     {%endif%}
                                 </div>
                                 <hr>
                                 <div>
                                     <strong>Lado:</strong>
                                     {% if status == 'Finalizado' %}
-                                    <p>{{ item_peça.lado }}</p>
+                                    <p>{{ item_peca.lado }}</p>
                                     {%else%}
                                     <select name="lado" class="semselect2 searchselector lado"
                                         data-item-id="{{ loop.index0 }}">
-                                        <option value="{{ item_peça.lado }}" selected>{{ item_peça.lado }}
+                                        <option value="{{ item_peca.lado }}" selected>{{ item_peca.lado }}
                                         </option>
                                         <option value="S">Sem Lado</option>
                                         <option value="L/D">Direita</option>
@@ -203,7 +203,7 @@
                                     {%endif%}
                                 </div>
                                 <hr>
-                                <div><strong>Preço:</strong><span class="precoPeça">{{ item_peça.preso}}</span>
+                                <div><strong>Preço:</strong><span class="precoPeca">{{ item_peca.preso}}</span>
                                 </div>
                                 <hr>
                                 <div class="preco-total" style="color: #008337; font-weight: bold;"><strong
@@ -211,7 +211,7 @@
                                 <hr>
                                 {% if status == 'Finalizado' %}
                                 {%else%}
-                                <form action="/apagar_item_peças/{{ Serviço.id }}/{{ loop.index0 }}" method="POST">
+                                <form action="/apagar_item_pecas/{{ Servico.id }}/{{ loop.index0 }}" method="POST">
                                     <input type="hidden" name="_method" value="DELETE">
                                     <input type="submit" class="cor-cancelar" value="Apagar Item">
 
@@ -228,7 +228,7 @@
             {% endif %}
             <tr>
                 <td>
-                    <div id="soma_peças"><strong>Total em Peças:</strong> R$ 0.00</div>
+                    <div id="soma_pecas"><strong>Total em Pecas:</strong> R$ 0.00</div>
                 </td>
             </tr>
             {% if items_data_MDO %}
@@ -251,7 +251,7 @@
                                 <hr>
                                 {% if status == 'Finalizado' %}
                                 {%else%}
-                                <form action="/apagar_item_mos/{{ Serviço.id }}/{{ loop.index0 }}" method="POST">
+                                <form action="/apagar_item_mos/{{ Servico.id }}/{{ loop.index0 }}" method="POST">
                                     <input type="hidden" name="_method" value="DELETE">
                                     <input type="submit" class="cor-cancelar" value="Apagar Item">
                                 </form>
@@ -273,9 +273,9 @@
     </table>
     <label for="obsSer">Observação:</label>
     {% if status == 'Finalizado' %}
-    <p style="font-size: 15px; padding: 5px;">{{Serviço.obs}}</p>
+    <p style="font-size: 15px; padding: 5px;">{{Servico.obs}}</p>
     {%else%}
-    <textarea id="obsSer" name="obsSer" rows="5" cols="40">{{Serviço.obs}}</textarea>
+    <textarea id="obsSer" name="obsSer" rows="5" cols="40">{{Servico.obs}}</textarea>
     {%endif%}
 
 </div>
@@ -283,8 +283,8 @@
 <div style="padding: 20px;">
     {%if session["nivel"] >= 3%}
     {% if status == 'Orçamento' %}
-    <a href="{{url_for('aprovarServiço', id=Serviço.id)}}">
-        <input type="submit" style="font-size: 20px;" class="cor-ok" name="" value="APROVAR SERVIÇO">
+    <a href="{{url_for('aprovarServico', id=Servico.id)}}">
+        <input type="submit" style="font-size: 20px;" class="cor-ok" name="" value="APROVAR SERVIcO">
     </a>
     {%endif%}
 
@@ -298,7 +298,7 @@
         </div>
     </div>
     <hr>
-    <a href="{{url_for('finalizarServiço', id=Serviço.id)}}">
+    <a href="{{url_for('finalizarServico', id=Servico.id)}}">
         <input type="submit" style="margin: 5px; font-size: 20px;" class="cor-ok" name="" value="FINALIZAR">
     </a>
     {%endif%}
@@ -309,16 +309,16 @@
     <div style="display: flex; justify-content: space-between;">
         <div style="padding: 1px;  width: 50%;">
             <label>Mecanico:</label>
-            <p>{{Serviço.mecanico.apelido}}</p>
+            <p>{{Servico.mecanico.apelido}}</p>
         </div>
         <div style="padding: 1px; width: 50%;">
             <label>Vendedor:</label>
-            <p>{{Serviço.vendedor.apelido}}</p>
+            <p>{{Servico.vendedor.apelido}}</p>
         </div>
     </div>
     <hr>
     {%if session["nivel"] >= 4%}
-    <a href="{{url_for('finalizarEdit', id=Serviço.id)}}">
+    <a href="{{url_for('finalizarEdit', id=Servico.id)}}">
         <input type="submit" style="font-size: 10px;" class="cor-alerta" name="" value="EDITAR">
     </a>
     {%endif%}
@@ -335,13 +335,13 @@
     <hr>
     <div class="div_admistrador">
         <h3>Modificar Finalizado</h3>
-        <form action="/finalizarEditVolt/{{Serviço.id }}" method="POST">
+        <form action="/finalizarEditVolt/{{Servico.id }}" method="POST">
             <input type="hidden" id="valordaspesas" name="valordaspesas" value="R$ 0,00">
             <input type="hidden" id="valortodos" name="valortodos" value="R$ 0,00">
             <div>
                 <div style="background-color: brown; border-radius: 20px;" class="lado-a-lado">
                     <label for="gasto">Valor Gasto:</label>
-                    <input type="text" name="gasto" id="gasto" class="inputReais" value="{{Serviço.valor_gasto}}">
+                    <input type="text" name="gasto" id="gasto" class="inputReais" value="{{Servico.valor_gasto}}">
                 </div>
             </div>
 
@@ -374,14 +374,14 @@
             </div>
             <div>
                 <label for="kmAtualiza">Adicione o KM:</label>
-                <input type="number" name="kmAtualiza" id="kmAtualiza" value="{{Serviço.km_final}}" required>
+                <input type="number" name="kmAtualiza" id="kmAtualiza" value="{{Servico.km_final}}" required>
             </div>
             <div style="padding: 0px 0px 0px 0px;" class="lado-a-lado">
                 <input type="submit" class="button-grande cor-ok" name="" value="SALVAR">
             </div>
         </form>
 
-        <input type="hidden" id="servico_id" value="{{ Serviço.editor_finalizado_id }}">
+        <input type="hidden" id="servico_id" value="{{ Servico.editor_finalizado_id }}">
         <button class="button-pequeno cor-cancelar" id="meuBotao">CANCELAR</button>
     </div>
 
@@ -398,29 +398,29 @@
             <p><strong>Telefone:</strong> {{session['dados_empresa_fone']}} - {{session['dados_empresa_fone1']}}</p>
             <p><strong>E-mail:</strong> {{session['dados_empresa_email']}}</p>
             <p><strong>Endereço:</strong> {{session['dados_empresa_endereço']}}</p>
-            <p><strong>Criado:</strong> {{Serviço.user_os.apelido}}</p>
+            <p><strong>Criado:</strong> {{Servico.user_os.apelido}}</p>
 
         </div>
     </div>
     {% if status == 'Finalizado' %}
-    <h2 style="text-align: center;">Nota de Serviço {{Serviço.status}} N:{{ Serviço.id }}</h2>
+    <h2 style="text-align: center;">Nota de Servico {{Servico.status}} N:{{ Servico.id }}</h2>
     {%else%}
-    <h2 style="text-align: center;">{{Serviço.status}} N:{{ Serviço.id }}</h2>
+    <h2 style="text-align: center;">{{Servico.status}} N:{{ Servico.id }}</h2>
     {%endif%}
 
     <div style="padding: 5px;" class="info-group">
-        {%if Serviço.cliente_os_id > 0%}
-        {% if Serviço.cliente_os.nomeFantasia %}
+        {%if Servico.cliente_os_id > 0%}
+        {% if Servico.cliente_os.nomeFantasia %}
         <div style="display: flex;"><strong>Nome:</strong>
-            <p id="nomecliente">{{Serviço.cliente_os.nomeFantasia}}</p>
+            <p id="nomecliente">{{Servico.cliente_os.nomeFantasia}}</p>
         </div>
         {% else %}
         <div style="display: flex;"><strong>Nome:</strong>
-            <p id="nomecliente">{{Serviço.cliente_os.nome}}</p>
+            <p id="nomecliente">{{Servico.cliente_os.nome}}</p>
         </div>
         {% endif %}
-        <p><strong>Telefone:</strong>{{Serviço.cliente_os.fone}}</p>
-        <p><strong>Email:</strong>{{Serviço.cliente_os.email}}</p>
+        <p><strong>Telefone:</strong>{{Servico.cliente_os.fone}}</p>
+        <p><strong>Email:</strong>{{Servico.cliente_os.email}}</p>
         {%else%}
         <div style="display: flex;"><strong>Nome:</strong>
             <p id="nomecliente">{{nome_cliente_os}}</p>
@@ -431,23 +431,23 @@
     </div>
 
     <div style="padding: 2px;" class="info-group">
-        {%if Serviço.veiculo_os_id > 0%}
-        <p><strong>Placa:</strong>{{Serviço.veiculo_os.placa}}</p>
+        {%if Servico.veiculo_os_id > 0%}
+        <p><strong>Placa:</strong>{{Servico.veiculo_os.placa}}</p>
 
-        <p><strong>Marca:</strong>{{Serviço.veiculo_os.carro.marca}}</p>
+        <p><strong>Marca:</strong>{{Servico.veiculo_os.carro.marca}}</p>
 
         <div style="display: flex;"><strong>Modelo:</strong>
-            <p id="modelocarro">{{Serviço.veiculo_os.carro.modelo}}</p>
+            <p id="modelocarro">{{Servico.veiculo_os.carro.modelo}}</p>
         </div>
 
-        <p><strong>Ano:</strong>{{Serviço.veiculo_os.carro.ano}}</p>
+        <p><strong>Ano:</strong>{{Servico.veiculo_os.carro.ano}}</p>
 
-        <p><strong>Motor:</strong>{{Serviço.veiculo_os.carro.motor}}</p>
+        <p><strong>Motor:</strong>{{Servico.veiculo_os.carro.motor}}</p>
 
         {%if status == 'Finalizado' or status == 'Editar Finazados'%}
-        <p><strong>Motor:</strong>{{Serviço.km_final}}</p>
+        <p><strong>Motor:</strong>{{Servico.km_final}}</p>
         {%else%}
-        <p><strong>Motor:</strong>{{Serviço.veiculo_os.km}}</p>
+        <p><strong>Motor:</strong>{{Servico.veiculo_os.km}}</p>
         {% endif %}
         {% else %}
 
@@ -481,15 +481,15 @@
             </tr>
         </thead>
         <tbody>
-            {% if items_data_peças %}
-            {% for item_peça in items_data_peças %}
+            {% if items_data_pecas %}
+            {% for item_peca in items_data_pecas %}
             <tr>
-                <td>{{item_peça.codigo}}</td>
-                <td>{{item_peça.nome}}</td>
-                <td>{{item_peça.lado}}</td>
-                <td>{{item_peça.un}}</td>
-                <td style="white-space: nowrap;">{{item_peça.preso}}</td>
-                <td style="white-space: nowrap;">{{item_peça.pago_total}}</td>
+                <td>{{item_peca.codigo}}</td>
+                <td>{{item_peca.nome}}</td>
+                <td>{{item_peca.lado}}</td>
+                <td>{{item_peca.un}}</td>
+                <td style="white-space: nowrap;">{{item_peca.preso}}</td>
+                <td style="white-space: nowrap;">{{item_peca.pago_total}}</td>
             </tr>
             {%endfor%}
             {%else%}
@@ -509,8 +509,8 @@
             {%endif%}
         </tbody>
     </table>
-    <p style="text-align: right; padding: 5px; font-size: 18px;"><strong>Total em Peças:</strong>
-        {{valor_total_peças}}
+    <p style="text-align: right; padding: 5px; font-size: 18px;"><strong>Total em Pecas:</strong>
+        {{valor_total_pecas}}
     </p>
 
     <div class="rodape">
@@ -520,18 +520,18 @@
     {% if status == 'Finalizado' %}
     {% if status == 'Finalizado' %}
     <div style="font-size: 12px; display: flex; justify-content: space-between; flex-wrap: wrap;">
-        <p><strong>Vendedor:</strong> {{Serviço.vendedor.apelido}}</p>
-        <p><strong>Mecanico:</strong> {{Serviço.mecanico.apelido}}</p>
+        <p><strong>Vendedor:</strong> {{Servico.vendedor.apelido}}</p>
+        <p><strong>Mecanico:</strong> {{Servico.mecanico.apelido}}</p>
     </div>
     {%else%}
     {%endif%}
     <div style="font-size: 12px; display: flex;">
 
-        <p><strong>Data:</strong> {{Serviço.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
+        <p><strong>Data:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
     </div>
     {%else%}
     <div style="font-size: 12px; display: flex;">
-        <p><strong>Data:</strong> {{ Serviço.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
+        <p><strong>Data:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
     </div>
     {%endif%}
 
@@ -551,7 +551,7 @@
         if (idInput && botao) {
             var id = idInput.value;
             var parametro = "tratatar";
-            window.location.href = `/AbrirServiço/${id}/${parametro}`;
+            window.location.href = `/AbrirServico/${id}/${parametro}`;
         }
     }
 
@@ -605,9 +605,9 @@
 
     }
 
-    function gerarPDF(numero_serviço) {
+    function gerarPDF(numero_servico) {
         $.ajax({
-            url: '/AbrirServiço/' + numero_serviço + '/tratar',
+            url: '/AbrirServico/' + numero_servico + '/tratar',
             method: 'GET',
             success: function (dados) {
                 $('#content').html(dados);

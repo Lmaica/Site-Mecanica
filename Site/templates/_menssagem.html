@@ -1,4 +1,5 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
+
 {% if messages %}
 {% for category, message in messages %}
 {% if category == "confime" %}
@@ -25,12 +26,12 @@
         <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
     </div>
     <div class="DivFlutanteConte">
-        <form action="/aprovarServiço/{{ message }}" method="POST">
+        <form action="/aprovarServico/{{ message }}" method="POST">
             <div class="DivFlutanteConte">
                 <p>Qual o KM do Veiculo???</p>
             </div>
             <input type="number" name="kmAtualiza" id="kmAtualiza" required>
-            <span style="font-size: 14px; font-family: Arial, sans-serif;">Km Anterior: {{Serviço.veiculo_os.km}}</span>
+            <span style="font-size: 14px; font-family: Arial, sans-serif;">Km Anterior: {{Servico.veiculo_os.km}}</span>
             <div style="padding: 0px 10px 10px 10px;" class="lado-a-lado">
                 <input type="button" onclick="ButunDivFlutante()" class="button-grande cor-cancelar" value="Cancelar">
                 <input type="submit" class="button-grande cor-ok" name="" value="Continuar">
@@ -45,9 +46,9 @@
         <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
     </div>
     <div class="DivFlutanteConte">
-        <form action="/finalizarServiço/{{ message }}" method="POST">
+        <form action="/finalizarServico/{{ message }}" method="POST">
             <div>
-                {% if items_data_peças %}
+                {% if items_data_pecas %}
                 <div style="background-color: black; border-radius: 20px; padding: 5px;">
                     <table>
                         <thead>
@@ -57,12 +58,12 @@
                                 <th>Valor</th>
                             </tr>
                         </thead>
-                        {% for item_peça in items_data_peças %}
+                        {% for item_peca in items_data_pecas %}
                         <tbody>
                             <tr>
-                                <td>{{ loop.index }}&rpar;{{ item_peça.nome}}</td>
+                                <td>{{ loop.index }}&rpar;{{ item_peca.nome}}</td>
                                 <td></td>
-                                <td style="color: brown;">{{ item_peça.pago}}</td>
+                                <td style="color: brown;">{{ item_peca.pago}}</td>
                             </tr>
                         </tbody>
                         {% endfor %}
@@ -94,7 +95,7 @@
                 <label for="kmAtualiza">Adicione o KM:</label>
                 <input type="number" name="kmAtualiza" id="kmAtualiza" required>
             </div>
-            <span style="font-size: 14px; font-family: Arial, sans-serif;">Km Anterior: {{Serviço.veiculo_os.km}}</span>
+            <span style="font-size: 14px; font-family: Arial, sans-serif;">Km Anterior: {{Servico.veiculo_os.km}}</span>
             <div style="padding: 0px 5px 5px 5px;" class="lado-a-lado">
                 <input type="button" style="padding: 10px;" onclick="ButunDivFlutante()"
                     class="button-grande cor-cancelar" value="Cancelar">
@@ -186,7 +187,7 @@
     };
 </script>
 
-{% elif category == "itensServiço" %}
+{% elif category == "itensServico" %}
 <div id="DivFlutante">
     <div class="cor-ok DivFlutanteCabeça">
         <h3>Adicionar Item!!!</h3>
@@ -200,7 +201,7 @@
                         <label for="tipo">Tipo:</label>
                         <select name="tipo" class="semselect2 searchselector" required>
                             <option value="">Selecione Tipo</option select>
-                            <option value="Peça">Peça</option>
+                            <option value="Peca">Peça</option>
                             <option value="Mão de Obra">Mão de Obra</option>
                         </select>
                     </div>

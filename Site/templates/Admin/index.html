@@ -126,8 +126,8 @@
                     src="{{ url_for('static', filename='img/pistao.png') }}" alt="">Peças<i>&#8595;</i></a>
             <ul class="principalCorMesclada submenu">
                 <hr>
-                <li><a href="{{url_for('Peças')}}">Peças</a></li>
-                <li><a href="{{url_for('Marca_das_Peças')}}"> Marcas</a></li>
+                <li><a href="{{url_for('Pecas')}}">Peças</a></li>
+                <li><a href="{{url_for('Marca_das_Pecas')}}"> Marcas</a></li>
                 <hr>
             </ul>
         </li>
@@ -148,7 +148,7 @@
         {%else%}
         {%endif%}
         {%if session["nivel"] >= 2%}
-        <li class="principalCorUnica" ><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/serviço.png') }}"
+        <li class="principalCorUnica" ><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/servico.png') }}"
                     alt="">Serviços <i>&#8595;</i></a>
             <ul class="principalCorMesclada submenu">
                 <hr>

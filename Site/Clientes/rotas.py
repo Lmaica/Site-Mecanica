@@ -15,7 +15,7 @@ import secrets
 from Site.Carros.modelos import Carro
 import os
 from flask_login import login_required, current_user
-from Site.Serviços.modelos import Serviso
+from Site.Servicos.modelos import Serviso
 import json
 import random
 import string
@@ -763,7 +763,7 @@ def servicoDoCliente(id):
         )
 
         return render_template(
-            "Serviços/Serviços.html",
+            "Servicos/Servicos.html",
             status="cliente",
             cliente_id=cliente,
             servisos=servisos,
@@ -860,7 +860,7 @@ def searchservicoDoCliente(id):
                     .paginate(page=page, per_page=10)
                 )
             return render_template(
-                "Serviços/Serviços.html",
+                "Servicos/Servicos.html",
                 status="cliente",
                 cliente_id =cliente,
                 servisos=servisos,
@@ -882,7 +882,7 @@ def fazer_os_carro(id):
     num_items = Serviso.query.count()
     if num_items == 0:
         Redutor_codigo.Redutor_codigo_seriviços(veiculo.cliente_id, veiculo.id, user.id)
-        return redirect(f"/AbrirServiço/1/tratatar")
+        return redirect(f"/AbrirServico/1/tratatar")
     filtro = Serviso.query.order_by(desc(Serviso.id)).first()
     get_serviso = Serviso.query.get_or_404(filtro.id)
     Cliente_os_atual = json.loads(get_serviso.cliente_veiculo)
@@ -896,10 +896,10 @@ def fazer_os_carro(id):
     else:
         Redutor_codigo.Redutor_codigo_seriviços(veiculo.cliente_id, veiculo.id, user.id)
     filtro = Serviso.query.order_by(desc(Serviso.id)).first()
-    Serviço = filtro
-    return redirect(f"/AbrirServiço/{Serviço.id}/tratatar")
+    Servico = filtro
+    return redirect(f"/AbrirServico/{Servico.id}/tratatar")
 
-#dados dinamicos de serviços do cliente
+#dados dinamicos de servicos do cliente
 @app.route("/carDinamicos/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required

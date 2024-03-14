@@ -23,18 +23,18 @@ def ajustes():
     from Site.Clientes import modelos
     from Site.MaoObra import modelos
     from Site.Fornecedor import modelos
-    from Site.Peças import modelos
+    from Site.Pecas import modelos
     from Site.Caixa import modelos
-    from Site.Serviços import modelos
+    from Site.Servicos import modelos
 
     # rotas
     from Site.Admin import rotas
     from Site.Carros import rotas
     from Site.Clientes import rotas
     from Site.MaoObra import rotas
-    from Site.Peças import rotas
+    from Site.Pecas import rotas
     from Site.Fornecedor import rotas
-    from Site.Serviços import rotas
+    from Site.Servicos import rotas
     from Site.Caixa import rotas
 
 
