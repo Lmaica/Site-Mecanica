@@ -138,7 +138,7 @@ $(document).ready(function () {
     });
 
 });
-// CARROS PARA SERVIÇOS E PEÇAS
+// CARROS PARA SERVIÇOS E PEcAS
 $(document).ready(function () {
     // Carregar modelos com base na marca selecionada
 
@@ -298,28 +298,28 @@ function getPrice(element) {
     return parseFloat(element.textContent.replace(/[^\d.,]/g, '').replace('.', '').replace(',', '.').trim());
 }
 
-function updatePriceTotal(inputElement, precoElementPeças) {
+function updatePriceTotal(inputElement, precoElementPecas) {
     const input = inputElement.value;
 
-    if (precoElementPeças) {
-        const preco = getPrice(precoElementPeças);
-        const precoTotalPeça = input * preco;
-        const precoTotalPeçaElement = inputElement.closest(".containerDados").querySelector(".preco-total");
-        precoTotalPeçaElement.innerHTML = `<strong style='color: #000000;'>Preço Total:</strong> ${formatCurrency(precoTotalPeça)}`;
+    if (precoElementPecas) {
+        const preco = getPrice(precoElementPecas);
+        const precoTotalPeca = input * preco;
+        const precoTotalPecaElement = inputElement.closest(".containerDados").querySelector(".preco-total");
+        precoTotalPecaElement.innerHTML = `<strong style='color: #000000;'>Preço Total:</strong> ${formatCurrency(precoTotalPeca)}`;
     }
 }
 
 function atualizarTotais() {
-    let totalPeças = 0;
+    let totalPecas = 0;
     let totalMDO = 0;
 
-    const elementosPeça = document.querySelectorAll('.precoPeça');
+    const elementosPeca = document.querySelectorAll('.precoPeca');
 
-    elementosPeça.forEach(function (elemento) {
-        const precoPeça = getPrice(elemento);
+    elementosPeca.forEach(function (elemento) {
+        const precoPeca = getPrice(elemento);
         const quantidadeInput = elemento.closest('.containerDados').querySelector('.number-input');
         const quantidade = parseFloat(quantidadeInput.value);
-        totalPeças += precoPeça * quantidade;
+        totalPecas += precoPeca * quantidade;
     });
 
     const elementosMDO = document.querySelectorAll('.precoMDO');
@@ -327,12 +327,12 @@ function atualizarTotais() {
         totalMDO += getPrice(elemento);
     });
 
-    const totalGeral = totalPeças + totalMDO;
-    document.getElementById('soma_peças').innerHTML = `<p style="float: right;">Total em Peças: <strong>${formatCurrency(totalPeças)}</strong></p>`;
+    const totalGeral = totalPecas + totalMDO;
+    document.getElementById('soma_pecas').innerHTML = `<p style="float: right;">Total em Pecas: <strong>${formatCurrency(totalPecas)}</strong></p>`;
     document.getElementById('somaTotal').innerHTML = `<strong>Total:</strong> ${formatCurrency(totalGeral)}`;
     var valordaspesas = document.getElementById('valordaspesas');
     if (valordaspesas) {
-        valordaspesas.value = `${formatCurrency(totalPeças)}`;
+        valordaspesas.value = `${formatCurrency(totalPecas)}`;
     }
 
     var valortodos = document.getElementById('valortodos');
@@ -343,16 +343,16 @@ function atualizarTotais() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const soma_peças = document.getElementById("soma_peças");
+    const soma_pecas = document.getElementById("soma_pecas");
     const inputs = document.querySelectorAll(".containerDados input[type='number']");
 
     inputs.forEach(function (input) {
         const container = input.closest(".containerDados");
-        const precoElementPeças = container.querySelector(".precoPeça");
-        updatePriceTotal(input, precoElementPeças);
+        const precoElementPecas = container.querySelector(".precoPeca");
+        updatePriceTotal(input, precoElementPecas);
 
         input.addEventListener("input", function () {
-            updatePriceTotal(input, precoElementPeças);
+            updatePriceTotal(input, precoElementPecas);
             atualizarTotais();
         });
     });
@@ -360,12 +360,12 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener('input', function (event) {
         const target = event.target;
 
-        if (target.classList.contains('number-input') || target.classList.contains('precoMDO') || target.classList.contains('precoPeça')) {
+        if (target.classList.contains('number-input') || target.classList.contains('precoMDO') || target.classList.contains('precoPeca')) {
             atualizarTotais();
         }
     });
 
-    if (soma_peças) {
+    if (soma_pecas) {
         atualizarTotais();
     } else {
     }
@@ -379,7 +379,7 @@ $(document).ready(function () {
         var item_id = $(this).data("item-id");
         var servico_id = $("#Ser_id").val();
         $.ajax({
-            url: "/atualizar_uni_peças/" + servico_id + "/" + item_id,
+            url: "/atualizar_uni_pecas/" + servico_id + "/" + item_id,
             method: "PUT",
             data: { un: novo_valor_un },
             error: function () {
@@ -396,7 +396,7 @@ $(document).ready(function () {
         var item_id = $(this).data("item-id");
         var servico_id = $("#Ser_id").val();
         $.ajax({
-            url: "/atualizar_lado_peças/" + servico_id + "/" + item_id,
+            url: "/atualizar_lado_pecas/" + servico_id + "/" + item_id,
             method: "PUT",
             data: { lado: novo_valor_lado },
             error: function () {
@@ -501,15 +501,15 @@ $(document).ready(function () {
     });
 });
 
-//Adicionar peças ao orçamento sem atulizar a pagina 
-function enviarFormulario(idPeça, event) {
+//Adicionar pecas ao orçamento sem atulizar a pagina
+function enviarFormulario(idPeca, event) {
     event.preventDefault();
-
-    var formulario = document.getElementById('meu-formulario-' + idPeça);
+    
+    var formulario = document.getElementById('meu-formulario-' + idPeca);
     var formData = new FormData(formulario);
-
+    console.log(idPeca);
     var xhr = new XMLHttpRequest();
-    xhr.open('PUT', '/adicinar_item_peça', true);
+    xhr.open('PUT', '/adicinar_item_peca', true);
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
@@ -533,7 +533,7 @@ function enviarFormulario(idPeça, event) {
                         `;
                         document.body.appendChild(DivFlutante);
                     } else {
-                        alert("Erro ao adicionar peça: " + resposta.message);
+                        alert("Erro ao adicionar peca: " + resposta.message);
                     }
                 } catch (e) {
                     console.error("Erro ao analisar a resposta JSON:", e);

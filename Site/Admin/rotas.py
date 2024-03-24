@@ -39,8 +39,8 @@ from Site.Caixa.modelos import Caixa,Catcaixa
 import random
 import string
 from email_validator import validate_email, EmailNotValidError
-#import pythoncom
-#import win32com.client as win32
+import pythoncom
+import win32com.client as win32
 import time
 
 def get_results_dict(query_results, date_extractor, *value_columns):
@@ -309,6 +309,10 @@ def Admin():
         lembretes=lembretes,
         adivertencias=adivertencias,
     )
+
+@app.route('/cartaoVisita')
+def cartaoVisita():
+    return render_template("/Admin/cartaoVisita.html")
 
 # Configuração de estilo
 @app.route('/salvar_config', methods=['POST'])
@@ -689,27 +693,24 @@ def googleLogin():
 #Recuperar senha
 
 def enviar_email_senha(usuario, nova_senha):
-    print(usuario)
-    print(nova_senha)
-    #pythoncom.CoInitialize()
-    #outlook = win32.Dispatch('outlook.application')
-    #email = outlook.CreateItem(0)
+    pythoncom.CoInitialize()
+    outlook = win32.Dispatch('outlook.application')
+    email = outlook.CreateItem(0)
     
-    # Configurar as informações do e-mail
-    #email.To = usuario
-    #email.Subject = "Recuperação de Senha (por favor, exclua este email após a leitura)"
-    #email.HTMLBody = f"""
-    #<p>Olá,</p>
-    #<p>Sua senha foi redefinida com sucesso.</p>
-    #<p>Aqui estão suas novas credenciais:</p>
-    #<p>Nova Senha: {nova_senha}</p>
-    #<p>Por favor, faça o login com suas novas credenciais e altere sua senha imediatamente.</p>
-    #<p>por favor, exclua este email após a leitura</p>
-    #<p>Atenciosamente,</p>
-    #<p>Equipe de Suporte</p>
-    #"""
+    email.To = usuario
+    email.Subject = "Recuperação de Senha (por favor, exclua este email após a leitura)"
+    email.HTMLBody = f"""
+        <p>Olá,</p>
+        <p>Sua senha foi redefinida com sucesso.</p>
+        <p>Aqui estão suas novas credenciais:</p>
+        <p>Nova Senha: <b>{nova_senha}</b></p>
+        <p>Por favor, faça o login com suas novas credenciais e altere sua senha imediatamente.</p>
+        <p>por favor, exclua este email após a leitura</p>
+        <p>Atenciosamente,</p>
+        <p>Equipe de Suporte</p>"""
 
-    #email.Send()
+
+    email.Send()
 
 
 @app.route('/recuperar_senha', methods=['POST'])

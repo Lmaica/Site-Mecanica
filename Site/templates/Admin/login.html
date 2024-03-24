@@ -15,6 +15,12 @@
             height: 100vh;
         }
 
+        .no-click {
+            pointer-events: none;
+            filter: blur(1px);
+            overflow: hidden;
+        }
+
         .login-container {
             background-color: #d3d6e1b2;
             border-radius: 10px;
@@ -127,28 +133,29 @@
 
         /* Estilos para dispositivos móveis */
         @media only screen and (max-width: 760px) {
-            .bemVindo{
+            .bemVindo {
                 padding-top: 30px;
             }
+
             .aviso {
-            position: absolute;
-            bottom: 50%;
-            left: 50%;
-            transform: translate(-50%, -150%);
-            text-align: center;
-            border: 0px;
-            color: #570000;
-            border-radius: 10px;
-            font-size: 16px;
-            white-space: nowrap;
-        }
+                position: absolute;
+                bottom: 50%;
+                left: 50%;
+                transform: translate(-50%, -150%);
+                text-align: center;
+                border: 0px;
+                color: #570000;
+                border-radius: 10px;
+                font-size: 16px;
+                white-space: nowrap;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="login-container">
-        <h2 class="bemVindo" >Bem Vindo!</h2>
+    <div id="login-container" class="login-container">
+        <h2 class="bemVindo">Bem Vindo!</h2>
         {% from "_formularioAjuda.html" import render_field %}
         {% include '_menssagem.html'%}
         <form method="post" enctype="multipart/form-data">
@@ -167,14 +174,13 @@
         </form>
 
         <div class="login-links">
-            <a href="#" onclick="enviarEmail()">Esqueceu sua senha?</a>
+            <a href="#" onclick="teste()">Esqueceu sua senha?</a>
             <a href="{{url_for('googleLogin')}}">Login Google</a>
         </div>
     </div>
 
     <script>
         $(document).ready(function () {
-            // Exemplo de dados a serem enviados
             var dados = {};
             var body = document.body;
 
@@ -203,10 +209,20 @@
                 passwordToggle.textContent = '🔒';
             }
         }
+        var loginContainer = document.getElementById('login-container');
+        function teste() {
+            loginContainer.classList.add('no-click');
+            enviarEmail()
+        }
         function enviarEmail() {
             var usuario = document.getElementById('usuario').value;
 
-            // Envia os dados do formulário para o Flask usando AJAX
+            if (!usuario) {
+                alert('Por favor, insira seu endereço de e-mail.');
+                location.reload();
+                return;
+            }
+
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/recuperar_senha', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -216,15 +232,19 @@
                         var response = JSON.parse(xhr.responseText);
                         if (response.success) {
                             alert(response.message);
+                            location.reload();
                         } else {
                             alert(response.message);
+                            location.reload();
                         }
                     } else {
                         alert('Ocorreu um erro ao enviar o e-mail de recuperação. Consulte o console para mais detalhes.');
+                        location.reload();
                     }
                 }
             };
             xhr.send(JSON.stringify({ usuario: usuario }));
+
         }
 
     </script>

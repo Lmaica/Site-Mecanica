@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartão de Visita Digital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+
+        .card img {
+            width: 100px;
+            border-radius: 10%;
+            margin-bottom: 20px;
+            /* Increased margin */
+        }
+
+        .card h1 {
+            font-size: 1.2rem;
+            color: #333;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card p {
+            font-size: 0.90rem;
+            color: #666;
+            padding: 0;
+            margin: 0;
+        }
+
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .social-link {
+            margin: 5px;
+            transition: transform 0.3s, color 0.3s, font-size 0.3s;
+            color: #555;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .social-link:hover {
+            transform: scale(1.2);
+        }
+
+        /* Colors for social links */
+        #whatsapp {
+            background-color: #25d366;
+            color: #fff;
+        }
+
+        #instagram {
+            background-color: #e4405f;
+            color: #fff;
+        }
+
+        #facebook {
+            background-color: #1877f2;
+            color: #fff;
+        }
+
+        #google {
+            background-color: #ea4335;
+            color: #fff;
+        }
+
+        /* Specific colors for email and phone */
+        #email {
+            background-color: #ff6b6b;
+            color: #fff;
+        }
+
+        #phone {
+            background-color: #4b7bec;
+            color: #fff;
+        }
+
+        /* Color and icon for the website */
+        #site {
+            background-color: #6ab04c;
+            /* Cor representativa para o site */
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <img id="avatar" src="{{ url_for('static', filename='img/logosemfundo.png') }}" alt="avatar">
+        <h1 id="name"></h1>
+        <p id="description"></p>
+        <div class="social-links">
+            <a id="whatsapp" class="social-link" href="https://wa.me/5551986927910" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a id="instagram" class="social-link" href="https://www.instagram.com/explore/locations/870229616463082/maica-manutencao-automotiva/" target="_blank"><i class="fab fa-instagram"></i>
+                Instagram</a>
+            <a id="facebook" class="social-link" href="https://www.facebook.com/maicaauto/?locale=pt_BR" target="_blank"><i class="fab fa-facebook-f"></i> Facebook</a>
+            <a id="google" class="social-link"
+                href="https://www.google.com/maps/place/Maic%C3%A1+Manuten%C3%A7%C3%A3o+Automotiva/@-29.9099282,-51.1490916,17z/data=!3m1!4b1!4m6!3m5!1s0x9519703a16d7c6d3:0xfac2f982ef75c777!8m2!3d-29.9099282!4d-51.1490916!16s%2Fg%2F11fyzd47tj?entry=ttu"
+                target="_blank"><i class="fab fa-google"></i> Google</a>
+            <a id="phone" class="social-link" href="tel:+5551986927910"><i class="fas fa-phone"></i> Ligar</a>
+            <a id="site" class="social-link"
+                href="https://www.google.com/maps/place/Maic%C3%A1+Manuten%C3%A7%C3%A3o+Automotiva/@-29.9099282,-51.1490916,17z/data=!3m1!4b1!4m6!3m5!1s0x9519703a16d7c6d3:0xfac2f982ef75c777!8m2!3d-29.9099282!4d-51.1490916!16s%2Fg%2F11fyzd47tj?entry=ttu"
+                target="_blank"><i class="fas fa-globe"></i> Site</a>
+        </div>
+
+        <span>Escolha uma das opções acima &#8593;</span>
+
+    </div>
+
+    <script>
+        function exibirNomeEParceiroProgressivo(nome, descricao) {
+            var h1 = document.getElementById('name');
+            var p = document.getElementById('description');
+            var textName = "";
+            var textDescription = "";
+            var i = 0;
+            var j = 0;
+            var speed = 40; // Display speed in milliseconds
+
+            function typeWriter() {
+                if (i < nome.length) {
+                    textName += nome.charAt(i);
+                    h1.innerText = textName;
+                    i++;
+                    setTimeout(typeWriter, speed);
+                } else if (j < descricao.length) {
+                    textDescription += descricao.charAt(j);
+                    p.innerText = textDescription;
+                    j++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+
+            typeWriter();
+        }
+
+        // Call the function to display the name and description progressively
+        exibirNomeEParceiroProgressivo('Maicá Manutenção Automotiva', 'Seu parceiro em serviços automotivos!');
+    </script>
+</body>
+
+</html>
