@@ -289,10 +289,11 @@ def addCaixas(tipo):
         (carteira.id, carteira.nome) for carteira in carteiras
     ]
     form.carteira_id.choices = carteira_choices
-    catcaixas = Catcaixa.query.filter(Catcaixa.id != 1).all()
+    catcaixas = Catcaixa.query.filter(~Catcaixa.id.in_([1, 2])).all()
     catcaixa_choices = [("", "Selecione uma categoria")] + [
         (catcaixa.id, catcaixa.nome) for catcaixa in catcaixas
     ]
+
     form.catcaixa_id.choices = catcaixa_choices
     fornecedores = Fornecedor.query.all()
     fornecedor_choices = [(0, "Selecione um fornecedor")] + [

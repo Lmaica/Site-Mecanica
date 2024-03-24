@@ -915,7 +915,7 @@ def carDinamicos(id):
         .order_by(Serviso.data_finalizada.desc())
     )
     return render_template(
-        "/clientes/dadosDinamicos.html",        
+        "/Clientes/dadosDinamicos.html",        
         status="cliente",
         cliente_id=cliente,
         servisos=servisos,

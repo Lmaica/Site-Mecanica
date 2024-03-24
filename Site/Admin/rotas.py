@@ -39,9 +39,9 @@ from Site.Caixa.modelos import Caixa,Catcaixa
 import random
 import string
 from email_validator import validate_email, EmailNotValidError
-import pythoncom
-import win32com.client as win32
-import time
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 def get_results_dict(query_results, date_extractor, *value_columns):
     from collections import defaultdict
@@ -693,13 +693,10 @@ def googleLogin():
 #Recuperar senha
 
 def enviar_email_senha(usuario, nova_senha):
-    pythoncom.CoInitialize()
-    outlook = win32.Dispatch('outlook.application')
-    email = outlook.CreateItem(0)
-    
-    email.To = usuario
-    email.Subject = "Recuperação de Senha (por favor, exclua este email após a leitura)"
-    email.HTMLBody = f"""
+    remetente = 'maica.contato@outlook.com'  # Insira seu e-mail do Outlook como remetente
+    destinatario = usuario
+    assunto = "Recuperação de Senha (por favor, exclua este email após a leitura)"
+    mensagem = f"""
         <p>Olá,</p>
         <p>Sua senha foi redefinida com sucesso.</p>
         <p>Aqui estão suas novas credenciais:</p>
@@ -709,8 +706,24 @@ def enviar_email_senha(usuario, nova_senha):
         <p>Atenciosamente,</p>
         <p>Equipe de Suporte</p>"""
 
+    # Configuração do servidor SMTP da Microsoft
+    servidor_smtp = 'smtp.office365.com'
+    porta = 587
+    usuario_smtp = 'maica.contato@outlook.com'  # Insira seu e-mail do Outlook
+    senha_smtp = 'atljMaic@2024'  # Insira sua senha do Outlook
 
-    email.Send()
+    # Criação da mensagem
+    msg = MIMEMultipart()
+    msg['From'] = remetente
+    msg['To'] = destinatario
+    msg['Subject'] = assunto
+    msg.attach(MIMEText(mensagem, 'html'))
+
+    # Conexão com o servidor SMTP e envio do e-mail
+    with smtplib.SMTP(servidor_smtp, porta) as servidor:
+        servidor.starttls()
+        servidor.login(usuario_smtp, senha_smtp)
+        servidor.send_message(msg)
 
 
 @app.route('/recuperar_senha', methods=['POST'])
