@@ -403,7 +403,7 @@ def atulizCaixas(id, tipo):
                 (carteira.id, carteira.nome) for carteira in carteiras
             ]
             form.carteira_id.choices = carteira_choices
-            catcaixas = Catcaixa.query.filter(Catcaixa.id != 1).all()
+            catcaixas = Catcaixa.query.filter((~Catcaixa.id.in_([1, 2]))).all()
             catcaixa_choices = [(getCaixa.catcaixa.id, getCaixa.catcaixa.nome)] + [
                 (catcaixa.id, catcaixa.nome) for catcaixa in catcaixas
             ]
