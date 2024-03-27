@@ -1188,7 +1188,9 @@
 
     /*menu inferior*/
     #DadosBaixo {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         position: fixed;
         width: 30px;
         height: 100vh;
@@ -1196,6 +1198,7 @@
         top: 0;
         border-top: 1px solid #ffffff00;
     }
+
 
     .borda-item {
         position: relative;

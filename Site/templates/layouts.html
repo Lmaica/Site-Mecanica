@@ -229,7 +229,7 @@
         {% endblock content %}
     </main>
     <footer id="DadosBaixo" class="principalCorMesclada">
-        {%if session["nivel"] >= 4%}
+        {%if session["nivel"] >= 6%}
         <div class="  borda-item">
             <a href="{{url_for('configurar')}}" class=" principalCorUnica menu-item"><img
                     src="{{ url_for('static', filename='img/config.png') }}" alt=""></a>

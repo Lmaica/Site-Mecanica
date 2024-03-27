@@ -1,0 +1,41 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Escolher Veiculo</h2>
+<div class="containerForm">
+    <div class="mobile-table">
+        <table class="mobile-table">
+            <thead>
+                <tr>
+                    <th>PLaCA</th>
+                    <th>CARRO</th>
+                    <th>KM</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in veiculos %}
+                <tr>
+                    <td>{{ veiculo.placa }}</td>
+                    <td>{{ veiculo.carro.marca }}/{{ veiculo.carro.modelo }}/{{ veiculo.carro.ano }}/{{ veiculo.carro.motor }}</td>
+                    <td>{{ veiculo.km }}</td>
+                </tr>
+                <tr class="row-details">
+                    <td colspan="4">
+                        <table class="nested-table">
+                            <div class="button-container">
+                                <form action="/adicinar_veiculo_os/{{ get_serviso.id }}/{{ veiculo.id }}" method="POST">
+                                    <input type="hidden" name="_method" value="ADICIONAR">
+                                    <input type="submit" class="cor-ok" value="Adicionar ao Serviço">
+                                </form>
+                            </div>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock content %}
