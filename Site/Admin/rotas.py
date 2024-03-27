@@ -584,40 +584,42 @@ def user_logaut():
 def Login_google():
     try:
         user_session = session.get("user")
-        if user_session is None:
+        if not session:
             return redirect(url_for("googleLogin"))
         name = user_session.get("name")
         email = user_session.get("email")
-        cadastrar = User(
-            nome=name.upper().strip(),
-            apelido='',
-            fone='',
-            fone1='',
-            email=email.strip(),
-            niver='',
-            cpf='',
-            rg='',
-            razaoSocial='',
-            nomeFantasia='',
-            cnpj='',
-            senha='',
-            cep='',
-            estado='',
-            cidade='',
-            bairro='',
-            rua='',
-            nuCasa='',
-            complemento='',
-            foto='foto.jpg',
-            nivel='NOVATO',
-            status='ATIVO',
-            cargo_id=3,
-        )
-        db.session.add(cadastrar)
-        db.session.commit()
-        novo_id_usuario = cadastrar
-
-        return redirect(url_for("atulizUser", id=novo_id_usuario.id))
+        user = User.query.filter_by(email=email).first()
+        if user:
+            return redirect(url_for("googleLogin"))
+        else:
+            cadastrar = User(
+                nome=name.upper().strip(),
+                apelido='',
+                fone='',
+                fone1='',
+                email=email.strip(),
+                niver='',
+                cpf='',
+                rg='',
+                razaoSocial='',
+                nomeFantasia='',
+                cnpj='',
+                senha='',
+                cep='',
+                estado='',
+                cidade='',
+                bairro='',
+                rua='',
+                nuCasa='',
+                complemento='',
+                foto='foto.jpg',
+                nivel='NOVATO',
+                status='ATIVO',
+                cargo_id=3,
+            )
+            db.session.add(cadastrar)
+            db.session.commit()
+            return redirect(url_for("googleLogin"))
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
@@ -627,7 +629,6 @@ def Login_google():
 def googleCallback():
     try:
         token = oauth.myApp.authorize_access_token()
-
         userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
         userinfo_response = requests.get(userinfo_url, headers={
             "Authorization": f"Bearer {token['access_token']}"
@@ -654,12 +655,11 @@ def googleLogin():
     try:
         if "user" in session:
             user_session = session.get("user")
-            name = user_session.get("name")
-            
             emailPreAnalise = user_session.get("email")
             user = User.query.filter_by(email=emailPreAnalise).first()
             empresa = User.query.get(1)
             if user:
+                print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
                 niveis = {
                     "DONO": 6,
                     "PERITO": 5,
@@ -684,7 +684,9 @@ def googleLogin():
                 login_user(user)
                 return redirect(url_for("Admin"))
             else:
-                return oauth.myApp.authorize_redirect(redirect_uri=url_for("googleCallback", _external=True))
+                print('bbbbbbbbbbbbbbbbbbb')
+                return redirect(url_for("Login_google"))
+            
         return oauth.myApp.authorize_redirect(redirect_uri=url_for("googleCallback", _external=True))
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
