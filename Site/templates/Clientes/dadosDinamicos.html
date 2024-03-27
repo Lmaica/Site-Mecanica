@@ -286,13 +286,14 @@
                         <th>Valor</th>
                     </tr>
                 </thead>
-                <tbody class="dados_peças">
+                <tbody class="dados_pecas">
                 </tbody>
                 <tbody class="dados_mdo">
                 </tbody>
             </table>
             <div class="rodape">Total: {{ item.valor_total }}</div>
-            <input type="hidden" class="peças_json" value="{{item.peca_os}}">
+            {{item.peca_os}}
+            <input type="hidden" class="pecas_json" value="{{item.peca_os}}">
             <input type="hidden" class="mdo_json" value="{{ item.mo_os }}">
         </div>
     </div>
@@ -333,8 +334,8 @@
             var dataFormatada = dia + "/" + mes + "/" + ano + " " + hora + ":" + minutos;
             elemento.textContent = dataFormatada;
         });
-        var jsonPecasInputs = document.querySelectorAll('.peças_json');
-        var divDadosPecas = document.querySelectorAll('.dados_peças');
+        var jsonPecasInputs = document.querySelectorAll('.pecas_json');
+        var divDadosPecas = document.querySelectorAll('.dados_pecas');
 
         jsonPecasInputs.forEach(function (input, index) {
             var jsonDataPecas = input.value;
@@ -343,9 +344,9 @@
             dadosPecas.itens.forEach(function (item) {
                 var listItem = document.createElement('tr');
                 listItem.innerHTML =
-                    '<td> ' + item.peça_nome + '</td>' +
-                    '<td> ' + item.peça_id + '</td>' +
-                    '<td> ' + item.peça_codigo + '</td>' +
+                    '<td> ' + item.peca_nome + '</td>' +
+                    '<td> ' + item.peca_id + '</td>' +
+                    '<td> ' + item.peca_codigo + '</td>' +
                     '<td> ' + item.un + '</td>' +
                     '<td> ' + item.lado + '</td>' +
                     '<td> ' + item.valor_final + '</td>';

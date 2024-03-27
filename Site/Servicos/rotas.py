@@ -744,7 +744,6 @@ def EscolhaPecas(id):
 @nome_required
 @verificacao_nivel(2)
 def adicinar_item_peca():
-    print('aaaaaaaaaaaaaaa')
     id_servico = request.form.get("numero_servico")
     id_peca = request.form.get("numero_peca")
     get_serviso = Serviso.query.get_or_404(id_servico)
