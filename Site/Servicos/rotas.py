@@ -444,7 +444,7 @@ def AbrirServico(id, tratatar):
             peca_codigo = item.get("peca_codigo")
             valor_custo = item.get("valor_custo")
             if peca_id is not None:
-                if len(getPecas) == 0 :
+                if len(getPecas) == 0:
                     Pagosoma = Calculos_gloabal.valor_para_Calculos(
                         valor_custo
                     ) * int(un)
@@ -456,30 +456,33 @@ def AbrirServico(id, tratatar):
                     soma_total.append(soma_do_valor)
                     soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
                     items_data_pecas.append(
-                                {
-                                    "codigo": peca_codigo,
-                                    "nome": peca_nome,
-                                    "preso": valor_final,
-                                    "pago_total": soma_formarmatado,
-                                    "pago": PagoFor,
-                                    "un": un,
-                                    "lado": lado,
-                                }
-                            )
-                for getPeca in getPecas:
-                    Pagosoma = Calculos_gloabal.valor_para_Calculos(
-                        getPeca.pago
-                    ) * int(un)
-                    PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
-                    soma_pagos.append(Pagosoma)
-                    if getPeca.id == peca_id:
-                        if get_serviso.status != "Orçamento":
-                            somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
-                            soma_do_valor = int(un) * somar_dados_uni
-                            soma_pecas.append(soma_do_valor)
-                            soma_total.append(soma_do_valor)
-                            soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
-                            items_data_pecas.append(
+                        {
+                            "codigo": peca_codigo,
+                            "nome": peca_nome,
+                            "preso": valor_final,
+                            "pago_total": soma_formarmatado,
+                            "pago": PagoFor,
+                            "un": un,
+                            "lado": lado,
+                        }
+                    )
+                else:
+                    peca_encontrada = False
+                    for getPeca in getPecas:
+                        if getPeca.id == peca_id:
+                            peca_encontrada = True
+                            Pagosoma = Calculos_gloabal.valor_para_Calculos(
+                                getPeca.pago
+                            ) * int(un)
+                            PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                            soma_pagos.append(Pagosoma)
+                            if get_serviso.status != "Orçamento":
+                                somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
+                                soma_do_valor = int(un) * somar_dados_uni
+                                soma_pecas.append(soma_do_valor)
+                                soma_total.append(soma_do_valor)
+                                soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                                items_data_pecas.append(
                                     {
                                         "codigo": peca_codigo,
                                         "nome": peca_nome,
@@ -490,24 +493,24 @@ def AbrirServico(id, tratatar):
                                         "lado": lado,
                                     }
                                 )
-                        else:
-                            somar_dados_uni = Calculos_gloabal.valor_para_Calculos(getPeca.preso)
-                            soma_do_valor = int(un) * somar_dados_uni
-                            soma_pecas.append(soma_do_valor)
-                            soma_total.append(soma_do_valor)
-                            soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
-                            items_data_pecas.append(
-                                {
-                                    "codigo": getPeca.codigo,
-                                    "nome": getPeca.nome,
-                                    "preso": getPeca.preso,
-                                    "pago_total": soma_formarmatado,
-                                    "pago": PagoFor,
-                                    "un": un,
-                                    "lado": lado,
-                                }
-                            )
-                    else:
+                            else:
+                                somar_dados_uni = Calculos_gloabal.valor_para_Calculos(getPeca.preso)
+                                soma_do_valor = int(un) * somar_dados_uni
+                                soma_pecas.append(soma_do_valor)
+                                soma_total.append(soma_do_valor)
+                                soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                                items_data_pecas.append(
+                                    {
+                                        "codigo": getPeca.codigo,
+                                        "nome": getPeca.nome,
+                                        "preso": getPeca.preso,
+                                        "pago_total": soma_formarmatado,
+                                        "pago": PagoFor,
+                                        "un": un,
+                                        "lado": lado,
+                                    }
+                                )
+                    if not peca_encontrada:
                         Pagosoma = Calculos_gloabal.valor_para_Calculos(
                             valor_custo
                         ) * int(un)
@@ -518,16 +521,16 @@ def AbrirServico(id, tratatar):
                         soma_total.append(soma_do_valor)
                         soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
                         items_data_pecas.append(
-                                    {
-                                        "codigo": peca_codigo,
-                                        "nome": peca_nome,
-                                        "preso": valor_final,
-                                        "pago_total": soma_formarmatado,
-                                        "pago": PagoFor,
-                                        "un": un,
-                                        "lado": lado,
-                                    }
-                                )
+                            {
+                                "codigo": peca_codigo,
+                                "nome": peca_nome,
+                                "preso": valor_final,
+                                "pago_total": soma_formarmatado,
+                                "pago": PagoFor,
+                                "un": un,
+                                "lado": lado,
+                            }
+                        )
     items_data_MDO = []
     if "itens" in mo_os:
         for item_MDO in mo_os["itens"]:
@@ -544,27 +547,32 @@ def AbrirServico(id, tratatar):
                             "preso": mo_preso,
                         }
                     )
-                for getmo in get_MDO:
-                    if getmo.id == mo_id:
-                        if get_serviso.status != "Orçamento":
-                            mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
-                            soma_total.append(mdo_valor_para_soma)
-                            items_data_MDO.append(
-                                {
-                                    "nome": mo_nome,
-                                    "preso": mo_preso,
-                                }
-                            )
-                        else:
-                            mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(getmo.preso)
-                            soma_total.append(mdo_valor_para_soma)
-                            items_data_MDO.append(
-                                {
-                                    "nome": getmo.nomemaoobra.nome,
-                                    "preso": getmo.preso,
-                                }
-                            )
-                    else:
+                else:
+                    encontrado = False
+                    for getmo in get_MDO:
+                        if getmo.id == mo_id:
+                            encontrado = True
+                            if get_serviso.status != "Orçamento":
+                                mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
+                                soma_total.append(mdo_valor_para_soma)
+                                items_data_MDO.append(
+                                    {
+                                        "nome": mo_nome,
+                                        "preso": mo_preso,
+                                    }
+                                )
+                            else:
+                                mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(getmo.preso)
+                                soma_total.append(mdo_valor_para_soma)
+                                items_data_MDO.append(
+                                    {
+                                        "nome": getmo.nomemaoobra.nome,
+                                        "preso": getmo.preso,
+                                    }
+                                )
+                            break
+                    
+                    if not encontrado:
                         mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
                         soma_total.append(mdo_valor_para_soma)
                         items_data_MDO.append(
@@ -573,6 +581,7 @@ def AbrirServico(id, tratatar):
                                 "preso": mo_preso,
                             }
                         )
+
     SomarPago = sum(soma_pagos)
     SomarPecas = sum(soma_pecas)
     SomarTotal = sum(soma_total)

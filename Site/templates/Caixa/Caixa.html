@@ -141,8 +141,11 @@
                                 <td style="background-color: rgb(77, 77, 77);" colspan="4">
                                     <div class="button-container">
                                         {%if Caixa.catcaixa.nome == '*SERVIÇO*'%}
-                                        <p style="color: aliceblue;" >Para efetuar modificações ou exclusão neste item, é necessário utilizar
+                                        <p style="color: aliceblue;">Para efetuar modificações ou exclusão neste item, é
+                                            necessário utilizar
                                             exclusivamente o Serviços Finalizados.</p>
+                                        {%elif Caixa.catcaixa.nome == '*TRASFERIR*'%}
+                                        <p style="color: aliceblue;">Transferências: Esta operação não pode ser excluída nem modificada</p>
                                         {%else%}
                                         <a href="#"><input type="submit"
                                                 onclick="showDiv('Caixas', '{{Caixa.id}}', '{{Caixa.descricao}}')"

@@ -27,6 +27,16 @@
         {{ form.carteira_id() }}
         {{ form.catcaixa_id.label }}
         {{ form.catcaixa_id() }}
+        {% if atulizar %}
+        {% if tipo == 'Entrada' or Caixa.fornecedor_id == 0 %}
+        <div class="retira">
+            {{ render_field(form.fornecedor_id) }}
+        </div>
+        {% else %}
+        {{ form.fornecedor_id.label }}
+        {{ form.fornecedor_id() }}
+        {% endif %}
+        {% else %}
         {% if tipo == 'Entrada' %}
         <div class="retira">
             {{ render_field(form.fornecedor_id) }}
@@ -34,6 +44,7 @@
         {% else %}
         {{ form.fornecedor_id.label }}
         {{ form.fornecedor_id() }}
+        {% endif %}
         {% endif %}
 </fieldset>
 <fieldset class="containerForm">

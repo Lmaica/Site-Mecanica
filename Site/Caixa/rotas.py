@@ -332,6 +332,9 @@ def addCaixas(tipo):
 def atulizCaixas(id, tipo):
     try:
         getCaixa = Caixa.query.get_or_404(id)
+        if getCaixa.catcaixa_id == 1 or getCaixa.catcaixa_id == 2:
+            flash(f"Evite usar a barra de navegação para isso.!!!", "cor-cancelar")
+            return redirect(url_for("Caixas", tipo=tipo))
         data_hora_atual = datetime.now()
         ano_atual = int(data_hora_atual.year)
         mes_atual = int(data_hora_atual.month)
@@ -445,6 +448,9 @@ def atulizCaixas(id, tipo):
 def deleteCaixas(id):
     try:
         getCaixa = Caixa.query.get_or_404(id)
+        if getCaixa.catcaixa_id == 1 or getCaixa.catcaixa_id == 2:
+            flash(f"Evite usar a barra de navegação para isso.!!!", "cor-cancelar")
+            return redirect(url_for("Caixas", tipo='Todos'))
         if request.method == "POST":
             try:
                 data_hora_atual = datetime.now()
