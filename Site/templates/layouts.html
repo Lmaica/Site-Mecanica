@@ -6,10 +6,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="{{url_for('static', filename='css/estiloMob.css')}}?v=1"
-        media="(max-width: 760px)">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/estilo.css')}}?v=1"
-        media="(min-width: 760px)">
+    <link rel="icon" type="image/icon" href="{{ url_for('static', filename='img/logosemfundo.ico') }}">
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/estiloMob.css')}}?v=1" media="(max-width: 760px)">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/estilo.css')}}?v=1" media="(min-width: 760px)">
 
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -152,6 +152,14 @@
                     {%endif%}
                     <hr>
                 </ul>
+            </li>
+            {%else%}
+            {%endif%}
+            {%if session["nivel"] >= 3%}
+            <li class="principalCorUnica"><a href="{{url_for('combos')}}" onclick="toggleSubMenu(this)"><img
+                        src="{{ url_for('static', filename='img/caixas.png') }}" alt="">
+                    <p>Combos</p>
+                </a>
             </li>
             {%else%}
             {%endif%}

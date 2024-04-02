@@ -187,7 +187,7 @@
     };
 </script>
 
-{% elif category == "itensServico" %}
+{% elif category == "itensServico" or category == "itensCombo" %}
 <div id="DivFlutante">
     <div class="cor-ok DivFlutanteCabeça">
         <h3>Adicionar Item!!!</h3>
@@ -195,55 +195,62 @@
     </div>
     <div class="DivFlutanteConte">
         <div>
-            <form action="/AddItensManual/{{ message }}" method="POST">
-                <div style="background-color: rgb(157, 157, 158); color: black; border-radius: 10px; padding: 10px; ">
-                    <div class="lado-a-lado">
-                        <label for="tipo">Tipo:</label>
-                        <select name="tipo" class="semselect2 searchselector" required>
-                            <option value="">Selecione Tipo</option select>
-                            <option value="Peca">Peça</option>
-                            <option value="Mão de Obra">Mão de Obra</option>
-                        </select>
-                    </div>
-                    <div class="lado-a-lado">
-                        <label for="Codigo">Codigo:</label>
-                        <input style="height: 30px; margin-top: 10px;" type="text" name="Codigo" id="Codigo" required>
-                    </div>
-                    <label for="NomeItens">Nome Peças:</label>
-                    <input type="text" name="NomeItens" id="NomeItens" required>
-                    <div class="lado-a-lado">
-                        <label for="unidad">Quantidade:</label>
-                        <input style="text-align: center;width: 50px ;height: 30px; margin-top: 10px;" type="number"
-                            name="unidad" value="1" min="1" required>
-                    </div>
-                    <div class="lado-a-lado">
-                        <label for="lado">Lado:</label>
-                        <select name="lado" class="semselect2 searchselector">
-                            <option value="S">Sem Lado</option>
-                            <option value="L/D">Direita</option>
-                            <option value="L/E">Esquerda</option>
-                        </select>
-                    </div>
-                    <div class="lado-a-lado">
-                        <label for="custo">Valor Custo:</label>
-                        <input style="height: 30px; margin-top: 10px;" type="text" name="custo" id="custo"
-                            class="inputReais" placeholder="R$ 0,00">
+            {% if category == "itensCombo"%}
+            <form action="/AddItensManualCombo/{{ message }}" method="POST">
+                {%else%}
+                <form action="/AddItensManual/{{ message }}" method="POST">
+                    {% endif %}
+                    <div
+                        style="background-color: rgb(157, 157, 158); color: black; border-radius: 10px; padding: 10px; ">
+                        <div class="lado-a-lado">
+                            <label for="tipo">Tipo:</label>
+                            <select name="tipo" class="semselect2 searchselector" required>
+                                <option value="">Selecione Tipo</option select>
+                                <option value="Peca">Peça</option>
+                                <option value="Mão de Obra">Mão de Obra</option>
+                            </select>
+                        </div>
+                        <div class="lado-a-lado">
+                            <label for="Codigo">Codigo:</label>
+                            <input style="height: 30px; margin-top: 10px;" type="text" name="Codigo" id="Codigo"
+                                required>
+                        </div>
+                        <label for="NomeItens">Nome Peças:</label>
+                        <input type="text" name="NomeItens" id="NomeItens" required>
+                        <div class="lado-a-lado">
+                            <label for="unidad">Quantidade:</label>
+                            <input style="text-align: center;width: 50px ;height: 30px; margin-top: 10px;" type="number"
+                                name="unidad" value="1" min="1" required>
+                        </div>
+                        <div class="lado-a-lado">
+                            <label for="lado">Lado:</label>
+                            <select name="lado" class="semselect2 searchselector">
+                                <option value="S">Sem Lado</option>
+                                <option value="L/D">Direita</option>
+                                <option value="L/E">Esquerda</option>
+                            </select>
+                        </div>
+                        <div class="lado-a-lado">
+                            <label for="custo">Valor Custo:</label>
+                            <input style="height: 30px; margin-top: 10px;" type="text" name="custo" id="custo"
+                                class="inputReais" placeholder="R$ 0,00">
+                        </div>
+
+                        <div class="lado-a-lado">
+                            <label for="venda">Valor Venda:</label>
+                            <input style="height: 30px; margin-top: 10px;" type="text" name="venda" id="venda"
+                                class="inputReais" placeholder="R$ 0,00" required>
+                        </div>
+
+                        <div style="padding: 0px 5px 5px 5px;" class="lado-a-lado">
+                            <input type="button" style="padding: 10px;" onclick="ButunDivFlutante()"
+                                class="button-grande cor-cancelar" value="Cancelar">
+                            <input type="submit" class="button-grande cor-ok" name="" value="Continuar">
+                        </div>
+
                     </div>
 
-                    <div class="lado-a-lado">
-                        <label for="venda">Valor Venda:</label>
-                        <input style="height: 30px; margin-top: 10px;" type="text" name="venda" id="venda"
-                            class="inputReais" placeholder="R$ 0,00" required>
-                    </div>
-
-                    <div style="padding: 0px 5px 5px 5px;" class="lado-a-lado">
-                        <input type="button" style="padding: 10px;" onclick="ButunDivFlutante()"
-                            class="button-grande cor-cancelar" value="Cancelar">
-                        <input type="submit" class="button-grande cor-ok" name="" value="Continuar">
-                    </div>
-                </div>
-
-            </form>
+                </form>
         </div>
     </div>
 </div>

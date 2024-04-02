@@ -26,6 +26,7 @@ def ajustes():
     from Site.Pecas import modelos
     from Site.Caixa import modelos
     from Site.Servicos import modelos
+    from Site.Combo import modelos
 
     # rotas
     from Site.Admin import rotas
@@ -36,6 +37,7 @@ def ajustes():
     from Site.Fornecedor import rotas
     from Site.Servicos import rotas
     from Site.Caixa import rotas
+    from Site.Combo import rotas
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))

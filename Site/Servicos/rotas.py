@@ -18,7 +18,6 @@ from sqlalchemy import desc, and_, or_
 import json
 from datetime import datetime, timezone, timedelta
 from Site.Caixa.modelos import Carteirabanco, Caixa
-from flask_login import login_required
 from Site.Admin.modelos import User
 from .formularios import Responsaveis
 from flask_login import login_required, current_user
@@ -445,9 +444,7 @@ def AbrirServico(id, tratatar):
             valor_custo = item.get("valor_custo")
             if peca_id is not None:
                 if len(getPecas) == 0:
-                    Pagosoma = Calculos_gloabal.valor_para_Calculos(
-                        valor_custo
-                    ) * int(un)
+                    Pagosoma = Calculos_gloabal.valor_para_Calculos(valor_custo) * int(un)
                     PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
                     soma_pagos.append(Pagosoma)
                     somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
@@ -475,6 +472,7 @@ def AbrirServico(id, tratatar):
                                 getPeca.pago
                             ) * int(un)
                             PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                            
                             soma_pagos.append(Pagosoma)
                             if get_serviso.status != "Orçamento":
                                 somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
@@ -520,6 +518,7 @@ def AbrirServico(id, tratatar):
                         soma_pecas.append(soma_do_valor)
                         soma_total.append(soma_do_valor)
                         soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                        soma_pagos.append(Pagosoma)
                         items_data_pecas.append(
                             {
                                 "codigo": peca_codigo,
@@ -961,6 +960,33 @@ def searchPecasAdicionar():
                 get_Pecas = Peca.query.filter(
                     Peca.fornecedor.has(Fornecedor.nome.like(search))
                 ).paginate(page=page, per_page=4)
+            elif escolha == "todos":
+                search_terms = search.split()  
+                conditions = []
+                for term in search_terms:
+                    conditions.append(
+                        or_(
+                            Peca.id.like(f'%{term}%'),
+                            Peca.codigo.like(f'%{term}%'),
+                            Peca.codigo_debarra.like(f'%{term}%'),
+                            Peca.nome.like(f'%{term}%'),
+                            Peca.pago.like(f'%{term}%'),
+                            Peca.preso.like(f'%{term}%'),
+                            Peca.estoque.like(f'%{term}%'),
+                            Peca.carro.like(f'%{term}%'),
+                            Peca.descrisao.like(f'%{term}%'),
+                            Peca.data_criado.like(f'%{term}%'),
+                            Peca.marca.has(Marcapeca.nome.like(f'%{term}%')),
+                            Peca.fornecedor.has(Fornecedor.nome.like(f'%{term}%')),
+                        )
+                    )
+                get_Pecas = (
+                    Peca.query.filter(
+                        *conditions
+                    )
+                    .order_by(Peca.id.desc())
+                    .paginate(page=page, per_page=10)
+                )
             else:
                 get_Pecas = (
                     Peca.query.filter(getattr(Peca, escolha).like(search))
@@ -1095,6 +1121,31 @@ def searchMDOAdicionar():
                 MaoObras = Maoobra.query.filter(
                     Maoobra.catmaoobra.has(Catmaoobra.nome.like(search))
                 ).paginate(page=page, per_page=10)
+            elif escolha == "todos":
+                search_terms = search.split()  
+                conditions = []
+                for term in search_terms:
+                    conditions.append(
+                        or_(
+                            Maoobra.id.like(f'%{term}%'),
+                            Maoobra.tempo.like(f'%{term}%'),
+                            Maoobra.preso.like(f'%{term}%'),
+                            Maoobra.marca.like(f'%{term}%'),
+                            Maoobra.modelo.like(f'%{term}%'),
+                            Maoobra.anoIni.like(f'%{term}%'),
+                            Maoobra.anoFin.like(f'%{term}%'),
+                            Maoobra.motor.like(f'%{term}%'),
+                            Maoobra.nomemaoobra.has(Nomemaoobra.nome.like(f'%{term}%')),
+                            Maoobra.catmaoobra.has(Catmaoobra.nome.like(f'%{term}%')),
+                        )
+                    )
+                MaoObras = (
+                    Maoobra.query.filter(
+                        *conditions
+                    )
+                    .order_by(Maoobra.id.desc())
+                    .paginate(page=page, per_page=10)
+                )
             else:
                 MaoObras = (
                     Maoobra.query.filter(getattr(Maoobra, escolha).like(search))

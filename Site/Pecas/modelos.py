@@ -15,7 +15,7 @@ class Peca(db.Model):
     pago = db.Column(db.String, nullable=False)
     preso = db.Column(db.String, nullable=False)
     estoque = db.Column(db.Integer, nullable=False)
-    carro = db.Column(db.JSON, unique=False, default="TODOS")
+    carro = db.Column(db.JSON, unique=False, default="[]")
     descrisao = db.Column(db.Text, nullable=False)
 
     marca_id = db.Column(db.Integer, db.ForeignKey("marcapeca.id"), nullable=False)

@@ -1,0 +1,210 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+
+<h2 class="cabeçario-pagina">combos</h2>
+
+<div id="search-container">
+    <div class="search-box">
+        <form style="display: flex; width: 98%;" method="POST">
+            {% if busca %}
+            <input class="anular" value="{{busca}}" type="text" id="searchinput" placeholder="Buscar Combo"
+                autofocus="autofocus" name="search_string" aria-label="searchCombo">
+            {% else %}
+            <input class="anular" type="text" id="searchinput" placeholder="Buscar Combo" autofocus="autofocus"
+                name="search_string" aria-label="searchCombo">
+            {% endif %}
+
+            <select class="anular searchselector" id="searchselector" name="searchselector" onchange="alterarFormato()">
+                </option>
+                {% if escolha == "todos" %}
+                <option value="todos" selected>Todos</option>
+                {% else %}
+                <option value="todos">Todos</option>
+                {% endif %}
+                {% if escolha == "id" %}
+                <option value="id" selected>ID</option>
+                {% else %}
+                <option value="id">ID</option>
+                {% endif %}
+                {% if escolha == "nome" %}
+                <option value="nome" selected>Nome</option>
+                {% else %}
+                <option value="nome">Nome</option>
+                {% endif %}
+                {% if escolha == "status" %}
+                <option value="status" selected>Status</option>
+                {% else %}
+                <option value="status">Status</option>
+                {% endif %}
+            </select>
+            <button id="search-button" formaction="/searchCombo/{{status}}">Buscar</button>
+
+        </form>
+    </div>
+</div>
+<div class="custom-validation-message" id="customMessage"></div>
+
+<div class="botao-add">
+    <a href="{{url_for('addCombo')}}" class="button-pequeno cor-ok">Adicionar Combo</a>
+</div>
+
+<div class="mobile-table">
+    <table class="mobile-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in combos %}
+            {% if item.atividade %}
+            <tr>
+                <td style="color: green; font-weight: bold;" class="truncate">{{item.nome}}</td>
+                <td style="color: green; font-weight: bold;">{{ item.status }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td style="color: red; font-weight: bold;" class="truncate">{{item.nome}}</td>
+                <td style="color: red; font-weight: bold;">{{ item.status }}</td>
+            </tr>
+            {% endif %}
+
+            <tr class="row-details">
+                <td colspan="5">
+                    <table class="nested-table">
+                        <thead>
+                            <tr>
+                                <th colspan="4"
+                                    style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                    Dados item</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="lado-div">
+                                        <img src="{{ url_for('static', filename='imagens/' + item.image_1) }}"
+                                            alt="{{ item.nome }}" class="image-Pequena">
+                                        <div style="text-align: center; display: block; width: 100%;">
+                                            <label for="carros">Carros Compativeis:</label>
+                                            <div class="scroll-container-combo">
+                                                <textarea class="car-textarea-combo" name="carros" id="carros" cols=""
+                                                    rows="">{{item.carro}}</textarea>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>ID</th>
+                                <td colspan="3">{{ item.id }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Data/inicial</th>
+                                <td colspan="3" class="dataFormatada">{{ item.data_inicil_combo }}</td>
+                            </tr>
+                            {% if item.data_final_combo %}
+                            <tr>
+                                <th>Data/Final</th>
+                                <td colspan="3" class="dataFormatada">{{ item.data_final_combo }}</td>
+                            </tr>
+
+                            {% else %}
+                            <tr>
+                                <th>Data/Final</th>
+                                <td colspan="3">INDEFINIDO</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>OBS</th>
+                                <td colspan="3">{{ item.obs }}</td>
+                            </tr>
+                            {% if item.atividade %}
+                            <tr>
+                                <td colspan="4" style="color: green; font-weight: bold;">ATIVO</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" style="color: red; font-weight: bold;">INATIVO</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                {%if session["nivel"] >= 4%}
+                                <td>
+                                    <input type="button" onclick="showDiv('Combos', '{{item.id}}', '{{item.nome}}')"
+                                        class="cor-cancelar" style="margin-bottom: 10px;" value="Apagar">
+                                </td>
+                                {%else%}
+                                {%endif%}
+                                <td>
+                                    <a href="{{url_for('AbrirCombo', id=item.id)}}"><input type="submit" class="cor-ok"
+                                            name="" value="Editar"></a>
+                                </td>
+
+                            </tr>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    {% if combos.has_prev %}
+    {% if busca %}
+    <form action="{{ url_for('searchCombo', page=combos.prev_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('combos', page=combos.prev_num) }}">&lt;</a>
+    {% endif %}
+    {% endif %}
+    {% if combos.total > 10 %}
+    {% for page_num in combos.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_num %}
+    {% if combos.page == page_num %}
+    {%if busca %}
+    <form action="{{ url_for('searchCombo', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a class="paginationActive" href="{{ url_for('combos', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% else %}
+    {%if busca %}
+    <form action="{{ url_for('searchCombo', page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('combos', page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if combos.has_next %}
+    {% if busca %}
+    <form action="{{ url_for('searchCombo', page=combos.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('combos', page=combos.next_num) }}">&gt;</a>
+    {% endif %}
+    {% endif %}
+</div>
+
+{% endblock content %}

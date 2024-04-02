@@ -372,40 +372,35 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-//atulizar quantidade no Orçamento
-$(document).ready(function () {
-    $(".number-input").on("input", function () {
-        var novo_valor_un = $(this).val();
-        var item_id = $(this).data("item-id");
-        var servico_id = $("#Ser_id").val();
-        $.ajax({
-            url: "/atualizar_uni_pecas/" + servico_id + "/" + item_id,
-            method: "PUT",
-            data: { un: novo_valor_un },
-            error: function () {
-                console.log("Erro ao atualizar o item");
-            }
-        });
+// Função para atualizar a quantidade de peças
+function atualizarQuantidadePecas(inputElement) {
+    var novo_valor_un = $(inputElement).val();
+    var item_id = $(inputElement).data("item-id");
+    var servico_id = $("#Ser_id").val();
+    $.ajax({
+        url: "/atualizar_uni_pecas/" + servico_id + "/" + item_id,
+        method: "PUT",
+        data: { un: novo_valor_un },
+        error: function () {
+            console.log("Erro ao atualizar o item");
+        }
     });
-});
+}
 
-//atulizar lado no Orçamento
-$(document).ready(function () {
-    $(".lado").on("change", function () {
-        var novo_valor_lado = $(this).val();
-        var item_id = $(this).data("item-id");
-        var servico_id = $("#Ser_id").val();
-        $.ajax({
-            url: "/atualizar_lado_pecas/" + servico_id + "/" + item_id,
-            method: "PUT",
-            data: { lado: novo_valor_lado },
-            error: function () {
-                console.log("Erro ao atualizar o item");
-            }
-        });
+// Função para atualizar o lado das peças
+function atualizarLadoPecas(selectElement) {
+    var novo_valor_lado = $(selectElement).val();
+    var item_id = $(selectElement).data("item-id");
+    var servico_id = $("#Ser_id").val();
+    $.ajax({
+        url: "/atualizar_lado_pecas/" + servico_id + "/" + item_id,
+        method: "PUT",
+        data: { lado: novo_valor_lado },
+        error: function () {
+            console.log("Erro ao atualizar o item");
+        }
     });
-});
-
+}
 
 //Obrigar a colocar nome ou telefone ou email
 function validarCampos() {
@@ -434,7 +429,7 @@ function validarCampos() {
 
 //atulizar cliente no Orçamento
 $(document).ready(function () {
-    $(".DadosClienteServiço").on("input", function () {
+    $(".DadosClienteServico").on("input", function () {
         var Ser_id = $("#Ser_id").val();
         var campos = ["clientName", "telefone", "email", "placa", "Ser_marca", "Ser_modelo", "Ser_ano", "Ser_motor", "km"];
 
@@ -504,10 +499,9 @@ $(document).ready(function () {
 //Adicionar pecas ao orçamento sem atulizar a pagina
 function enviarFormulario(idPeca, event) {
     event.preventDefault();
-    
+
     var formulario = document.getElementById('meu-formulario-' + idPeca);
     var formData = new FormData(formulario);
-    console.log(idPeca);
     var xhr = new XMLHttpRequest();
     xhr.open('PUT', '/adicinar_item_peca', true);
 
@@ -594,10 +588,218 @@ function enviarFormularioMDO(idMDO, event) {
 
     xhr.send(formData);
 }
+//Adicionar pecas ao Combo sem atulizar a pagina
+function enviarFormularioCombo(idPeca, event) {
+    event.preventDefault();
+
+    var formulario = document.getElementById('meu-formulario-' + idPeca);
+    var formData = new FormData(formulario);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', '/adicinar_item_peca_combo', true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                try {
+                    var resposta = JSON.parse(xhr.responseText);
+                    if (resposta.success) {
+                        var message = resposta.message;
+                        var cor = resposta.cor
+                        var DivFlutante = document.createElement('div');
+                        DivFlutante.innerHTML = `
+                           <div id="DivFlutante">
+                                <div class="${cor} DivFlutanteCabeça">
+                                    <h3>AVISO!!!</h3>
+                                    <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+                                </div>
+                                <div class="DivFlutanteConte">
+                                    <p>${message}</p>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(DivFlutante);
+                    } else {
+                        alert("Erro ao adicionar peca: " + resposta.message);
+                    }
+                } catch (e) {
+                    console.error("Erro ao analisar a resposta JSON:", e);
+                    alert("Erro ao processar a resposta do servidor.");
+                }
+            } else {
+                alert("Erro ao processar a solicitação. Tente novamente.");
+            }
+        }
+    };
+
+    xhr.send(formData);
+}
+
+//Adicionar Mão de obra ao Combo sem atulizar a pagina
+function enviarFormularioMDOCombo(idMDO, event) {
+    event.preventDefault();
+
+    var formulario = document.getElementById('meu-formulario-' + idMDO);
+    var formData = new FormData(formulario);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', '/adicinar_item_MaoObra_Combo', true);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+                try {
+                    var resposta = JSON.parse(xhr.responseText);
+                    if (resposta.success) {
+                        var message = resposta.message;
+                        var cor = resposta.cor
+                        var DivFlutante = document.createElement('div');
+                        DivFlutante.innerHTML = `
+                           <div id="DivFlutante">
+                                <div class="${cor} DivFlutanteCabeça">
+                                    <h3>AVISO!!!</h3>
+                                    <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+                                </div>
+                                <div class="DivFlutanteConte">
+                                    <p>${message}</p>
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(DivFlutante);
+                    } else {
+                        alert("Erro ao adicionar Mão de obra: " + resposta.message);
+                    }
+                } catch (e) {
+                    console.error("Erro ao analisar a resposta JSON:", e);
+                    alert("Erro ao processar a resposta do servidor.");
+                }
+            } else {
+                alert("Erro ao processar a solicitação. Tente novamente.");
+            }
+        }
+    };
+
+    xhr.send(formData);
+}
+
+//atulizar quantidade no Combo
+function atualizarItem(inputElement) {
+    var novo_valor_un = $(inputElement).val();
+    var item_id = $(inputElement).data("item-id");
+    var Combo_id = $("#Com_id").val();
+    $.ajax({
+        url: "/atualizar_uni_pecas_combo/" + Combo_id + "/" + item_id,
+        method: "PUT",
+        data: { un: novo_valor_un },
+        error: function () {
+            console.log("Erro ao atualizar o item");
+        }
+    });
+}
+
+//atulizar lado no Combo
+function atualizarLadoPecasCombo(selectElement) {
+    var novo_valor_lado = $(selectElement).val();
+    var item_id = $(selectElement).data("item-id");
+    var Combo_id = $("#Com_id").val();
+    $.ajax({
+        url: "/atualizar_lado_pecas_combo/" + Combo_id + "/" + item_id,
+        method: "PUT",
+        data: { lado: novo_valor_lado },
+        error: function () {
+            console.log("Erro ao atualizar o item");
+        }
+    });
+}
+
+//atulizar dados no Combo
+$(document).ready(function () {
+    $(".DadosCombo").on("input", function () {
+        var Com_id = $("#Com_id").val();
+        var campos = ["nome", "status", "data_inicil_combo", "data_final_combo", "obs", "carrosInput"];
+        var formData = new FormData();  // Crie um objeto FormData para enviar os dados
+        campos.forEach(function (campo) {
+            formData.append(campo, $("#" + campo).val());
+        });
+
+        var fileInput = document.getElementById('image_1');
+        var file = fileInput.files[0];
+        formData.append('image_1', file);
+
+        $.ajax({
+            url: "/dadosCombo/" + Com_id,
+            method: "PUT",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.message) {
+                    $("#estadoCombo").html('<h2 style="color: green; font-weight: bold;">ATIVO</h2>');
+                } else {
+                    $("#estadoCombo").html('<h2 style="color: red; font-weight: bold;">INATIVO</h2><samp style="font-size: 80%;">O Combo só ativa com todos os dados.(Verifique data Final)</samp><br>');
+                }
+            },
+            error: function () {
+                console.log("Erro ao atualizar o item"); // Caso ocorra um erro na requisição AJAX
+            }
+        });
+    });
+});
+//Adicionar Carro no multiplo select2
+$(document).ready(function () {
+    $('#add-button-combo').on('click', function (event) {
+
+        event.preventDefault();
+        var option1 = $('#marcaT').val();
+        var option2 = $('#modeloT').val();
+        var option3 = $('#anoIniT').val();
+        var option4 = $('#anoFinT').val();
+        var option5 = $('#motorT').val();
+
+        // Substitua "TODOS" por uma string vazia ("")
+        option1 = option1 === 'TODOS' ? '' : option1;
+        option2 = option2 === 'TODOS' ? '' : option2;
+        option3 = option3 === 'TODOS' ? '' : option3;
+        option4 = option4 === 'TODOS' ? '' : option4;
+        option5 = option5 === 'TODOS' ? '' : option5;
+        if (option1 === '' && option2 === '' && option3 === '' && option4 === '' && option5 === '') {
+            return;
+        }
+        var newOptionValue = option1 + ' ' + option2 + ' ' + option3 + ' ' + option4 + ' ' + option5;
+
+        var currentValue = $('#carrosInput').val();
+        if (currentValue.indexOf(newOptionValue) === -1) {
+            var newValue = currentValue ? currentValue + '\n' + newOptionValue : newOptionValue;
+            $('#carrosInput').val(newValue);
+        }
+
+        var Com_id = $("#Com_id").val();
+        var campos = ["nome", "status", "data_inicil_combo", "data_final_combo", "obs", "carrosInput"];
+        var formData = new FormData();
+        campos.forEach(function (campo) {
+            formData.append(campo, $("#" + campo).val());
+        });
+        var fileInput = document.getElementById('image_1');
+        var file = fileInput.files[0];
+        formData.append('image_1', file);
+
+
+        $.ajax({
+            url: "/dadosCombo/" + Com_id,
+            method: "PUT",
+            data: formData,
+            contentType: false,
+            processData: false,
+            error: function () {
+                console.log("Erro ao atualizar o item");
+            }
+        });
+    });
+});
+
+
 
 //Função do menu para mobile 
-
-
 menuButton.addEventListener('change', toggleMenu);
 
 function toggleMenu() {

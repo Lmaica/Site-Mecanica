@@ -55,6 +55,9 @@
             {% if Adicionar %}
             <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
             <button id="search-button" formaction="/searchPecasAdicionar">Buscar</button>
+            {% elif AdicionarCombo %}
+            <input type="hidden" name="id" value="{{ AdicionarCombo.id }}" style="display: none;">
+            <button id="search-button" formaction="/searchPecasAdicionarCombo">Buscar</button>
             {% else %}
             <button id="search-button" formaction="/searchPecas">Buscar</button>
             {% endif %}
@@ -72,6 +75,11 @@
         class="button-pequeno cor-alerta">Retornar {{Adicionar.status}}</a>
 </div>
 {%endif%}
+{% elif AdicionarCombo %}
+<div class="botao-add">
+    <a href="{{url_for('AbrirCombo', id=AdicionarCombo.id)}}" class="button-pequeno cor-alerta">Retornar
+        {{AdicionarCombo.status}}</a>
+</div>
 {% else %}
 <div class="botao-add">
     <a href="{{url_for('addPecas')}}" class="button-pequeno cor-ok">Adicionar Peca</a>
@@ -168,32 +176,47 @@
                             <tr>
                                 <td style="background-color: rgb(77, 77, 77);" colspan="4">
 
-                                    {% if Adicionar %}
+                                    {% if Adicionar or AdicionarCombo %}
                                     <div class="button-container">
-                                        <form id="meu-formulario-{{ Peca.id }}" action="/adicinar_item_peca"
-                                            method="PUT" onsubmit="enviarFormulario('{{ Peca.id }}', event)">
-                                            <div class="lado-a-lado">
-                                                <label for="nu">Quantidade:</label>
-                                                <input style="text-align: center;width: 50px; font-size: 120%;"
-                                                    type="number" name="unidad" value="1" min="1">
-                                            </div>
-                                            <div class="lado-a-lado">
-                                                <label for="lado">Lado:</label>
-                                                <select name="lado" class="semselect2 searchselector">
-                                                    <option value="S">Sem Lado</option>
-                                                    <option value="L/D">Direita</option>
-                                                    <option value="L/E">Esquerda</option>
-                                                </select>
-                                            </div>
-                                            <input type="hidden" id="numero_servico" name="numero_servico"
-                                                value="{{ Adicionar.id }}">
-                                            <input type="hidden" id="numero_peca" name="numero_peca"
-                                                value="{{ Peca.id }}">
+                                        {% if AdicionarCombo %}
+                                        <form id="meu-formulario-{{ Peca.id }}" action="/adicinar_item_peca_combo"
+                                            method="PUT" onsubmit="enviarFormularioCombo('{{ Peca.id }}', event)">
+                                            {% else %}
+                                            <form id="meu-formulario-{{ Peca.id }}" action="/adicinar_item_peca"
+                                                method="PUT" onsubmit="enviarFormulario('{{ Peca.id }}', event)">
+                                                {%endif%}
+                                                <div class="lado-a-lado">
+                                                    <label for="nu">Quantidade:</label>
+                                                    <input style="text-align: center;width: 50px; font-size: 120%;"
+                                                        type="number" name="unidad" value="1" min="1">
+                                                </div>
+                                                <div class="lado-a-lado">
+                                                    <label for="lado">Lado:</label>
+                                                    <select name="lado" class="semselect2 searchselector">
+                                                        <option value="S">Sem Lado</option>
+                                                        <option value="L/D">Direita</option>
+                                                        <option value="L/E">Esquerda</option>
+                                                    </select>
+                                                </div>
+                                                {% if AdicionarCombo %}
+                                                <input type="hidden" id="numero_Combo" name="numero_Combo"
+                                                    value="{{ AdicionarCombo.id }}">
+                                                {% else %}
+                                                <input type="hidden" id="numero_servico" name="numero_servico"
+                                                    value="{{ Adicionar.id }}">
+                                                {%endif%}
 
-                                            <input type="submit" onclick="enviarFormulario('{{ Peca.id }}', event)"
-                                                class="cor-ok" value="Adicionar ao Servico">
+                                                <input type="hidden" id="numero_peca" name="numero_peca"
+                                                    value="{{ Peca.id }}">
 
-                                        </form>
+                                                
+                                                {% if AdicionarCombo %}
+                                                <input type="submit" onclick="enviarFormularioCombo('{{ Peca.id }}', event)" class="cor-ok" value="Adicionar ao Combo">
+                                                {% else %}
+                                                <input type="submit" onclick="enviarFormulario('{{ Peca.id }}', event)" class="cor-ok" value="Adicionar ao Servico">
+                                                {%endif%}
+
+                                            </form>
                                     </div>
                                     {% else %}
                                     <div class="button-container">
@@ -220,7 +243,60 @@
         </tbody>
     </table>
 </div>
-
+{% if AdicionarCombo %}
+<div class="pagination">
+    {% if Pecas.has_prev %}
+    {% if busca %}
+    <form action="{{ url_for('searchPecasAdicionarCombo',id=AdicionarCombo.id, page=Pecas.prev_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('EscolhaPecasCombo',id=AdicionarCombo.id, page=Pecas.prev_num) }}">&lt;</a>
+    {% endif %}
+    {% endif %}
+    {% if Pecas.total > 10 %}
+    {% for page_num in Pecas.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_num %}
+    {% if Pecas.page == page_num %}
+    {%if busca %}
+    <form action="{{ url_for('searchPecasAdicionarCombo',id=AdicionarCombo.id, page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a class="paginationActive" href="{{ url_for('EscolhaPecasCombo',id=AdicionarCombo.id, page=page_num) }}">{{
+        page_num }}</a>
+    {% endif %}
+    {% else %}
+    {%if busca %}
+    <form action="{{ url_for('searchPecasAdicionarCombo',id=AdicionarCombo.id, page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('EscolhaPecasCombo',id=AdicionarCombo.id, page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if Pecas.has_next %}
+    {% if busca %}
+    <form action="{{ url_for('searchPecasAdicionarCombo',id=AdicionarCombo.id, page=Pecas.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('EscolhaPecasCombo',id=AdicionarCombo.id, page=Pecas.next_num) }}">&gt;</a>
+    {% endif %}
+    {% endif %}
+</div>
+{% else %}
 <div class="pagination">
     {% if Pecas.has_prev %}
     {% if Adicionar %}
@@ -324,6 +400,6 @@
     {% endif %}
     {% endif %}
 </div>
-
+{%endif%}
 
 {% endblock content %}

@@ -1518,4 +1518,20 @@
     .password-toggle:hover {
         background-color: #22cc005e;
     }
+
+    .scroll-container-combo {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        height: 170px;
+        width: 100%;
+    }
+
+    .car-textarea-combo {
+        pointer-events: none;
+        height: 100vh;
+        width: 100%;
+        text-align: center;
+        background-color: #ccc;
+        border: 1px solid #ccc;
+    }
 }

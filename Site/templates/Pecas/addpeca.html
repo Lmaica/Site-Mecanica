@@ -37,6 +37,7 @@
                 <option value="">--Selecione o Fornecedor--</option>
                 {% if atulizar %}
                 <option value="{{ Peca.fornecedor.id }}" selected>{{ Peca.fornecedor.nome }}</option>
+                
                 {% endif %}
                 {%for fornecedor in fornecedors%}
                 <option value="{{fornecedor.id}}">{{fornecedor.nome}}</option>

@@ -1,0 +1,274 @@
+{% extends 'layouts.html'%}
+
+{% block content %}
+<h2 class="cabeçario-pagina">Combo</h2>
+
+<div id="estadoCombo" style="text-align: center; padding: 0px;">
+    {% if Combo.atividade %}
+    <h2 style="color: green; font-weight: bold;">{{ Combo.atividade }}</h2>
+    {% else %}
+    <h2 style="color: red; font-weight: bold;">INATIVO</h2>
+    <samp style="font-size: 80%;">O Combo só ativa com todos os dados.(Verifique data Final)</samp><br>
+    {% endif %}
+</div>
+
+<input type="hidden" name="Com_id" id="Com_id" value="{{ Combo.id }}">
+
+<div class="DadosCombo">
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados Combo</legend>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+            <label for="nome">Nome Combo:</label>
+            <input type="text" id="nome" name="nome" value="{{Combo.nome}}">
+            <label for="status">Status Combo:</label>
+            <select name="status" id="status">
+                <option value="{{Combo.status}}">{{Combo.status}}</option>
+                <option value="Normal">Normal</option>
+                <option value="Oferta">Oferta</option>
+            </select>
+            <label for="data_inicil_combo">Data Inicial do Combo:</label>
+            <input type="date" id="data_inicil_combo" name="data_inicil_combo"
+                value="{{ Combo.data_inicil_combo.strftime('%Y-%m-%d') }}">
+            <label for="data_final_combo">Data Final do Combo:</label>
+            {% if Combo.data_final_combo %}
+            <input type="date" id="data_final_combo" name="data_final_combo"
+                value="{{ Combo.data_final_combo.strftime('%Y-%m-%d') }}">
+            {% else %}
+            <input type="date" id="data_final_combo" name="data_final_combo" value="{{Combo.data_final_combo}}">
+            <samp> Se a data final não for definida, o período não terá fim. </samp>
+            {% endif %}
+            <label for="obs">Descrição:</label>
+
+            <textarea id="obs" name="obs" rows="5" cols="40">{{Combo.obs}}</textarea>
+
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Carros Compativeis</legend>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+
+            <div>
+                <label for="marcaT">Marca:</label>
+                <select id="marcaT" name="marcaT">
+                    <option value="">--Selecione marca--</option>
+                    {% for marca in marcas %}
+                    <option value="{{ marca }}">{{ marca }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="modeloT">Modelo:</label>
+                <select id="modeloT" name="modeloT" disabled>
+                    <option value="">--Selecione modelo--</option>
+                </select>
+            </div>
+            <div>
+                <label for="anoIniT">Ano inicil:</label>
+                <select id="anoIniT" name="anoIniT" disabled>
+                    <option value="">--Selecione Do ano--</option>
+                </select>
+            </div>
+            <div>
+                <label for="anoFinT">Ano Final:</label>
+                <select id="anoFinT" name="anoFinT" disabled>
+                    <option value="">--Selecione Ate o ano--</option>
+                </select>
+            </div>
+            <div>
+                <label for="motorT">Motor:</label>
+                <select id="motorT" name="motorT" disabled>
+                    <option value="">--Selecione motor--</option>
+                </select>
+            </div>
+
+            <input type="submit" id="add-button-combo" class="button-pequeno cor-alerta ">
+
+            <label for="carrosInput">Carros Compativeis:</label>
+            <textarea id="carrosInput" name="carrosInput" style="height: 150px;">{{Combo.carro}}</textarea>
+
+        </div>
+    </fieldset>
+
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Itens do Combo</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div class="">
+            <div class="product-table">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th style="background-color: #444343; font-size: 120%;">Dados do Orçamento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <div style="padding: 5px;">
+                                        <a href="{{url_for('EscolhaMDOCombo', id=Combo.id)}}">
+                                            <input type="submit" class="cor-ok" name="" value="Add Mão de Obra">
+                                        </a>
+                                    </div>
+                                    <div style="padding: 5px;">
+                                        <a href="{{url_for('AddItensManualCombo', id=Combo.id)}}">
+                                            <input type="submit" class="cor-alerta" name=""
+                                                value="Add Item Manualmente">
+                                        </a>
+                                    </div>
+                                    <div style="padding: 5px;">
+                                        <a href="{{url_for('EscolhaPecasCombo', id=Combo.id)}}">
+                                            <input type="submit" class="cor-ok" name="" value="Add Peças">
+                                        </a>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+
+
+                        {% if items_data_pecas %}
+                        {% for item_peca in items_data_pecas %}
+                        <tr>
+                            <td>
+                                <fieldset class="containerForm" style="cursor: pointer;">
+                                    <div class="peca-Nome toggleButton">
+                                        <p></p>
+                                        <div><strong>{{ loop.index }}&rpar; Nome:</strong><span>{{ item_peca.nome
+                                                }}</span><span class="arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    <div class="containerDados hidden">
+                                        <div class="peca-card">
+                                            <div><strong>Código:</strong>{{ item_peca.codigo }}</div>
+                                            <hr>
+                                            <div>
+                                                <strong>Unidade:</strong>
+
+                                                <input class="number-input" data-item-id="{{ loop.index0 }}"
+                                                    style="text-align: center;width: 50px; font-size: 100%;"
+                                                    type="number" id="un" name="un" value="{{ item_peca.un }}" min="1"
+                                                    oninput="atualizarItem(this)">
+
+                                            </div>
+                                            <hr>
+                                            <div>
+                                                <strong>Lado:</strong>
+                                                <select name="lado" class="semselect2 searchselector lado"
+                                                    data-item-id="{{ loop.index0 }}"
+                                                    onchange="atualizarLadoPecasCombo(this)">
+                                                    <option value="{{ item_peca.lado }}" selected>{{ item_peca.lado }}
+                                                    </option>
+                                                    <option value="S">Sem Lado</option>
+                                                    <option value="L/D">Direita</option>
+                                                    <option value="L/E">Esquerda</option>
+                                                </select>
+                                            </div>
+                                            <hr>
+                                            <div><strong>Preço:</strong><span class="precoPeca">{{
+                                                    item_peca.preso}}</span>
+                                            </div>
+                                            <hr>
+                                            <div class="preco-total" style="color: #008337; font-weight: bold;"><strong
+                                                    style="color: #000000;">Preço Total:</strong></div>
+                                            <hr>
+                                            <form action="/apagar_item_pecas_combo/{{ Combo.id }}/{{ loop.index0 }}"
+                                                method="POST">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="submit" class="cor-cancelar" value="Apagar Item">
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+                        {% else %}
+                        {% endif %}
+                        <tr>
+                            <td>
+                                <div id="soma_pecas"><strong>Total em Pecas:</strong> R$ 0.00</div>
+                            </td>
+                        </tr>
+                        {% if items_data_MDO %}
+                        {% for items_MDO in items_data_MDO %}
+                        <tr>
+                            <td>
+                                <fieldset class="containerForm" style="cursor: pointer;">
+                                    <div class="peca-Nome toggleButton">
+                                        <div><strong>{{ loop.index }}&rpar;</strong><span>MÃO DE OBRA</span><span
+                                                class="arrow">▼</span>
+                                        </div>
+                                    </div>
+                                    <div class="hidden">
+                                        <div class="peca-card">
+                                            <div><strong>Nome:</strong><span>{{ items_MDO.nome }}</span></div>
+                                            <hr>
+                                            <div style="color: #008337; font-weight: bold;"><strong
+                                                    style="color: #000000;">Preço:</strong><span class="precoMDO">
+                                                    {{items_MDO.preso}}</span></div>
+                                            <hr>
+
+                                            <form action="/apagar_item_mos_combo/{{ Combo.id }}/{{ loop.index0 }}"
+                                                method="POST">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="submit" class="cor-cancelar" value="Apagar Item">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        {% endif %}
+                        <tr>
+                            <td>
+                                <div id="somaTotal"><strong>Total:</strong> R$ 0.00</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Imagens do Combo</legend>
+            </div>
+            <span class="arrow">▼</span>
+        </div>
+        <div class="containerDados hidden">
+
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Adicionar Imagem Combo</label>
+                <img src="{{url_for('static',filename='imagens/'+Combo.image_1)}}" id="preview-image-1" src=""
+                    alt="Preview Image 1" onclick="openFileInput(1)">
+
+            </div>
+        </div>
+    </fieldset>
+</div>
+<div
+    style="color: white; background-color: #ff4444; text-align: center; padding: 5px; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);margin: 10px;">
+    <p>Os dados modificados aqui serão automaticamente atualizados.</p>
+
+</div>
+{% endblock content %}

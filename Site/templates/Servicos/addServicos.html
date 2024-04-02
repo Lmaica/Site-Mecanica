@@ -17,7 +17,6 @@
 {%endif%}
 <input type="hidden" name="Ser_id" id="Ser_id" value="{{ Servico.id }}">
 <div id="MensagemServico" class="retira"></div>
-
 <div class="DadosClienteServico">
     <fieldset class="containerForm">
         <div class="header toggleButton">
@@ -151,7 +150,7 @@
                         </div>
                         <div style="padding: 5px;">
                             <a href="{{url_for('EscolhaPecas', id=Servico.id)}}" onclick="return validarCampos();">
-                                <input type="submit" class="cor-ok" name="" value="Add Pecas">
+                                <input type="submit" class="cor-ok" name="" value="Add Peças">
                             </a>
                         </div>
                     </div>
@@ -183,7 +182,8 @@
                                     {%else%}
                                     <input class="number-input" data-item-id="{{ loop.index0 }}"
                                         style="text-align: center;width: 50px; font-size: 100%;" type="number" id="un"
-                                        name="un" value="{{ item_peca.un }}" min="1">
+                                        name="un" value="{{ item_peca.un }}" min="1"
+                                        oninput="atualizarQuantidadePecas(this)">
                                     {%endif%}
                                 </div>
                                 <hr>
@@ -192,10 +192,9 @@
                                     {% if status == 'Finalizado' %}
                                     <p>{{ item_peca.lado }}</p>
                                     {%else%}
-                                    <select name="lado" class="semselect2 searchselector lado"
-                                        data-item-id="{{ loop.index0 }}">
-                                        <option value="{{ item_peca.lado }}" selected>{{ item_peca.lado }}
-                                        </option>
+                                    <select name="lado" class="semselect2 searchselector lado" data-item-id="{{ loop.index0 }}"
+                                        onchange="atualizarLadoPecas(this)">
+                                        <option value="{{ item_peca.lado }}" selected>{{ item_peca.lado }}</option>
                                         <option value="S">Sem Lado</option>
                                         <option value="L/D">Direita</option>
                                         <option value="L/E">Esquerda</option>

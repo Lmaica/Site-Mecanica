@@ -133,6 +133,12 @@
         </li>
         {%else%}
         {%endif%}
+        {% if session["nivel"] >= 6 %}
+        <li class="principalCorUnica"><a href="{{url_for('configurar')}}" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/config.png') }}" alt="">Configurar</a>
+        </li>
+        {%else%}
+        {%endif%}
     </ul>
     <ul>
         {%if session["nivel"] >= 3%}
@@ -148,8 +154,8 @@
         {%else%}
         {%endif%}
         {%if session["nivel"] >= 2%}
-        <li class="principalCorUnica" ><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/servico.png') }}"
-                    alt="">Serviços <i>&#8595;</i></a>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/servico.png') }}" alt="">Serviços <i>&#8595;</i></a>
             <ul class="principalCorMesclada submenu">
                 <hr>
                 <li><a href="{{url_for('servisos',status='Orçamento')}}">Orçamentos</a></li>
@@ -164,9 +170,15 @@
         </li>
         {%else%}
         {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="{{url_for('combos')}}" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/caixas.png') }}" alt="">Combos</a>
+        </li>
+        {%else%}
+        {%endif%}
         {%if session["nivel"] >= 4%}
-        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/moeda.png') }}"
-                    alt="">Administrativo<i>&#8595;</i></a>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/moeda.png') }}" alt="">Administrativo<i>&#8595;</i></a>
             <ul class="principalCorMesclada submenu">
                 <hr>
                 <li><a href="{{url_for('Caixas',tipo='Todos')}}">Caixa</a></li>
@@ -180,8 +192,8 @@
         {%else%}
         {%endif%}
         {% if session["nivel"] >= 5 %}
-        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/grafico.png') }}"
-                    alt=""> Metas<i>&#8595;</i></a>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/grafico.png') }}" alt=""> Metas<i>&#8595;</i></a>
             <ul class="principalCorMesclada submenu">
                 <hr>
                 <li><a href="{{url_for('MetaBruta')}}">Bruto</a></li>
@@ -194,8 +206,8 @@
         {%else%}
         {%endif%}
         {% if session["nivel"] >= 5 %}
-        <li class="principalCorUnica" ><a href="#" onclick="toggleSubMenu(this)"><img src="{{ url_for('static', filename='img/equipe.png') }}"
-                    alt=""> Equipe<i>&#8595;</i></a>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/equipe.png') }}" alt=""> Equipe<i>&#8595;</i></a>
             <ul class="principalCorMesclada submenu">
                 <hr>
                 <li><a href="{{url_for('Users')}}">Colaboradores</a></li>
@@ -206,6 +218,7 @@
         </li>
         {%else%}
         {%endif%}
+
     </ul>
 </div>
 

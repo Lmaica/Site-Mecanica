@@ -659,7 +659,6 @@ def googleLogin():
             user = User.query.filter_by(email=emailPreAnalise).first()
             empresa = User.query.get(1)
             if user:
-                print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
                 niveis = {
                     "DONO": 6,
                     "PERITO": 5,
@@ -684,7 +683,6 @@ def googleLogin():
                 login_user(user)
                 return redirect(url_for("Admin"))
             else:
-                print('bbbbbbbbbbbbbbbbbbb')
                 return redirect(url_for("Login_google"))
             
         return oauth.myApp.authorize_redirect(redirect_uri=url_for("googleCallback", _external=True))
@@ -1165,6 +1163,7 @@ def deleteUser(id):
 @verificacao_nivel(5)
 def searchUser():
     try:
+        user = current_user
         if request.method == "POST":
             page = request.args.get("page", 1, type=int)
             form = request.form
@@ -1175,25 +1174,48 @@ def searchUser():
             if escolha == "id":
                 search_value = form["search_string"]
                 search = "{0}".format(search_value)
-                Users = (
-                    User.query.filter(getattr(User, escolha).like(search))
-                    .order_by(User.id.desc())
-                    .paginate(page=page, per_page=10)
-                )
+                if user.id == 1:
+                    Users = (
+                        User.query.filter(getattr(User, escolha).like(search), User.id != 1)
+                        .order_by(User.id.desc())
+                        .paginate(page=page, per_page=10)
+                    )
+                else:
+                    Users = (
+                        User.query.filter(getattr(User, escolha).like(search), User.id != 1, User.nivel != "PERITO")
+                        .order_by(User.id.desc())
+                        .paginate(page=page, per_page=10)
+                    )
+
             elif escolha == "email":
                 search_va = form["search_string"]
                 sear = "%{0}%".format(search_va)
-                Users = (
-                    User.query.filter(getattr(User, escolha).like(sear))
-                    .order_by(User.id.desc())
-                    .paginate(page=page, per_page=10)
-                )
+                if user.id == 1:
+                    Users = (
+                        User.query.filter(getattr(User, escolha).like(search), User.id != 1)
+                        .order_by(User.id.desc())
+                        .paginate(page=page, per_page=10)
+                    )
+                else:
+                    Users = (
+                        User.query.filter(getattr(User, escolha).like(search), User.id != 1, User.nivel != "PERITO")
+                        .order_by(User.id.desc())
+                        .paginate(page=page, per_page=10)
+                    )
             else:
-                Users = (
-                    User.query.filter(getattr(User, escolha).like(search))
-                    .order_by(User.id.desc())
-                    .paginate(page=page, per_page=10)
-                )
+                if user.id == 1:
+                    Users = (
+                        User.query.filter(getattr(User, escolha).like(search), User.id != 1)
+                        .order_by(User.id.desc())
+                        .paginate(page=page, per_page=10)
+                    )
+                else:
+                    Users = (
+                        User.query.filter(getattr(User, escolha).like(search), User.id != 1, User.nivel != "PERITO")
+                        .order_by(User.id.desc())
+                        .paginate(page=page, per_page=10)
+                    )
+
             return render_template(
                 "/Admin/Users.html",
                 users=Users,
