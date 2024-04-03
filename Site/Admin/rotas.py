@@ -42,6 +42,8 @@ from email_validator import validate_email, EmailNotValidError
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from Site.Combo.modelos import Combo
+import json
 
 def get_results_dict(query_results, date_extractor, *value_columns):
     from collections import defaultdict
@@ -242,11 +244,33 @@ def buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias_
 @nome_required
 def Admin():
     user = current_user
-    data_hora_atual = datetime.now()
-    ano_atual = int(data_hora_atual.year)
-    mes_atual = int(data_hora_atual.month)
-    dia_atual = int(data_hora_atual.day)
-    # lembretes
+    data_atual = datetime.now()
+
+    # Limpando lembretes expirados
+    Lembretestodos.query.filter(
+        Lembretestodos.data_fim < data_atual
+    ).delete()
+
+    # Limpando serviços antigos
+    data_limite_servicos = data_atual - timedelta(days=5*365)
+    Serviso.query.filter(
+        Serviso.data_finalizada <= data_limite_servicos
+    ).delete()
+
+    # Resetando combos não válidos
+    Combo.query.filter(
+        ~(
+            Combo.peca_os_combo.like('%"itens"%') |  # Alterando para pipe (|) para operador OR
+            Combo.mo_os_combo.like('%"itens"%')
+        ) | (Combo.nome == '') | (Combo.obs == '') | (Combo.carro == '""') |  # Usando parênteses para agrupar as condições
+        (Combo.image_1 == 'foto.jpg') | (Combo.data_inicil_combo >= data_atual) |  # Usando parênteses para agrupar as condições
+        ((Combo.data_final_combo != None) & (Combo.data_final_combo <= data_atual))  # Usando parênteses para agrupar as condições e alterando para != para verificar se não é None
+    ).update({'atividade': None})
+
+    # Committing changes
+    db.session.commit()
+
+    # Consulta lembretes e adivertencias
     lembretes = Lembretestodos.query.filter(
         or_(
             Lembretestodos.destinatario == "TODOS",
@@ -255,25 +279,7 @@ def Admin():
         ),
         Lembretestodos.tipo == "AVISO",
     ).order_by(Lembretestodos.data_inicil.desc())
-    data_total = datetime(
-        ano_atual,
-        mes_atual,
-        dia_atual,
-        0,
-        0,
-        0,
-    )
-    lembrete_apagar = (
-        Lembretestodos.query.filter(
-            and_(
-                Lembretestodos.data_fim < data_total,
-            )
-        )
-    ).all()
-    for lembrete in lembrete_apagar:
-        db.session.delete(lembrete)
-        db.session.commit()
-    # adivertencias
+
     adivertencias = Lembretestodos.query.filter(
         or_(
             Lembretestodos.destinatario == "TODOS",
@@ -282,28 +288,8 @@ def Admin():
         ),
         Lembretestodos.tipo == "ADIVERTENCIA",
     ).order_by(Lembretestodos.data_inicil.desc())
-    # Apagar dados antigos
-    data_serv_apagar = data_hora_atual - timedelta(days=5*365)
 
-    # Criar objeto datetime com a nova data
-    data_serv_apagar = datetime(
-        data_serv_apagar.year,
-        data_serv_apagar.month,
-        data_serv_apagar.day,
-        0,
-        0,
-        0,
-    )
-    Apagar_serviso = (
-        Serviso.query.filter(
-            and_(
-                Serviso.data_finalizada <= data_serv_apagar,
-            )
-        )
-    ).all()
-    for apagar_serv in Apagar_serviso:
-        db.session.delete(apagar_serv)
-        db.session.commit()
+    # Renderizando o template
     return render_template(
         "Admin/index.html",
         lembretes=lembretes,
@@ -1553,7 +1539,7 @@ def addLembretes():
         gettipo = request.form.get("tipo")
         getdestinatario = request.form.get("destinatario")
         getdata_inicil = request.form.get("data_inicial")
-        getdata_fim = request.form.get("data_fim").strip()
+        getdata_fim = request.form.get("data_fim")
         data_inicil_for = datetime.strptime(getdata_inicil, "%Y-%m-%d")
         data_fim_for = datetime.strptime(getdata_fim, "%Y-%m-%d")
         lembrete = Lembretestodos(
@@ -1572,7 +1558,14 @@ def addLembretes():
             "cor-ok",
         )
         return redirect(url_for("Lembretes"))
-    return render_template("Lembretes/addLembrete.html", form=form)
+    data_atual = datetime.now().date()
+    data_final = data_atual + timedelta(days=30)
+    data_formatada_inicil = data_atual.strftime("%Y-%m-%d")
+    data_formatada_fim = data_final.strftime("%Y-%m-%d")
+    return render_template("Lembretes/addLembrete.html",
+                            form=form,
+                            data_formatada_inicil=data_formatada_inicil,
+                            data_formatada_fim=data_formatada_fim,)
 
 
 @app.route("/atulizLembretes/<int:id>", methods=["GET", "POST"])

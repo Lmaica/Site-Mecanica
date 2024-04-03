@@ -1519,6 +1519,7 @@
         background-color: #22cc005e;
     }
 
+    /* Estilo para poder bloquear e ordenar dados em text */
     .scroll-container-combo {
         overflow-y: scroll;
         overflow-x: hidden;
@@ -1533,5 +1534,31 @@
         text-align: center;
         background-color: #ccc;
         border: 1px solid #ccc;
+    }
+
+    /*arrumar estilo de baixar */
+    .download-button {
+        display: inline-block;
+        background-color: #636363;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        border-top-right-radius: 20px;
+        border-top-left-radius: 20px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .download-button:hover {
+        background-color: #0056b3;
+    }
+
+    .download-button .button-text {
+        margin-right: 10px;
+    }
+
+    .download-button i {
+        font-size: 18px;
     }
 }

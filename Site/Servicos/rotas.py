@@ -21,6 +21,7 @@ from Site.Caixa.modelos import Carteirabanco, Caixa
 from Site.Admin.modelos import User
 from .formularios import Responsaveis
 from flask_login import login_required, current_user
+from Site.Combo.modelos import Combo
 
 # Dados do Serviços 
 @app.route("/servisos/<string:status>", methods=["GET", "POST"])
@@ -659,7 +660,7 @@ def AbrirServico(id, tratatar):
     )
 
 
-# Pecas do Serviços
+# itens do Serviços
 @app.route("/AddItensManual/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
@@ -713,6 +714,173 @@ def AddItensManual(id):
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
+# itens do Serviços Combos
+
+@app.route("/AbriCombosSevico/<int:id>", methods=["GET", "POST"])
+@login_required
+@nome_required
+@verificacao_nivel(2)
+def AbriCombosSevico(id):
+    try:
+        semItens = request.args.get('semItens')
+        get_serviso = Serviso.query.get_or_404(id)
+        page = request.args.get("page", 1, type=int)
+        combos = Combo.query.order_by(Combo.id).paginate(page=page, per_page=10)
+        if semItens is None: 
+            flash("Ao adicionar o Combo, todos os outros itens no Serviço serão apagados!", "cor-cancelar")
+        return render_template(
+            "Combo/combo.html",
+            combos=combos,
+            Adicionar=get_serviso,
+        )
+        
+    except Exception as erro:
+        MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
+        return render_template("pagina_erro.html", MSG=MSG)
+
+
+@app.route("/searchComboServico/<int:id>", methods=["GET", "POST"])
+@login_required
+@nome_required
+@verificacao_nivel(2)
+def searchComboServico(id):
+    try:
+        if request.method == "POST":
+            get_serviso = Serviso.query.get_or_404(id)
+            page = request.args.get("page", 1, type=int)
+            form = request.form
+            search_value = form["search_string"].upper()
+            search = "%{0}%".format(search_value)
+            escolha = str(request.form.get("searchselector"))
+            busca = search_value = form["search_string"]
+            if escolha == "todos":
+                search_terms = search.split()  
+                conditions = []
+                for term in search_terms:
+                    conditions.append(
+                        or_(
+                            Combo.id.like(f'%{term}%'),
+                            Combo.nome.like(f'%{term}%'),
+                            Combo.status.like(f'%{term}%'),
+                            Combo.status.like(f'%{term}%'),
+                            Combo.peca_os_combo.like(f'%{term}%'),
+                            Combo.mo_os_combo.like(f'%{term}%'),
+                            Combo.obs.like(f'%{term}%'),
+                        )
+                    )
+                get_combos = (
+                    Combo.query.filter(
+                        *conditions
+                    )
+                    .order_by(Combo.id.desc())
+                    .paginate(page=page, per_page=10)
+                )
+            else:
+                get_combos = (
+                    Combo.query.filter(getattr(Combo, escolha).like(search))
+                    .filter(Combo.id != 0)
+                    .order_by(Combo.data_inicil_combo.desc())
+                    .paginate(page=page, per_page=10)
+                )
+        return render_template(
+            "Combo/combo.html",
+            Adicionar=get_serviso,
+            combos=get_combos,
+            busca=busca,
+            escolha=escolha,
+        )
+    except Exception as erro:
+        MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
+        return render_template("pagina_erro.html", MSG=MSG)
+
+@app.route(
+    "/adicinar_item_combo_sevico/<int:idSevico>/<int:idCombo>", methods=["GET", "POST"]
+)
+@login_required
+@nome_required
+@verificacao_nivel(2)
+def adicinar_item_combo_sevico(idSevico,idCombo):
+    get_serviso = Serviso.query.get_or_404(idSevico)
+    
+    if not Serviso:
+        flash("Erro Consulte o Desenvolvedor!", "cor-cancelar")
+        return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
+    if get_serviso.id != 0 and get_serviso.status == "Finalizado":
+        flash("Evite utilizar diretamente a barra de navegação para percorrer o conteúdo.", "cor-cancelar")
+        return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
+    else:
+        getCombo = Combo.query.get_or_404(idCombo)
+        peca_os_atual = json.loads(getCombo.peca_os_combo)
+        if not (("itens" in getCombo.peca_os_combo and json.loads(getCombo.peca_os_combo)["itens"]) or ("itens" in getCombo.mo_os_combo and json.loads(getCombo.mo_os_combo)["itens"])):
+            semItens = 'semItens'
+            flash("Faltam itens neste Combo.", "cor-alerta")
+            return redirect(url_for("AbriCombosSevico", id=get_serviso.id,semItens=semItens))
+        if "itens" in peca_os_atual:
+            novos_itens_peca = []
+            for item in peca_os_atual["itens"]:
+                peca_id = item.get("peca_id")
+                un = item.get("un")
+                peca_nome = item.get("peca_nome")
+                lado = item.get("lado")
+                valor_final = item.get("valor_final")
+                peca_codigo = item.get("peca_codigo")
+                valor_custo = item.get("valor_custo")
+                valor_estoque = 0
+                try:
+                    getPeca = Peca.query.get_or_404(peca_id)
+                    if getPeca:
+                        if peca_id == getPeca.id:
+                            if get_serviso.status == "Aprovado":
+                                if peca_id.estoque != 0:
+                                    valor_atual = int(peca_id.estoque) - int(un)
+                                    if int(peca_id.estoque) > int(un):
+                                        valor_estoque = un
+                                    else:
+                                        valor_estoque = peca_id.estoque
+                                    if valor_atual < 0:
+                                        valor_atual = 0
+                                    peca_id.estoque = valor_atual
+                                    db.session.commit()
+                except:
+                    pass
+                novo_item = {
+                    "peca_id": peca_id,
+                    "peca_codigo": peca_codigo,
+                    "peca_nome": peca_nome,
+                    "un": un,
+                    "lado": lado,
+                    "em_estoque": valor_estoque,
+                    "valor_custo": valor_custo,
+                    "valor_final": valor_final,
+                }
+                novos_itens_peca.append(novo_item)
+            peca_os_atual["itens"] = novos_itens_peca
+            get_serviso.peca_os = json.dumps(peca_os_atual)
+
+            db.session.commit()
+        
+        MaoObra_os_atual = json.loads(getCombo.mo_os_combo)
+        if "itens" in MaoObra_os_atual:
+            novos_itens_mdo = []
+            for item_MDO in MaoObra_os_atual["itens"]:
+                mo_id = item_MDO.get("MDO_id")
+                mo_preso = item_MDO.get("MDO_preso")
+                mo_nome = item_MDO.get("MDO_nome")
+                novo_item = {
+                    "MDO_id": mo_id,
+                    "MDO_nome": mo_nome,
+                    "MDO_preso": mo_preso,
+                }
+                novos_itens_mdo.append(novo_item)  
+            MaoObra_os_atual["itens"] = novos_itens_mdo
+            get_serviso.mo_os = json.dumps(MaoObra_os_atual)
+            db.session.commit()
+    flash("Combo adicionado com sucesso!", "cor-ok")
+    return redirect(f"/AbrirServico/{get_serviso.id}/tratatar")
+
+
+
+# Pecas do Serviços
 @app.route("/EscolhaPecas/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
@@ -800,7 +968,6 @@ def adicinar_item_peca():
             "cor": "cor-ok",
         }
     return jsonify(response_data)
-
 
 
 @app.route("/atualizar_uni_pecas/<int:servico_id>/<int:item_id>", methods=["PUT"])

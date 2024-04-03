@@ -38,16 +38,34 @@
                 <option value="status">Status</option>
                 {% endif %}
             </select>
-            <button id="search-button" formaction="/searchCombo/{{status}}">Buscar</button>
+            {%if Adicionar%}
+            <button id="search-button" formaction="/searchComboServico/{{Adicionar.id}}">Buscar</button>
+            {%else%}
+            <button id="search-button" formaction="/searchCombo">Buscar</button>
+            {%endif%}
+            
 
         </form>
     </div>
 </div>
 <div class="custom-validation-message" id="customMessage"></div>
 
+{%if Adicionar%}
+{%if Adicionar.status == "Editar"%}
+<div class="botao-add">
+    <a href="{{url_for('finalizarEdit', id=Adicionar.id)}}" class="button-pequeno cor-alerta">Retornar</a>
+</div>
+{%else%}
+<div class="botao-add">
+    <a href="{{url_for('AbrirServico', id=Adicionar.id,tratatar='tratatar')}}"
+        class="button-pequeno cor-alerta">Retornar {{Adicionar.status}}</a>
+</div>
+{%endif%}
+{%else%}
 <div class="botao-add">
     <a href="{{url_for('addCombo')}}" class="button-pequeno cor-ok">Adicionar Combo</a>
 </div>
+{%endif%}
 
 <div class="mobile-table">
     <table class="mobile-table">
@@ -134,6 +152,14 @@
                             </tr>
                             {% endif %}
                             <tr>
+                                {%if Adicionar%}
+                                <td colspan="2">
+                                    <a
+                                        href="{{url_for('adicinar_item_combo_sevico', idSevico=Adicionar.id, idCombo=item.id)}}"><input
+                                            type="submit" class="cor-ok" name="" value="Adicionar"></a>
+                                </td>
+                                {%else%}
+                                
                                 {%if session["nivel"] >= 4%}
                                 <td>
                                     <input type="button" onclick="showDiv('Combos', '{{item.id}}', '{{item.nome}}')"
@@ -146,7 +172,10 @@
                                             name="" value="Editar"></a>
                                 </td>
 
+                                
+                                {%endif%}
                             </tr>
+
                     </table>
                 </td>
             </tr>
@@ -154,7 +183,60 @@
         </tbody>
     </table>
 </div>
-
+{%if Adicionar%}
+<div class="pagination">
+    {% if combos.has_prev %}
+    {% if busca %}
+    <form action="{{ url_for('searchComboServico',id=Adicionar.id, page=AbriCombosSevico.prev_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&lt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=AbriCombosSevico.prev_num) }}">&lt;</a>
+    {% endif %}
+    {% endif %}
+    {% if combos.total > 10 %}
+    {% for page_num in AbriCombosSevico.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if page_num %}
+    {% if combos.page == page_num %}
+    {%if busca %}
+    <form action="{{ url_for('searchComboServico', id=Adicionar.id, page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button class="paginationActive" type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a class="paginationActive" href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=page_num) }}">{{ page_num
+        }}</a>
+    {% endif %}
+    {% else %}
+    {%if busca %}
+    <form action="{{ url_for('searchComboServico', id=Adicionar.id, page=page_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">{{ page_num }}</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=page_num) }}">{{ page_num }}</a>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if combos.has_next %}
+    {% if busca %}
+    <form action="{{ url_for('searchComboServico', id=Adicionar.id, page=AbriCombosSevico.next_num) }}" method="POST">
+        <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+        <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+        <button type="submit">&gt;</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=AbriCombosSevico.next_num) }}">&gt;</a>
+    {% endif %}
+    {% endif %}
+</div>
+{%else%}
 <div class="pagination">
     {% if combos.has_prev %}
     {% if busca %}
@@ -206,5 +288,7 @@
     {% endif %}
     {% endif %}
 </div>
+{%endif%}
+
 
 {% endblock content %}

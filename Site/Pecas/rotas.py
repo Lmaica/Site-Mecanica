@@ -387,6 +387,40 @@ def deletePecas(id):
             try:
                 db.session.delete(getPeca)
                 db.session.commit()
+                
+                try:
+                    if getPeca.image_1 != "foto.jpg":
+                        os.remove(
+                            os.path.join(
+                                current_app.root_path, "static/imagens/" + getPeca.image_1
+                            )
+                        )
+                    else:
+                        pass
+                except Exception as e:
+                    pass
+                try:
+                    if getPeca.image_1 != "foto.jpg":
+                        os.remove(
+                            os.path.join(
+                                current_app.root_path, "static/imagens/" + getPeca.image_2
+                            )
+                        )
+                    else:
+                        pass
+                except:
+                    pass
+                try:
+                    if getPeca.image_1 != "foto.jpg":
+                        os.remove(
+                            os.path.join(
+                                current_app.root_path, "static/imagens/" + getPeca.image_3
+                            )
+                        )
+                    else:
+                        pass
+                except:
+                    pass
                 flash(
                     f"A Peça foi Deletada com Sucesso!!!",
                     "cor-ok",

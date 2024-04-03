@@ -12,7 +12,12 @@
         style="background-color: aliceblue; font-size: 20px; display: inline-block; border-radius: 20px; padding: 10px;">
         <strong>ID: </strong>{{ Servico.id }}
     </div>
-    <a><input type="submit" class="button-grande cor-alerta" onclick="gerarPDF({{Servico.id}})" name="" value="PDF"></a>
+    <a class="download-button" href="#" onclick="gerarPDF({{Servico.id}})">
+        <span class="button-text">PDF</span>
+        <i class="fas fa-download"></i>
+    </a>
+
+
 </div>
 {%endif%}
 <input type="hidden" name="Ser_id" id="Ser_id" value="{{ Servico.id }}">
@@ -132,7 +137,9 @@
                 <th style="background-color: #444343; font-size: 120%;">Dados do Orçamento</th>
             </tr>
         </thead>
+
         <tbody>
+
             {% if status == 'Finalizado' %}
             {%else%}
             <tr>
@@ -140,12 +147,17 @@
                     <div style="display: flex; justify-content: space-between;">
                         <div style="padding: 5px;">
                             <a href="{{url_for('EscolhaMDO', id=Servico.id)}}" onclick="return validarCampos();">
-                                <input type="submit" class="cor-ok" name="" value="Add Mão de Obra">
+                                <input type="submit" class="cor-ok" name="" value="Add Mão/De/Obra">
                             </a>
                         </div>
                         <div style="padding: 5px;">
                             <a href="{{url_for('AddItensManual', id=Servico.id)}}" onclick="return validarCampos();">
-                                <input type="submit" class="cor-alerta" name="" value="Add Item Manualmente">
+                                <input type="submit" class="cor-ok" name="" value="Add Manualmente">
+                            </a>
+                        </div>
+                        <div style="padding: 5px;">
+                            <a href="{{url_for('AbriCombosSevico', id=Servico.id)}}" onclick="return validarCampos();">
+                                <input type="submit" class="cor-ok" name="" value="Add Combo">
                             </a>
                         </div>
                         <div style="padding: 5px;">
@@ -192,8 +204,8 @@
                                     {% if status == 'Finalizado' %}
                                     <p>{{ item_peca.lado }}</p>
                                     {%else%}
-                                    <select name="lado" class="semselect2 searchselector lado" data-item-id="{{ loop.index0 }}"
-                                        onchange="atualizarLadoPecas(this)">
+                                    <select name="lado" class="semselect2 searchselector lado"
+                                        data-item-id="{{ loop.index0 }}" onchange="atualizarLadoPecas(this)">
                                         <option value="{{ item_peca.lado }}" selected>{{ item_peca.lado }}</option>
                                         <option value="S">Sem Lado</option>
                                         <option value="L/D">Direita</option>
@@ -276,9 +288,12 @@
     {%else%}
     <textarea id="obsSer" name="obsSer" rows="5" cols="40">{{Servico.obs}}</textarea>
     {%endif%}
+</div>
+<div class="botao-add" style="padding: 10px;">
+    <a style="border-radius: 10px; padding-left: 5px;padding-right: 5px; color: #000000; text-decoration: none; background-color: #f4f4f4; border: 1px solid #000000; display: inline-block;"
+        href="{{url_for('addComboServico', id=Servico.id)}}">Criar Combo da O.S</a>
 
 </div>
-
 <div style="padding: 20px;">
     {%if session["nivel"] >= 3%}
     {% if status == 'Orçamento' %}

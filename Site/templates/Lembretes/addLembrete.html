@@ -26,9 +26,5 @@
         <a href="{{url_for('Lembretes')}}" class="button-medio cor-cancelar">CANCELAR</a>
     </fieldset>
 </form>
-<script>
-    var destinatarioSelect = document.getElementById("destinatario-select");
-    var coperadorOption = destinatarioSelect.querySelector('option[value="COPERADOR"]');
-    coperadorOption.disabled = true;
-</script>
+
 {% endblock content %}

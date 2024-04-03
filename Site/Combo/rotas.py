@@ -21,6 +21,7 @@ from Site.Fornecedor.modelos import Fornecedor
 from Site.Global.fun_global import Calculos_gloabal, Redutor_codigo, Edit_global
 from Site.Carros.modelos import Carro
 from datetime import datetime, timedelta 
+from Site.Servicos.modelos import Serviso
 
 # Dados do Serviços 
 @app.route("/combos", methods=["GET", "POST"])
@@ -38,6 +39,7 @@ def combos():
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
+
 
 @app.route("/addCombo", methods=["GET", "POST"])
 @login_required
@@ -103,7 +105,7 @@ def searchCombo():
                     .paginate(page=page, per_page=10)
                 )
             return render_template(
-                "combos/combos.html",
+                "Combo/combo.html",
                 combos=get_combos,
                 busca=busca,
                 escolha=escolha,
@@ -124,6 +126,17 @@ def deleteCombos(id):
             try:
                 db.session.delete(getCombo)
                 db.session.commit()
+                try:
+                    if getCombo.image_1 != "foto.jpg":
+                        os.remove(
+                            os.path.join(
+                                current_app.root_path, "static/imagens/" + getCombo.image_1
+                            )
+                        )
+                    else:
+                        pass
+                except Exception as e:
+                    pass
                 flash(
                     f"A Peça foi Deletada com Sucesso!!!",
                     "cor-ok",
@@ -142,7 +155,6 @@ def deleteCombos(id):
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-
 @app.route("/AbrirCombo/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
@@ -150,12 +162,10 @@ def deleteCombos(id):
 def AbrirCombo(id):
     data_atual = datetime.now()
     get_combo = Combo.query.get_or_404(id)
-    
-    if ("itens" in get_combo.peca_os_combo and json.loads(get_combo.peca_os_combo)["itens"]) or ("itens" in get_combo.mo_os_combo and json.loads(get_combo.mo_os_combo)["itens"]) and get_combo.nome != '' and get_combo.obs != '' and get_combo.carro != '""' and get_combo.image_1 != 'foto.jpg' and get_combo.data_inicil_combo < data_atual and get_combo.data_final_combo > data_atual:
+    if (("itens" in get_combo.peca_os_combo and json.loads(get_combo.peca_os_combo)["itens"]) or ("itens" in get_combo.mo_os_combo and json.loads(get_combo.mo_os_combo)["itens"])) and get_combo.nome != '' and get_combo.obs != '' and get_combo.carro != '""' and get_combo.image_1 != 'foto.jpg' and get_combo.data_inicil_combo < data_atual and (get_combo.data_final_combo is None or get_combo.data_final_combo > data_atual):
         get_combo.atividade = 'Ativo'
     else:
         get_combo.atividade = None
-
     db.session.commit()
     peca_os = json.loads(get_combo.peca_os_combo)
     getPecas = Peca.query.order_by(Peca.id).all()
@@ -324,6 +334,26 @@ def AbrirCombo(id):
         marcas=marcas,
     )
 
+
+@app.route("/addComboServico/<int:id>", methods=["GET", "POST"])
+@login_required
+@nome_required
+@verificacao_nivel(2)
+def addComboServico(id):
+    get_serviso = Serviso.query.get_or_404(id)
+    get_Combo = Combo(
+        status="Normal",
+        nome='',
+        peca_os_combo=get_serviso.peca_os,
+        mo_os_combo=get_serviso.mo_os,
+        obs='',
+        image_1='foto.jpg',
+    )
+    db.session.add(get_Combo)
+    db.session.commit()
+    filtro = Combo.query.order_by(desc(Combo.id)).first()
+    getCombo = filtro
+    return redirect(f"/AbrirCombo/{getCombo.id}")
 
 # Pecas do Serviços
 @app.route("/AddItensManualCombo/<int:id>", methods=["GET", "POST"])

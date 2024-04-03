@@ -209,11 +209,14 @@
                                                 <input type="hidden" id="numero_peca" name="numero_peca"
                                                     value="{{ Peca.id }}">
 
-                                                
+
                                                 {% if AdicionarCombo %}
-                                                <input type="submit" onclick="enviarFormularioCombo('{{ Peca.id }}', event)" class="cor-ok" value="Adicionar ao Combo">
+                                                <input type="submit"
+                                                    onclick="enviarFormularioCombo('{{ Peca.id }}', event)"
+                                                    class="cor-ok" value="Adicionar ao Combo">
                                                 {% else %}
-                                                <input type="submit" onclick="enviarFormulario('{{ Peca.id }}', event)" class="cor-ok" value="Adicionar ao Servico">
+                                                <input type="submit" onclick="enviarFormulario('{{ Peca.id }}', event)"
+                                                    class="cor-ok" value="Adicionar ao Servico">
                                                 {%endif%}
 
                                             </form>
