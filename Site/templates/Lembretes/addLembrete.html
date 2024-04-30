@@ -1,8 +1,6 @@
-{% extends 'layouts.html'%}
+{% extends 'NavAdimin.html' %}
 
 {% block content %}
-{% include '_menssagem.html'%}
-{% include 'NavAdimin.html' %}
 {% from "_formularioAjuda.html" import render_field %}
 {% if lembrete %}
 <h2  class="cabeçario-pagina">Editar Lembrete</h2>

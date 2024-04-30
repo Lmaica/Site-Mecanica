@@ -49,10 +49,12 @@ def addCombo():
     dadosJson = {"itens": []}
     get_Combo = Combo(
         status="Normal",
+        tipo="Basico",
         nome='',
         peca_os_combo=json.dumps(dadosJson),
         mo_os_combo=json.dumps(dadosJson),
         obs='',
+        valor_total='',
         image_1='foto.jpg',
     )
     db.session.add(get_Combo)
@@ -84,7 +86,8 @@ def searchCombo():
                             Combo.id.like(f'%{term}%'),
                             Combo.nome.like(f'%{term}%'),
                             Combo.status.like(f'%{term}%'),
-                            Combo.status.like(f'%{term}%'),
+                            Combo.carro.like(f'%{term}%'),
+                            Combo.tipo.like(f'%{term}%'),
                             Combo.peca_os_combo.like(f'%{term}%'),
                             Combo.mo_os_combo.like(f'%{term}%'),
                             Combo.obs.like(f'%{term}%'),
@@ -162,6 +165,7 @@ def deleteCombos(id):
 def AbrirCombo(id):
     data_atual = datetime.now()
     get_combo = Combo.query.get_or_404(id)
+    
     if (("itens" in get_combo.peca_os_combo and json.loads(get_combo.peca_os_combo)["itens"]) or ("itens" in get_combo.mo_os_combo and json.loads(get_combo.mo_os_combo)["itens"])) and get_combo.nome != '' and get_combo.obs != '' and get_combo.carro != '""' and get_combo.image_1 != 'foto.jpg' and get_combo.data_inicil_combo < data_atual and (get_combo.data_final_combo is None or get_combo.data_final_combo > data_atual):
         get_combo.atividade = 'Ativo'
     else:
@@ -841,11 +845,13 @@ def dadosCombo(Com_id):
     data_atual = datetime.now()
     atividade_combo = 0
     nome = request.form.get("nome").strip()
+    totalInput = request.form.get("totalInput").strip()
     if nome == '':
         atividade_combo = 0
     else:
         atividade_combo += 1
     status = request.form.get("status")
+    tipo = request.form.get("tipo")
     
     data_inicil_combo = request.form.get("data_inicil_combo")
     data_inicial_for = datetime.strptime(data_inicil_combo, "%Y-%m-%d")
@@ -923,9 +929,11 @@ def dadosCombo(Com_id):
         getCombo.atividade = 'Ativo'
     else:
         getCombo.atividade = None 
-  
+
     getCombo.nome = nome.upper()
     getCombo.status = status 
+    getCombo.tipo = tipo 
+    getCombo.valor_total = totalInput 
     getCombo.data_inicil_combo = data_inicial_for
     getCombo.data_final_combo = data_fim_for
     getCombo.obs = obs

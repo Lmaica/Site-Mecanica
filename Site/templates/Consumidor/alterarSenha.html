@@ -1,0 +1,46 @@
+{% extends 'NavAdimin.html' %}
+
+{% block contentConsumidor %}
+
+{% from "_formularioAjuda.html" import render_field %}
+<h2 style="padding: 20px;">Modificar Senha</h2>
+<form method="post" enctype="multipart/form-data" action="{{ url_for('alterarSenhaConsumidor', id=users.id) }}">
+    <fieldset class="containerForm">
+        <div class="containerDados">
+            {{ form.csrf_token }}
+            <div style="position: relative;" class="input-container">
+                {{ form.senha_nova.label }}
+                {{ form.senha_nova(id="senha_nova", class="login-input anular", placeholder="Senha") }}
+                <span class="password-toggle" onclick="togglePasswordVisibility('senha_nova')"> 🔒</span>
+            </div>
+            <div style="position: relative;" class="input-container">
+                {{ form.confirmacao_senha.label }}
+                {{ form.confirmacao_senha(id="confirmacao_senha", class="login-input anular", placeholder="Senha")
+                }}
+                <span class="password-toggle" onclick="togglePasswordVisibility('confirmacao_senha')"> 🔒</span>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        {{ form.submit(value="ATUALIZAR", class="button-grande cor-ok") }}
+        <a href="{{url_for('dadosConsumidor',id=session['id_consumidor'])}}" class="button-medio cor-cancelar">CANCELAR</a>
+    </fieldset>
+</form>
+</div>
+
+<script>
+    function togglePasswordVisibility(fieldId) {
+        const senhaInput = document.getElementById(fieldId);
+        const passwordToggle = senhaInput.nextElementSibling;
+
+        if (senhaInput.type === 'password') {
+            senhaInput.type = 'text';
+            passwordToggle.textContent = '🔓';
+        } else {
+            senhaInput.type = 'password';
+            passwordToggle.textContent = '🔒';
+        }
+    }
+</script>
+
+{% endblock contentConsumidor %}

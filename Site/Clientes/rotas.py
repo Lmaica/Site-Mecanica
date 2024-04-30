@@ -24,112 +24,6 @@ from sqlalchemy import desc, or_
 from faker import Faker
 
 #send_file
-@app.route("/lopClientesVeiculos/<int:numero>")
-@login_required
-@nome_required
-@verificacao_nivel(3)
-def lopClientesVeiculos(numero):
-    fake = Faker('pt_BR')
-
-    def formatar_data(data):
-        return datetime.strptime(data, '%d/%m/%Y').date()
-
-    def gerar_cliente():
-        tipo_cliente = random.choice(['pessoa_fisica', 'pessoa_juridica'])
-
-        if tipo_cliente == 'pessoa_fisica':
-            cadastrar = Cliente(
-                nome=fake.name().upper(),
-                fone=f"({fake.random_int(10, 99)}) {fake.random_int(90000, 99999)}-{fake.random_int(1000, 9999)}",
-                fone1=f"({fake.random_int(10, 99)}) {fake.random_int(90000, 99999)}-{fake.random_int(1000, 9999)}",
-                email=fake.email(),
-                niver=formatar_data(fake.date_of_birth(minimum_age=18, maximum_age=80).strftime('%d/%m/%Y')),
-                cpf=fake.cpf(),
-                rg=fake.random_number(digits=8),
-                cep=fake.postcode(),
-                estado=fake.state_abbr(),
-                cidade=fake.city(),
-                bairro=fake.word().upper(),
-                rua=fake.street_name().upper(),
-                nuCasa=fake.building_number(),
-                complemento=fake.word().upper(),
-                foto="foto.jpg",
-                statu="ATIVO",
-                pjoucpf=0
-            )
-        elif tipo_cliente == 'pessoa_juridica':
-            cadastrar = Cliente(
-                nome=fake.name().upper(),
-                razaoSocial=fake.company().upper(),
-                nomeFantasia=fake.company().upper(),
-                cnpj=fake.cnpj(),
-                fone=f"({fake.random_int(10, 99)}) {fake.random_int(90000, 99999)}-{fake.random_int(1000, 9999)}",
-                fone1=f"({fake.random_int(10, 99)}) {fake.random_int(90000, 99999)}-{fake.random_int(1000, 9999)}",
-                email=fake.company_email(),
-                niver=formatar_data(fake.date_of_birth(minimum_age=18, maximum_age=80).strftime('%d/%m/%Y')),
-                cep=fake.postcode(),
-                estado=fake.state_abbr(),
-                cidade=fake.city(),
-                bairro=fake.word().upper(),
-                rua=fake.street_name().upper(),
-                nuCasa=fake.building_number(),
-                complemento=fake.word().upper(),
-                foto="foto.jpg",
-                statu="ATIVO",
-                pjoucpf=1
-            )
-        else:
-            raise ValueError("Tipo de cliente inválido.")
-
-        db.session.add(cadastrar)
-        return cadastrar
-
-    def gerar_chassi_ficticio():
-        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=17))
-
-    def gerar_placa_ficticia(placas_usadas):
-        placa = None
-        while placa is None or placa in placas_usadas:
-            letras = random.choices(string.ascii_uppercase, k=3)
-            numeros = random.choices(string.digits, k=4)
-            placa = f"{''.join(letras)}-{'' .join(numeros)}"
-        placas_usadas.add(placa)
-        return placa
-
-    def criar_carros_para_clientes(lista_carros, lista_clientes):
-        if not lista_carros or not lista_clientes:
-            return None
-
-        placas_usadas = set()
-
-        for cliente in lista_clientes:
-            carro = random.choice(lista_carros)
-            placa = gerar_placa_ficticia(placas_usadas)
-            km = random.randint(0, 100000)
-            chassi = gerar_chassi_ficticio()
-
-            veiculo = Veiculo(
-                placa=placa,
-                carro_id=carro.id,
-                km=km,
-                cliente_id=cliente.id,
-                chassi=chassi,
-            )
-
-            db.session.add(veiculo)
-
-        db.session.commit()
-        return "Carros criados com sucesso para os clientes."
-
-    
-    clientes = [gerar_cliente() for _ in range(numero)]
-    db.session.commit()
-
-    lista_carros = Carro.query.all()
-    lista_clientes = Cliente.query.all()
-    criar_carros_para_clientes(lista_carros, lista_clientes)
-
-    return redirect("/clientes")
 
     
 @app.route("/clientes")
@@ -137,7 +31,7 @@ def lopClientesVeiculos(numero):
 @nome_required
 @verificacao_nivel(3)
 def clientes():
-        
+    try:    
         page = request.args.get("page", 1, type=int)
         clientes = Cliente.query.order_by(Cliente.id.desc()).paginate(
             page=page, per_page=10
@@ -146,7 +40,9 @@ def clientes():
         return render_template(
             "Clientes/cliente.html", clientes=clientes, veiculos=veiculos
         )
- 
+    except Exception as erro:
+        MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
+        return render_template("pagina_erro.html", MSG=MSG)
 
 @app.route("/addCliente", methods=["GET", "POST"])
 @login_required
@@ -207,7 +103,7 @@ def addCliente():
                     razaoSocial=razaoSocial,
                     nomeFantasia=nomeFantasia,
                     cnpj=cnpj,
-                    senha=hash_senha,
+                    senha=None,
                     cep=form.cep.data.strip(),
                     estado=form.estado.data.upper().strip(),
                     cidade=form.cidade.data.upper().strip(),

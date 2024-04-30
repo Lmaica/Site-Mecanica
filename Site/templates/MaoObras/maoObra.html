@@ -1,4 +1,4 @@
-{% extends 'layouts.html' %}
+{% extends 'NavAdimin.html' %}
 
 {% block content %}
 <h2 class="cabeçario-pagina">Mão de Obra</h2>
@@ -45,6 +45,9 @@
             {% if Adicionar %}
             <input type="hidden" name="id" value="{{ Adicionar.id }}" style="display: none;">
             <button id="search-button" formaction="/searchMDOAdicionar">Buscar</button>
+            {% elif AdicionarCombo %}
+            <input type="hidden" name="id" value="{{ AdicionarCombo.id }}" style="display: none;">
+            <button id="search-button" formaction="/searchMDOAdicionarCombo">Buscar</button>
             {% else %}
             <button id="search-button" formaction="/searchMaoObras">Buscar</button>
             {%endif%}
@@ -145,8 +148,8 @@
                                             <input type="hidden" id="numero_mdo" name="numero_mdo"
                                                 value="{{ MaoObra.id }}">
                                             <input type="submit"
-                                                onclick="enviarFormularioMDOCombo('{{ MaoObra.id }}', event)" class="cor-ok"
-                                                value="Adicionar ao Combo">
+                                                onclick="enviarFormularioMDOCombo('{{ MaoObra.id }}', event)"
+                                                class="cor-ok" value="Adicionar ao Combo">
                                         </form>
                                         {% else %}
                                         <form id="meu-formulario-{{ MaoObra.id }}" action="/adicinar_item_MaoObra"

@@ -1,4 +1,4 @@
-{% extends 'layouts.html'%}
+{% extends 'NavAdimin.html' %}
 
 {% block content %}
 <h2 class="cabeçario-pagina">{{status}}</h2>
@@ -16,8 +16,6 @@
         <span class="button-text">PDF</span>
         <i class="fas fa-download"></i>
     </a>
-
-
 </div>
 {%endif%}
 <input type="hidden" name="Ser_id" id="Ser_id" value="{{ Servico.id }}">
@@ -540,7 +538,6 @@
     {%else%}
     {%endif%}
     <div style="font-size: 12px; display: flex;">
-
         <p><strong>Data:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
     </div>
     {%else%}
@@ -590,7 +587,7 @@
             adicioneados.removeChild(divs[divs.length - 1]);
         }
     }
-    // Cria o PDF
+
     function CriarPDF() {
 
         var notasFiscais = document.querySelectorAll('.nota-servico');
@@ -632,7 +629,5 @@
             }
         });
     }
-
-
 </script>
 {% endblock content %}

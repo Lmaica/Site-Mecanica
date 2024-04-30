@@ -1,0 +1,703 @@
+{% extends 'layouts.html' %}
+
+{% block contentAdimin %}
+
+{% if contentConsumidor %}
+<style>
+    .margens-consumidor {
+        padding-bottom: 40px;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    .rodape {
+        background-color: #333;
+        color: #fff;
+        padding: 50px 0;
+        text-align: center;
+        padding: 10px;
+        padding-bottom: 50px;
+    }
+
+    .rodape h3 {
+        color: #fff;
+        font-size: 24px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #fff;
+        padding-bottom: 10px;
+        display: inline-block;
+    }
+
+    .rodape h3::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 0;
+        height: 2px;
+        background-color: #fff;
+        transition: width 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+
+    .rodape ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        /* Altera o layout para flexbox */
+        justify-content: center;
+        /* Alinha os itens ao centro horizontalmente */
+    }
+
+    .rodape ul li {
+        margin-right: 20px;
+        /* Adiciona espaço entre os itens */
+    }
+
+    /* Para remover a margem direita do último item */
+    .rodape ul li:last-child {
+        margin-right: 0;
+    }
+
+    .rodape p,
+    .rodape ul {
+        color: #ccc;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .rodape ul li a {
+        color: #fff;
+        font-size: 25px;
+        margin-right: 10px;
+        transition: color 0.3s ease;
+    }
+
+    .rodape ul li a span {
+        font-size: 15px;
+    }
+
+    .rodape ul li a:hover {
+        color: #616161 !important;
+    }
+
+    a:hover {
+        color: rgb(0, 0, 0) !important;
+    }
+
+    #DadosAcimaConsumidor {
+        display: flex;
+        position: absolute;
+        width: 100%;
+        height: 8%;
+        bottom: 0;
+        top: auto;
+        border-top: 1px solid #ffffff00;
+        z-index: 2;
+    }
+
+    .dados-superior-consumidor {
+        display: flex;
+    }
+
+    #DadosAcimaConsumidor .dados-superior-consumidor {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    #DadosAcimaConsumidor .login-logat {
+        display: flex;
+        position: absolute;
+        top: 0;
+        right: 0;
+
+    }
+
+    #DadosAcimaConsumidor .login-logat h4 {
+        color: #fff;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    #DadosAcimaConsumidor .login-logat p {
+        color: #fff;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    #DadosAcimaConsumidor .login-logat p a {
+        color: #fff;
+        padding: 20px;
+    }
+
+    #DadosAcimaConsumidor .title-logo {
+        display: flex;
+        font-size: 1vw;
+        white-space: nowrap;
+        padding-right: 10px;
+    }
+
+    #DadosAcimaConsumidor .title-logo img {
+        display: flex;
+        height: 9.8vh;
+    }
+
+    #DadosAcimaConsumidor nav {
+        padding-left: 20px;
+        margin-right: auto;
+    }
+
+    #DadosAcimaConsumidor nav ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #DadosAcimaConsumidor nav ul li {
+        border-radius: 50px;
+        display: inline-block;
+        margin-left: 20px;
+        padding: 5px;
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    #DadosAcimaConsumidor nav ul li:first-child {
+        margin-left: 0;
+    }
+
+    #DadosAcimaConsumidor nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.2vw;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    #DadosAcimaConsumidor nav ul li a img {
+        width: 30px;
+    }
+
+    #DadosAcimaConsumidor nav ul li:hover {
+        transform: scale(1.05);
+    }
+
+
+
+    #content-consumidor {
+        position: relative;
+        z-index: 1;
+        overflow: auto;
+        top: 10vh;
+        width: 100%;
+        height: 90vh;
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+
+    }
+
+
+    #DadosAcimaConsumidor {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: fixed;
+        width: 100%;
+        height: 10vh;
+        left: 0;
+        top: 0;
+        border-top: 1px solid #ffffff00;
+    }
+
+
+
+    .consumidorMenuDesk {
+        display: block;
+    }
+
+    .consumidorMenuMobile {
+        display: none !important;
+    }
+
+    #menuConsumidor {
+        display: none;
+    }
+
+    .img-logo {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    #search-consumidor {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    /* Styling the input field */
+    .search-box-consumidor {
+        display: inline-block;
+        position: relative;
+    }
+
+    .search-box-consumidor input[type="text"] {
+        padding: 10px;
+        font-size: 16px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        width: 250px;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .search-box-consumidor input[type="text"]:focus {
+        border-color: #000000;
+    }
+
+    #search-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    #search-button:hover {
+        background-color: #45a049;
+    }
+
+    @media screen and (max-width: 768px) {
+        .rodape ul li a span {
+            display: none;
+        }
+
+        .rodape {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .rodape .col-md-6 {
+            margin-bottom: 0;
+        }
+
+        .rodape .col-md-6:last-child {
+            text-align: left;
+        }
+
+        #menuConsumidor {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            color: #fff;
+            transition: left 0.3s ease-in-out;
+            z-index: 2;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        #DadosAcimaConsumidor .dados-superior-consumidor p,
+        #DadosAcimaConsumidor .dados-superior-consumidor nav {
+            display: none;
+        }
+
+        #DadosAcimaConsumidor .login-logat {
+            display: none;
+
+        }
+
+        #DadosAcimaConsumidor .title-logo {
+            display: flex;
+            font-size: 2.7vw;
+            padding-right: 50px;
+            white-space: nowrap;
+        }
+
+        #DadosAcimaConsumidor .title-logo img {
+            display: flex;
+            height: 9.8vh;
+            margin-right: 1vw;
+        }
+
+        .margens-consumidor {
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .consumidorMenuMobile {
+            display: block !important;
+            height: 100px !important;
+
+        }
+
+        .consumidorMenuMobile a {
+            position: relative !important;
+            height: 30px;
+
+        }
+
+        .inferiorMenuMobile {
+            padding-top: 30px !important;
+            width: 85%;
+            max-height: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .consumidorMenuDesk {
+            display: none;
+        }
+    }
+</style>
+<footer id="DadosAcimaConsumidor" class="principalCorMesclada">
+    <div class="dados-superior-consumidor">
+        <div class="title-logo">
+            <div class="img-logo">
+                <img src="{{ url_for('static', filename='img/logosemfundo.ico') }}" alt="Logo">
+            </div>
+            <h1>Maicá Manutenção Automotiva</h1>
+        </div>
+        <div class="login-logat">
+            {% if session["consumidor"] %}
+            <h4>{{session["consumidor"]}}</h4>
+            <p>{{session["email_consumidor"]}}</p>
+            <hr>
+            <p><a href="{{url_for('cliente_consumidor_logaut')}}">Sair</a></p>
+            {% else %}
+            <p><a href="{{url_for('CriarLogin')}}">Criar conta</a></p>
+            <p><a href="{{url_for('loginCliente')}}">Login</a></p>
+            {% endif %}
+
+        </div>
+        <nav>
+            <ul>
+                <li class="principalCorUnica"><a href="/">Inicial</a></li>
+                {% if 'id_consumidor' in session %}
+                <li class="principalCorUnica"><a href="{{url_for('dadosConsumidor',id=session['id_consumidor'])}}">Área
+                        Cliente</a></li>
+                {% else %}
+                <li class="principalCorUnica"><a href="{{url_for('loginCliente')}}">Área
+                        Cliente</a></li>
+                {% endif %}
+                <li id="scrollButton" class="principalCorUnica "><a href="#">Fale Conosco</a></li>
+            </ul>
+        </nav>
+    </div>
+</footer>
+<div id="menuConsumidor">
+    <header id="NavAdmin">
+        <input id="menuButton" type="checkbox" />
+        <label for="menuButton">
+            <div class="ChecMenu">
+                <span class="hamburguer"></span>
+            </div>
+        </label>
+    </header>
+
+    <div id="menu" class="principalCorMesclada">
+        {% if session["consumidor"] %}
+        <div class="principalCorUnica">
+            <h4>{{session["consumidor"]}}</h4>
+            <hr>
+            <p>{{session["email_consumidor"]}}</p>
+            <a href="{{url_for('cliente_consumidor_logaut')}}">sair</a>
+        </div>
+        {% else %}
+        <div class="consumidorMenuMobile principalCorUnica">
+            <h4>Maicá Manutenção Automotiva</h4>
+            <hr>
+            <div class="inferiorMenuMobile">
+                <a href="{{url_for('CriarLogin')}}">Criar conta</a>
+                <a href="{{url_for('loginCliente')}}">Login</a>
+            </div>
+        </div>
+        {% endif %}
+
+
+        <ul>
+            <li class="principalCorUnica"><a href="/" onclick="closeMenu()"><img
+                        src="{{ url_for('static', filename='img/casa.png') }}" alt="">
+                    <p>Inicial</p>
+                </a></li>
+            {% if 'id_consumidor' in session %}
+            <li class="principalCorUnica"><a href="{{url_for('dadosConsumidor',id=session['id_consumidor'])}}"
+                    onclick="closeMenu()"><img src="{{ url_for('static', filename='img/colaborador.png') }}" alt="">
+                    <p>Ária Cliente</p>
+                </a></li>
+            {% else %}
+            <li class="principalCorUnica"><a href="{{url_for('loginCliente')}}" onclick="closeMenu()"><img
+                        src="{{ url_for('static', filename='img/colaborador.png') }}" alt="">
+                    <p>Ária Cliente</p>
+                </a></li>
+            {% endif %}
+            <li id="scrollButton" class="principalCorUnica"><a href="#" onclick="scrollToRow() ,closeMenu()"><img
+                        src="{{ url_for('static', filename='img/equipe.png') }}" alt="">
+                    <p>Fale Conosco</p>
+                </a></li>
+            <li class="principalCorUnica"><a href="#" onclick="closeMenu() "><img
+                        src="{{ url_for('static', filename='img/x.png') }}" alt="">
+                    <p>Fechar</p>
+                </a></li>
+        </ul>
+    </div>
+</div>
+
+<main id="content-consumidor" onclick="closeMenu()">
+    {% block contentConsumidor %}
+
+    {% endblock contentConsumidor %}
+</main>
+
+{% else %}
+<header id="NavAdmin">
+    <input id="menuButton" type="checkbox" />
+    <label for="menuButton">
+        <div class="ChecMenu">
+            <span class="hamburguer"></span>
+        </div>
+    </label>
+</header>
+
+<div id="menu" class="principalCorMesclada">
+    <div class="principalCorUnica">
+        <h4>{{session["nome"]}}</h4>
+        <hr>
+        <p>{{session["cargo"]}}</p>
+        <p>{{session["email"]}}</p>
+        <a href="{{url_for('user_logaut')}}">sair da conta </a>
+    </div>
+
+    <ul>
+        <li class="principalCorUnica"><a href="{{url_for('Admin')}}"><img
+                    src="{{ url_for('static', filename='img/casa.png') }}" alt="">
+                <p>Início</p>
+            </a></li>
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/colaborador.png') }}" alt="">
+                <p>Colaborador<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('dadosUsuario',id=session['_user_id'])}}">Dados<a></li>
+
+                {% if session["nivel"] >= 3 %}
+                <li><a href="{{url_for('relatorio')}}">Relatorios</a></li>
+                {%else%}
+                {%endif%}
+                {% if session["nivel"] >= 2 %}
+                <li><a href="{{url_for('servicoRelatorios')}}">Ária Cliente</a></li>
+                {%else%}
+                {%endif%}
+                <hr>
+            </ul>
+        </li>
+
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="{{url_for('clientes')}}" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/clientes.png') }}" alt="">
+                <p>Clientes</p>
+            </a>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="{{url_for('carros')}}" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/carro.png') }}" alt="">
+                <p>Carros</p>
+            </a>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/MDO.png') }}" alt="">
+                <p>Mão de Obra<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('MaoObras')}}">Mão de Obras</a></li>
+                <li><a href="{{url_for('Nome_para_Mao_de_Obra')}}">Nomes</a></li>
+                {%if session["nivel"] >= 4%}
+                <li><a href="{{url_for('Categorias_de_Mão_de_Obra')}}">Cateogoria</a></li>
+                {%else%}
+                {%endif%}
+                {%if session["nivel"] >= 4%}
+                <li><a href="{{url_for('ValorMDO')}}">Valor</a></li>
+                {%else%}
+                {%endif%}
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/pistao.png') }}" alt="">
+                <p>Peças<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Pecas')}}">Peças</a></li>
+                <li><a href="{{url_for('Marca_das_Pecas')}}">Marcas</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/fornecedor.png') }}" alt="">
+                <p>Fornecedor<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Fornecedors')}}">Fornecedors</a></li>
+                <li><a href="{{url_for('Cateforia_do_Fornecedor')}}">Cateogorias</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 2%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/servico.png') }}" alt="">
+                <p>Serviços<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('servisos',status='Orçamento')}}">Orçamentos</a></li>
+                {%if session["nivel"] >= 3%}
+                <li><a href="{{url_for('servisos',status='Aprovado')}}">Aprovados</a></li>
+                <li><a href="{{url_for('servisos',status='Finalizado')}}">Finalizados</a></li>
+                <li><a href="{{url_for('servisos',status='Todo')}}">Todos</a></li>
+                {%else%}
+                {%endif%}
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 3%}
+        <li class="principalCorUnica"><a href="{{url_for('combos')}}" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/caixas.png') }}" alt="">
+                <p>Combos</p>
+            </a>
+        </li>
+        {%else%}
+        {%endif%}
+        {%if session["nivel"] >= 4%}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/moeda.png') }}" alt="">
+                <p>Administrativo<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Caixas',tipo='Todos')}}">Caixas</a></li>
+                <li><a href="{{url_for('Caixas',tipo='Entrada')}}">Entradas</a></li>
+                <li><a href="{{url_for('Caixas',tipo='Saida')}}">Saidas</a></li>
+                <li><a href="{{url_for('Carteiras')}}">Carteiras</a></li>
+                <li><a href="{{url_for('Categorias_de_Caixa')}}">Categorias</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {% if session["nivel"] >= 5 %}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/grafico.png') }}" alt="">
+                <p>Metas<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('MetaBruta')}}">Bruto</a></li>
+                <li><a href="{{url_for('MetaLiquida')}}">Liquido</a></li>
+                <li><a href="{{url_for('MetaMecanico')}}">Mecanico</a></li>
+                <li><a href="{{url_for('MetaVendedor')}}">Vendedor</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {% if session["nivel"] >= 5 %}
+        <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
+                    src="{{ url_for('static', filename='img/equipe.png') }}" alt="">
+                <p>Equipe<i>&#8595;</i></p>
+            </a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('Users')}}">Colaboradores</a></li>
+                <li><a href="{{url_for('Cargos')}}">Cargos</a></li>
+                <li><a href="{{url_for('Lembretes')}}">Avisos</a></li>
+                <hr>
+            </ul>
+        </li>
+        {%else%}
+        {%endif%}
+        {% if session["nivel"] >= 6 %}
+        <li class="principalCorUnica"><a href="{{url_for('configurar')}}"><img
+                    src="{{ url_for('static', filename='img/config.png') }}" alt="">
+                <p>Configurar</p>
+            </a>
+        </li>
+        {%else%}
+        {%endif%}
+        <li class="principalCorUnica"><a href="#" onclick="closeMenu()"><img
+                    src="{{ url_for('static', filename='img/x.png') }}" alt="">
+                <p>Fechar</p>
+            </a></li>
+    </ul>
+</div>
+
+<main id="content" onclick="closeMenu()">
+    {% block content %}
+
+    {% endblock content %}
+</main>
+<footer id="DadosBaixo" class="principalCorMesclada">
+    {%if session["nivel"] >= 6%}
+    <div class="  borda-item">
+        <a href="{{url_for('configurar')}}" class=" principalCorUnica menu-item"><img
+                src="{{ url_for('static', filename='img/config.png') }}" alt=""></a>
+    </div>
+    {%else%}
+    {%endif%}
+    {%if session["nivel"] >= 2%}
+    <div class="borda-item">
+        <a href="{{url_for('servisos',status='Orçamento')}}" class="principalCorUnica menu-item"><img
+                src="{{ url_for('static', filename='img/servico.png') }}" alt=""></a>
+    </div>
+    {%else%}
+    {%endif%}
+    {%if session["nivel"] >= 1%}
+    <div class="borda-item">
+        <a href="{{url_for('Admin')}}" class="principalCorUnica menu-item"><img
+                src="{{ url_for('static', filename='img/casa.png') }}" alt=""></a>
+    </div>
+    {%else%}
+    {%endif%}
+    {%if session["nivel"] >= 4%}
+    <div class="borda-item">
+        <a href="{{url_for('Caixas',tipo='Todos')}}" class="principalCorUnica menu-item"><img
+                src="{{ url_for('static', filename='img/moeda.png') }}" alt=""></a>
+    </div>
+    {%else%}
+    {%endif%}
+    {%if session["nivel"] >= 1%}
+    <div class="borda-item">
+        <a href="{{url_for('dadosUsuario',id=session['_user_id'])}}" class="principalCorUnica menu-item"><img
+                src="{{ url_for('static', filename='img/colaborador.png') }}" alt=""></a>
+    </div>
+    {%else%}
+    {%endif%}
+</footer>
+
+{% endif %}
+{% endblock contentAdimin %}

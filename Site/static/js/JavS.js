@@ -1,8 +1,14 @@
 var menu = document.getElementById('menu');
 var content = document.getElementById('content');
+if (!content) {
+    content = document.getElementById('content-consumidor');
+}
 var menuButton = document.getElementById('menuButton');
 var NavAdmin = document.getElementById('NavAdmin');
 var DadosBaixo = document.getElementById('DadosBaixo');
+if (!DadosBaixo) {
+    DadosBaixo = document.getElementById('DadosAcimaConsumidor');
+}
 window.addEventListener("beforeunload", function () {
     showLoader();
 });
@@ -17,10 +23,9 @@ function showLoader() {
     DadosBaixo.classList.add('no-click');
     setTimeout(function () {
         location.reload();
-    }, 10000); // 5000 milissegundos = 5 segundos
+    }, 10000);
 
 }
-
 
 
 // Atulizar Configuração
@@ -40,6 +45,7 @@ $(document).ready(function () {
             for (var i = 0; i < cabeçarioPagina.length; i++) {
                 cabeçarioPagina[i].style.background = response.cores.principal_secundaria;
                 cabeçarioPagina[i].style.color = response.cores.principal_letras;
+
             }
             for (var i = 0; i < principalCorUnica.length; i++) {
                 principalCorUnica[i].style.background = response.cores.principal_botao;
@@ -59,6 +65,10 @@ $(document).ready(function () {
             for (var i = 0; i < principalCorMesclada.length; i++) {
                 principalCorMesclada[i].style.background = response.cores.principal_secundaria;;
                 principalCorMesclada[i].style.color = response.cores.principal_letras;
+                var imagem = principalCorMesclada[i].querySelector('img');
+                if (imagem) {
+                    imagem.style.filter = 'invert(' + response.icones.img_cor + '%)';
+                }
             }
 
             body.style.fontFamily = response.fontes.fonte_principal;
@@ -712,39 +722,6 @@ function atualizarLadoPecasCombo(selectElement) {
     });
 }
 
-//atulizar dados no Combo
-$(document).ready(function () {
-    $(".DadosCombo").on("input", function () {
-        var Com_id = $("#Com_id").val();
-        var campos = ["nome", "status", "data_inicil_combo", "data_final_combo", "obs", "carrosInput"];
-        var formData = new FormData();  // Crie um objeto FormData para enviar os dados
-        campos.forEach(function (campo) {
-            formData.append(campo, $("#" + campo).val());
-        });
-
-        var fileInput = document.getElementById('image_1');
-        var file = fileInput.files[0];
-        formData.append('image_1', file);
-
-        $.ajax({
-            url: "/dadosCombo/" + Com_id,
-            method: "PUT",
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                if (response.message) {
-                    $("#estadoCombo").html('<h2 style="color: green; font-weight: bold;">ATIVO</h2>');
-                } else {
-                    $("#estadoCombo").html('<h2 style="color: red; font-weight: bold;">INATIVO</h2><samp style="font-size: 80%;">O Combo só ativa com todos os dados.(Verifique data Final)</samp><br>');
-                }
-            },
-            error: function () {
-                console.log("Erro ao atualizar o item"); // Caso ocorra um erro na requisição AJAX
-            }
-        });
-    });
-});
 //Adicionar Carro no multiplo select2
 $(document).ready(function () {
     $('#add-button-combo').on('click', function (event) {
@@ -1329,7 +1306,7 @@ toggleButtons.forEach(button => {
     });
 });
 
-//Pagina dinamicamente So funciona se a tela tiver menos de 768px
+//Pagina dinamicamente So funciona se a tela tiver maior de 768px
 function loadDynamicContent(clienteId) {
     if (window.innerWidth > 760) {
         $.ajax({

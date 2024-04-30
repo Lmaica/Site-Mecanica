@@ -246,7 +246,56 @@ def deleteCarteiras(id):
 @nome_required
 @verificacao_nivel(4)
 def searchcarteiras():
-    return Redutor_codigo.search_generic(Carteirabanco, "Carteiras")
+    try:
+        if request.method == "POST":
+            page = request.args.get("page", 1, type=int)
+            form = request.form
+            search_value = form["search_string"].upper()
+            search = f"%{search_value}%"
+            escolha = str(request.form.get("searchselector"))
+            busca = search_value = form["search_string"]
+            getCaixas = Caixa.query.all()
+            get_carteiras = (
+                Carteirabanco.query.filter(getattr(Carteirabanco, escolha).like(search))
+                .order_by(Carteirabanco.id.desc())
+                .paginate(page=page, per_page=10)
+            )
+            lista_de_valores = []
+            for cart in get_carteiras:
+                carteira_id_saida = []
+                caixa_id_entrada = []
+                for cartera_caixas in getCaixas:
+                    valor_calculado = Calculos_gloabal.valor_para_Calculos(cartera_caixas.valor)
+                    if cart.id == cartera_caixas.carteira_id:
+                        if cartera_caixas.tipo == "Saida":
+                            carteira_id_saida.append(valor_calculado)
+                        else:
+                            caixa_id_entrada.append(valor_calculado)
+                somar_entrada = sum(caixa_id_entrada)
+                somar_saida = sum(carteira_id_saida)
+                somas_total = somar_entrada - somar_saida
+                somas_total = Calculos_gloabal.format_valor_moeda(somas_total)
+                lista_de_valores.append(
+                    {
+                        "id": cart.id,
+                        "nome": cart.nome,
+                        "valor": somas_total,
+                    }
+                )
+                total_caixa = Caixa.Saldo_Caixa()
+            return render_template(
+                "/umDado.html",
+                busca=busca,
+                escolha=escolha,
+                lista_de_valores=lista_de_valores,
+                perfils=get_carteiras,
+                perfil="Carteiras",
+                produto="Carteiras",
+                total_caixa=total_caixa,
+            )
+    except Exception as erro:
+        MSG = f"Erro {erro}!!! Desculpe, algo deu errado. Volte à página inicial e tente novamente!!!"
+        return render_template("pagina_erro.html", MSG=MSG)
 
 
 # Caixa

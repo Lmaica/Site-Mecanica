@@ -1,11 +1,10 @@
-{% extends 'layouts.html' %}
+{% extends 'NavAdimin.html' %}
 {% block content %}
 {%if status == 'cliente'%}
 <h2 class="cabeçario-pagina">Serviços do Cliente</h2>
 {%else%}
 <h2 class="cabeçario-pagina">{{status}}s</h2>
 {%endif%}
-
 <div id="search-container">
     <div class="search-box">
         <form style="display: flex; width: 98%;" method="POST">

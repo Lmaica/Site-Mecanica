@@ -1,7 +1,8 @@
 from Site import db, app, BaseDados
+from flask_login import UserMixin
 
 
-class Cliente(BaseDados):
+class Cliente(BaseDados, UserMixin):
     senha = db.Column(db.String, unique=False)
     statu = db.Column(db.String, unique=False)
     pjoucpf = db.Column(db.Boolean)

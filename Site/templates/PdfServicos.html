@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login com Google</title>
+    <style>
+        .nota-servico {
+            padding: 0;
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .nota-servico h2 {
+            color: #000000;
+            border-bottom: 2px solid #000000;
+            text-align: center;
+        }
+
+        .nota-servico h3 {
+            color: #000000;
+            border-bottom: 1px solid #000000;
+            margin-top: 0;
+        }
+
+        .nota-servico p {
+            padding: 2px;
+            margin: 0;
+        }
+
+        .nota-servico table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .nota-servico th,
+        .nota-servico td {
+            padding: 5px;
+            text-align: left;
+        }
+
+        .nota-servico th {
+            background-color: #fffdfd;
+            color: #000000;
+        }
+
+        .nota-servico table tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .nota-servico table tr:nth-child(odd) {
+            background-color: #e2e2e2;
+        }
+
+        .nota-servico .company-logo {
+            margin-right: 20px;
+            float: left;
+        }
+
+        .nota-servico .adireita {
+            overflow: hidden;
+        }
+
+        .nota-servico .company-container div {
+            overflow: hidden;
+        }
+
+        .nota-servico .company-container div,
+        .nota-servico .adireita {
+            width: 50%;
+            box-sizing: border-box;
+            padding: 5px;
+        }
+
+        .company-container-nomes {
+            overflow: hidden;
+        }
+
+        .company-logo,
+        .adireita-nomes {
+            float: left;
+            width: calc(40% - 10px);
+            margin-right: 5px;
+            box-sizing: border-box;
+            padding: 5px;
+
+        }
+
+        .adireita-nomes:last-child {
+            margin-right: 0;
+        }
+
+        .nota-servico .rodape {
+            background-color: #a4a4a4;
+            border-radius: 10px;
+            padding: 5px;
+            text-align: right;
+            font-size: 20px;
+            clear: both;
+            margin-top: 20px;
+
+        }
+
+        .nota-servico img {
+            width: 140px;
+            height: 140px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nota-servico">
+        <div class="company-container">
+            <img src="data:image/jpeg;base64,{{ imagem_codificada_base64 }}" class="company-logo">
+
+            <div class="adireita">
+                <h3>{{empresa.nomeFantasia}}</h3>
+                <p><strong>Telefone:</strong> {{empresa.fone}}-{{empresa.fone1}}</p>
+                <p><strong>E-mail:</strong> {{empresa.email}}</p>
+                <p><strong>Endereço:</strong> {{empresa.estado}}</p>
+                <p><strong>Criador:</strong> {{Servico.user_os.apelido}}</p>
+            </div>
+        </div>
+        {% if Servico.status == 'Finalizado' %}
+        <h2>Nota de Serviço {{Servico.status}} N:{{ Servico.id }}</h2>
+        {% else %}
+        <h2>{{Servico.status}} N:{{ Servico.id }}</h2>
+        {% endif %}
+        <div class="company-container-nomes">
+            <div class="company-logo">
+                {% if Servico.cliente_os.nomeFantasia %}
+                <p><strong>Nome:</strong>{{Servico.cliente_os.nomeFantasia}}</p>
+                {% else %}
+                <p><strong>Nome:</strong>{{Servico.cliente_os.nome}}</p>
+                {% endif %}
+                <p><strong>Telefone:</strong>{{Servico.cliente_os.fone}}</p>
+                <p><strong>Email:</strong>{{Servico.cliente_os.email}}</p>
+            </div>
+
+            <div class="adireita-nomes">
+                <p><strong>Placa:</strong>{{Servico.veiculo_os.placa}}</p>
+                <p><strong>Marca:</strong>{{Servico.veiculo_os.carro.marca}}</p>
+                <p><strong>Modelo:</strong>{{Servico.veiculo_os.carro.modelo}}</p>
+            </div>
+            <div class="adireita-nomes">
+                <p><strong>Ano:</strong>{{Servico.veiculo_os.carro.ano}}</p>
+                <p><strong>Motor:</strong>{{Servico.veiculo_os.carro.motor}}</p>
+                <p><strong>KM:</strong>{{Servico.km_final}}</p>
+            </div>
+        </div>
+        <hr>
+        <table>
+            <thead>
+                <tr>
+                    <th>Codigo/Tipo</th>
+                    <th>Nome</th>
+                    <th>Lado</th>
+                    <th>Un</th>
+                    <th>Valor Unitário</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if items_data_pecas %}
+                {% for item_peca in items_data_pecas %}
+                <tr>
+                    <td>{{item_peca.codigo}}</td>
+                    <td>{{item_peca.nome}}</td>
+                    <td>{{item_peca.lado}}</td>
+                    <td>{{item_peca.un}}</td>
+                    <td style="white-space: nowrap;">{{item_peca.preso}}</td>
+                    <td style="white-space: nowrap;">{{item_peca.pago_total}}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+                {% if items_data_MDO %}
+                {% for items_MDO in items_data_MDO %}
+                <tr>
+                    <td>Mão de Obra</td>
+                    <td>{{items_MDO.nome}}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td style="white-space: nowrap;">{{items_MDO.preso}}</td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+        <p style="text-align: right; padding: 5px; font-size: 18px;"><strong>Total em Peças:</strong>
+            {{valor_total_pecas}}
+        </p>
+
+        <div class="rodape">
+            <p><strong>Total:</strong> {{valor_total_total}}</p>
+        </div>
+        <div></div>
+
+        <div class="company-container-nomes">
+            {% if Servico.status == 'Finalizado' %}
+            <div style="font-size: 12px;">
+                <div class="company-logo">
+                    <p><strong>Vendedor:</strong> {{Servico.vendedor.apelido}}</p>
+                </div>
+                <div class="adireita-nomes">
+                    <p><strong>Mecanico:</strong> {{Servico.mecanico.apelido}} </p>
+                </div>
+                <div class="adireita-nomes">
+                    <p><strong>Data:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+                <p style="text-align: right; padding: 5px;"><strong>observação:</strong>
+                    {{ Servico.obs }}
+                </p>
+
+            </div>
+            {% else %}
+            <div style="font-size: 12px;">
+                <p><strong>Data:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</body>
+
+</html>

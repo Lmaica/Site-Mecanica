@@ -1,4 +1,4 @@
-{% extends 'layouts.html'%}
+{% extends 'NavAdimin.html' %}
 
 {% block content %}
 <h2 class="cabeçario-pagina">Combo</h2>
@@ -30,6 +30,13 @@
                 <option value="{{Combo.status}}">{{Combo.status}}</option>
                 <option value="Normal">Normal</option>
                 <option value="Oferta">Oferta</option>
+            </select>
+            <label for="tipo">Tipo do Combo:</label>
+            <select name="tipo" id="tipo">
+                <option value="{{Combo.tipo}}">{{Combo.tipo}}</option>
+                <option value="Basico">Basico</option>
+                <option value="Parcial">Parcial</option>
+                <option value="Completo">Completo</option>
             </select>
             <label for="data_inicil_combo">Data Inicial do Combo:</label>
             <input type="date" id="data_inicil_combo" name="data_inicil_combo"
@@ -246,6 +253,7 @@
 
             </div>
         </div>
+        <input type="hidden" name="totalInput" id="totalInput" value="0.00">
     </fieldset>
     <fieldset class="containerForm">
         <div class="header toggleButton">
@@ -266,9 +274,75 @@
         </div>
     </fieldset>
 </div>
+
+
 <div
     style="color: white; background-color: #ff4444; text-align: center; padding: 5px; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);margin: 10px;">
     <p>Os dados modificados aqui serão automaticamente atualizados.</p>
 
 </div>
+<script>
+    //atulizar dados no Combo
+    $(document).ready(function () {
+        // Defina a função para enviar os dados do combo
+        function enviarDadosDoCombo() {
+            var Com_id = $("#Com_id").val();
+            var campos = ["nome", "status", "data_inicil_combo", "data_final_combo", "obs", "carrosInput", "tipo", "totalInput"];
+            var formData = new FormData();  // Crie um objeto FormData para enviar os dados
+            campos.forEach(function (campo) {
+                formData.append(campo, $("#" + campo).val());
+            });
+
+            var fileInput = document.getElementById('image_1');
+            var file = fileInput.files[0];
+            formData.append('image_1', file);
+
+            $.ajax({
+                url: "/dadosCombo/" + Com_id,
+                method: "PUT",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.message) {
+                        $("#estadoCombo").html('<h2 style="color: green; font-weight: bold;">ATIVO</h2>');
+                    } else {
+                        $("#estadoCombo").html('<h2 style="color: red; font-weight: bold;">INATIVO</h2><samp style="font-size: 80%;">O Combo só ativa com todos os dados.(Verifique data Final)</samp><br>');
+                    }
+                },
+                error: function () {
+                    console.log("Erro ao atualizar o item"); // Caso ocorra um erro na requisição AJAX
+                }
+            });
+        }
+
+        enviarDadosDoCombo();
+
+        // Defina o evento de input nos elementos com a classe "DadosCombo"
+        $(".DadosCombo").on("input", function () {
+            enviarDadosDoCombo(); // Execute a função ao detectar uma entrada de dados
+        });
+    });
+
+    function atualizarValor() {
+        var total = document.getElementById('somaTotal').innerText.replace('Total:', '');
+        document.getElementById('totalInput').value = total;
+    }
+
+    // Chamada inicial para definir o valor no carregamento da página
+    atualizarValor();
+
+    // Monitora as alterações na div "somaTotal"
+    var target = document.getElementById('somaTotal');
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.type === 'childList' && mutation.target === target) {
+                atualizarValor();
+            }
+        });
+    });
+
+    var config = { childList: true, subtree: true };
+    observer.observe(target, config);
+</script>
 {% endblock content %}

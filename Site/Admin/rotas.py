@@ -44,6 +44,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from Site.Combo.modelos import Combo
 import json
+from Site.Consumidor.modelos import Token
 
 def get_results_dict(query_results, date_extractor, *value_columns):
     from collections import defaultdict
@@ -239,11 +240,13 @@ def buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias_
     return resultados_finais
 
 
-@app.route("/")
+
+@app.route("/MaicaATLJ")
 @login_required
 @nome_required
 def Admin():
     user = current_user
+
     data_atual = datetime.now()
 
     # Limpando lembretes expirados
@@ -288,12 +291,17 @@ def Admin():
         ),
         Lembretestodos.tipo == "ADIVERTENCIA",
     ).order_by(Lembretestodos.data_inicil.desc())
+    
+    limite = data_atual - timedelta(hours=24)
 
-    # Renderizando o template
+    db.session.query(Token).filter(Token.data <= limite).delete()
+
+    db.session.commit()
     return render_template(
         "Admin/index.html",
         lembretes=lembretes,
         adivertencias=adivertencias,
+        teste='Teste valor em Pagina',
     )
 
 @app.route('/cartaoVisita')
@@ -331,6 +339,7 @@ def dados_cofigurarar():
 @verificacao_nivel(2)
 def relatorio():
     return render_template("Admin/relatorios.html")
+
 
 @app.route("/pagina_graficos/<string:estilo_data>/<string:tipo>")
 @login_required
@@ -539,6 +548,7 @@ def login():
                     session["email"] = user.email
                     session["cargo"] = user.cargo.nome
                     session["nivel"] = nivel
+                    session["nivel_nome"] = user.nivel
                     endereço = str(empresa.estado) + '-' + str(empresa.cidade).capitalize() + '- Bairro:' + str(empresa.bairro).capitalize() + '- Rua:' + str(empresa.rua).capitalize() + '- N:' + str(empresa.nuCasa)
                     session['dados_empresa_nome'] = empresa.nomeFantasia
                     session['dados_empresa_fone'] = empresa.fone
@@ -546,23 +556,36 @@ def login():
                     session['dados_empresa_email'] = empresa.email
                     session['dados_empresa_logo'] = empresa.foto
                     session['dados_empresa_endereço'] = endereço
+                    session['tentativas_login'] == 0
                     login_user(user)
                     flash(f"Sejá Bem Vindo {user.apelido}", "cor-ok")
                     return redirect(url_for("Admin"))
                 else:
                     session['tentativas_login'] += 1
-                    flash("E-mail ou senha inválido", "Longin_Erro")
+                    flash("E-mail ou senha inválido", "Longin_Erro_Utrapado")
                     return redirect(url_for("login"))
             
             return render_template("Admin/login.html", form=form)
     except:
         session['tentativas_login'] += 1
-        flash("E-mail ou senha inválido", "Longin_Erro")
+        flash("E-mail ou senha inválido", "Longin_Erro_Utrapado")
         return redirect(url_for("login"))
 
 @app.route("/user/logaut")
 def user_logaut():
     logout_user()
+    session.pop("nome", None)
+    session.pop("apelido", None)
+    session.pop("email", None)
+    session.pop("cargo", None)
+    session.pop("nivel", None)
+    session.pop("nivel_nome", None)
+    session.pop("dados_empresa_nome", None)
+    session.pop("dados_empresa_fone", None)
+    session.pop("dados_empresa_fone1", None)
+    session.pop("dados_empresa_email", None)
+    session.pop("dados_empresa_logo", None)
+    session.pop("dados_empresa_endereço", None)
     return redirect(url_for("Admin"))
 
 # Logen com google
@@ -659,6 +682,7 @@ def googleLogin():
                 session["email"] = user.email
                 session["cargo"] = user.cargo.nome
                 session["nivel"] = nivel
+                session["nivel_nome"] = user.nivel
                 endereço = str(empresa.estado) + '-' + str(empresa.cidade).capitalize() + '- Bairro:' + str(empresa.bairro).capitalize() + '- Rua:' + str(empresa.rua).capitalize() + '- N:' + str(empresa.nuCasa)
                 session['dados_empresa_nome'] = empresa.nomeFantasia
                 session['dados_empresa_fone'] = empresa.fone
@@ -695,10 +719,9 @@ def enviar_email_senha(usuario, nova_senha):
     # Configuração do servidor SMTP da Microsoft
     servidor_smtp = 'smtp.office365.com'
     porta = 587
-    usuario_smtp = 'maica.contato@outlook.com'  # Insira seu e-mail do Outlook
-    senha_smtp = 'atljMaic@2024'  # Insira sua senha do Outlook
+    usuario_smtp = 'maica.contato@outlook.com'  
+    senha_smtp = 'atljMaic@2024'  
 
-    # Criação da mensagem
     msg = MIMEMultipart()
     msg['From'] = remetente
     msg['To'] = destinatario
@@ -908,6 +931,8 @@ def addUser():
         return render_template("pagina_erro.html", MSG=MSG)
     
 @app.route('/alterar_senha/<int:id>', methods=['GET', 'POST'])
+@login_required
+@nome_required
 def alterar_senha(id):
     users = User.query.get_or_404(id)
     form = AlterarSenhaForm()
@@ -921,8 +946,10 @@ def alterar_senha(id):
         flash('As senhas não coincidem. Por favor, tente novamente.', 'cor-alerta')
     return render_template('Admin/alterarSenha.html', form=form, users=users)
 
+
 @app.route("/atulizUser/<int:id>", methods=["GET", "POST"])
 @login_required
+@nome_required
 def atulizUser(id):
     try:
         user = current_user
@@ -1672,9 +1699,7 @@ def servicoRelatorios():
         servisos=servisos,
     )
 
-@login_required
-@nome_required
-@verificacao_nivel(2)
+
 @app.route("/searchservicoRelatorios", methods=["GET", "POST"])
 @login_required
 @nome_required

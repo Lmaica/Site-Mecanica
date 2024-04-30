@@ -1,0 +1,604 @@
+{% extends 'NavAdimin.html' %}
+
+{% block contentConsumidor %}
+
+<style>
+    .dadosUsuario-pai {
+        display: block;
+        text-align: center;
+        background: #f8f8f8;
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .dadosUsuario {
+        display: flex;
+        text-align: center;
+        background: #f8f8f8;
+    }
+
+    .dadosUsuario .info {
+        display: flex;
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .dadosInterno {
+        padding: 5px;
+    }
+
+    .dadosUsuario p {
+        margin: 10px 0;
+    }
+
+    .dadosUsuario strong {
+        font-weight: bold;
+    }
+
+    .dadosUsuario img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s;
+    }
+
+    .dadosUsuario img:hover {
+        transform: scale(1.1);
+    }
+
+    .div-pai {
+        display: flex;
+        width: 100%;
+    }
+
+    .div-filho {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .icone-dinamico {
+        max-width: 200px;
+        margin: 0;
+        padding-bottom: 50px;
+        position: relative;
+        top: 20px;
+        left: 40%;
+    }
+
+    .icone-torneira {
+        margin: 0;
+        padding: 0;
+        font-size: 100px;
+    }
+
+    .icone-gota {
+        margin: 0;
+        padding: 0;
+        margin-left: 55px;
+        margin-top: 2.5em;
+    }
+
+    @keyframes drop {
+        0% {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(0);
+            opacity: 0;
+        }
+    }
+
+    .icone-gota.drop {
+        animation: drop 1s infinite;
+    }
+
+    /* Estilo egrenagem */
+
+    .gear-container-pai {
+        font-size: 100px;
+        position: relative;
+        width: 100%;
+        height: 80%;
+    }
+
+    .gear-container {
+        position: absolute;
+        top: 10%;
+        right: 70%;
+        transform: translate(-50%, -50%);
+    }
+
+    .gear {
+        position: absolute;
+
+    }
+
+    .gear:nth-child(1) {
+        top: 20px;
+        left: 50px;
+        animation-delay: 0s;
+        animation: rotate 3s linear infinite;
+
+    }
+
+    .gear:nth-child(2) {
+        top: 50px;
+        left: 130px;
+        animation-delay: 1s;
+        animation: rotate-counterclockwise 3s linear infinite;
+    }
+
+    .gear:nth-child(3) {
+        top: 115px;
+        left: 65px;
+        animation-delay: 0.5s;
+        animation: rotate 3s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes rotate-counterclockwise {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(-360deg);
+        }
+    }
+
+    @media only screen and (max-width: 760px) {
+        .gear-container-pai {
+            font-size: 40px;
+            padding: 20px;
+        }
+
+        .gear-container {
+            position: absolute;
+            right: 65%;
+        }
+
+
+        .gear:nth-child(1) {
+            top: 8px;
+            left: 00px;
+        }
+
+        .gear:nth-child(2) {
+            top: 0px;
+            left: 35px;
+
+        }
+
+        .gear:nth-child(3) {
+            top: 8px;
+            left: 70px;
+        }
+
+        .icone-dinamico {
+            padding-top: 0px;
+            padding-bottom: 10px;
+            position: relative;
+            top: 20px;
+            right: 50%;
+        }
+
+        .icone-torneira {
+            font-size: 50px;
+        }
+
+        .icone-gota {
+            font-size: 15px;
+            margin-left: 18px;
+            margin-top: 2em;
+        }
+
+        .div-pai {
+            display: block;
+        }
+
+        .dadosUsuario-pai {
+            display: block;
+            text-align: center;
+            background: #f8f8f8;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .dadosUsuario {
+            display: block;
+        }
+
+        .dadosUsuario .info {
+            display: block;
+        }
+    }
+</style>
+<div class="dadosUsuario-pai">
+    <div class="dadosUsuario">
+        <img src="{{ url_for('static', filename='imagens/' + user.foto) }}" alt="{{user.nome }}">
+        <div class="info">
+            <div class="dadosInterno">
+                <p><strong>Nome:</strong> {{ user.nome }}</p>
+                {% if user.fone or user.fone1 %}
+                <p><strong>Telefone:</strong> {{ user.fone }}&nbsp;&nbsp;{{ user.fone1 }}</p>
+                {% endif %}
+                <p><strong>E-mail:</strong> {{ user.email }}</p>
+            </div>
+            <div class="dadosInterno">
+                {% if user.niver %}
+                <p><strong>Nascido:</strong> {{ user.niver }}</p>
+                {% endif %}
+                {% if user.cpf %}
+                <p><strong>CPF:</strong> {{ user.cpf }}</p>
+                {% endif %}
+                {% if user.rg %}
+                <p><strong>RG:</strong> {{ user.rg }}</p>
+                {% endif %}
+                {% if user.rua %}
+                <p><strong>Endereço:</strong> {{ user.rua }} {{ user.nuCasa }}
+                    {{ user.complemento }}
+                    {{ user.cidade }}
+                    {{ user.estado }}
+                    {{ user.cep }}
+                </p>
+                {% endif %}
+
+            </div>
+            <div class="dadosInterno">
+                {% if user.cnpj %}
+                <p><strong>Nome/Fantasia:</strong> {{ user.nomeFantasia }}</p>
+                <p><strong>CNPJ:</strong> {{ user.cnpj }}</p>
+                <p><strong>SOCIAL:</strong> {{ user.razaoSocial }}</p>
+                {% endif %}
+
+                <div style="display: flex; padding: 10px; font-size: 15px;">
+                    <span>Data Cadastro : </span>
+                    <samp class="dataFormatada">{{ user.data_criado }}</samp>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="lado-a-lado">
+        <input type="button" onclick="window.location.href='{{ url_for('atualizarCadastroCli', id=user.id) }}';"
+            class="cor-alerta button-pequeno" style="margin-bottom: 10px;" value="Editar Cadastro">
+        <input type="button" onclick="window.location.href='{{ url_for('alterarSenhaConsumidor', id=user.id) }}';"
+            class="cor-cancelar button-pequeno" style="margin-bottom: 10px;" value="Alterar Senha">
+    </div>
+</div>
+<hr style="margin: 10px;">
+<div class="div-pai">
+    <div class="div-filho">
+        {% if servisos_atual %}
+        <h2>Serviços em Progresso</h2>
+        <div class="mobile-table">
+            <table class="mobile-table">
+                <thead>
+                    <tr>
+                        <th>Placa/Modelo</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item_atual in servisos_atual %}
+                    <tr>
+                        <td class="truncate">{{item_atual.veiculo_os.placa}}/ {{item_atual.veiculo_os.carro.modelo}}</td>
+                        <td class="dataFormatada">{{ item_atual.data_finalizada }}</td>
+                    </tr>
+
+                    <tr class="row-details">
+                        <td colspan="5">
+                            <table class="nested-table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4"
+                                            style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                            Dados item_atual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>ID</th>
+                                        <td colspan="3">{{ item_atual.id }}</td>
+                                    </tr>
+                                    {%if item_atual.veiculo_os%}
+                                    <tr>
+                                        <th>Carro</th>
+                                        <td colspan="3">
+                                            {{item_atual.veiculo_os.carro.marca}}/{{item_atual.veiculo_os.carro.modelo}}/{{item_atual.veiculo_os.carro.ano}}/{{item_atual.veiculo_os.carro.motor}}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>km</th>
+                                        <td colspan="3">
+                                            {{item_atual.veiculo_os.km}}
+                                        </td>
+                                    </tr>
+                                    {%if item_atual.notafiscal%}
+                                    <tr>
+                                        <th>Notafiscal</th>
+                                        <td colspan="3">{{ item_atual.notafiscal }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>Mecanico</th>
+                                        <td colspan="3">{{ item_atual.mecanico.nome }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Vendedor</th>
+                                        <td colspan="3">{{ item_atual.vendedor.nome }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Data/Criado</th>
+                                        <td colspan="3" class="dataFormatada">{{ item_atual.data_criado }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>OBS</th>
+                                        <td colspan="3">{{ item_atual.obs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <a class="button-medio download-button"
+                                                href="{{url_for('generate_pdf', id=item_atual.id)}}">
+                                                <span>Baixar PDF</span>
+                                                <i class=" fas fa-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+        <div class="gear-container-pai">
+            <div class="gear-container">
+                <i class="fas fa-cog gear"></i>
+                <i class="fas fa-cog gear"></i>
+                <i class="fas fa-cog gear"></i>
+            </div>
+        </div>
+
+        {%else%}
+        <h2>Nenhum serviço em Progresso.</h2>
+        <div class="icone-dinamico">
+            <span class="fa-stack fa-lg">
+                <i class="icone-torneira fas fa-faucet fa-stack-1x"></i>
+                <i class="icone-gota fas fa-tint fa-stack-1x drop"></i>
+            </span>
+        </div>
+        {% endif %}
+    </div>
+    <div class="div-filho">
+        {% if servisos %}
+        <h2>Serviços finalizado</h2>
+        <div class="mobile-table">
+            <table class="mobile-table">
+                <thead>
+                    <tr>
+                        <th>Placa/Modelo</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in servisos %}
+                    <tr>
+                        <td class="truncate">{{item.veiculo_os.placa}}/{{item.veiculo_os.carro.modelo}}</td>
+                        <td class="dataFormatada">{{ item.data_finalizada }}</td>
+                    </tr>
+
+                    <tr class="row-details">
+                        <td colspan="5">
+                            <table class="nested-table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="4"
+                                            style="color: aliceblue; text-align: center; background-color: rgb(77, 77, 77);">
+                                            Dados item</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>ID</th>
+                                        <td colspan="3">{{ item.id }}</td>
+                                    </tr>
+                                    {%if item.veiculo_os%}
+                                    <tr>
+                                        <th>Carro</th>
+                                        <td colspan="3">
+                                            {{item.veiculo_os.carro.marca}}/{{item.veiculo_os.carro.modelo}}/{{item.veiculo_os.carro.ano}}/{{item.veiculo_os.carro.motor}}
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>km</th>
+                                        <td colspan="3">
+                                            {{item.km_final}}
+                                        </td>
+                                    </tr>
+                                    {%if item.notafiscal%}
+                                    <tr>
+                                        <th>Notafiscal</th>
+                                        <td colspan="3">{{ item.notafiscal }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th>Mecanico</th>
+                                        <td colspan="3">{{ item.mecanico.nome }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Vendedor</th>
+                                        <td colspan="3">{{ item.vendedor.nome }}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Data/Criado</th>
+                                        <td colspan="3" class="dataFormatada">{{ item.data_criado }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Data/Finalizado</th>
+                                        <td colspan="3" class="dataFormatada">{{ item.data_finalizada }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>OBS</th>
+                                        <td colspan="3">{{ item.obs }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <a class="button-medio download-button"
+                                                href="{{url_for('generate_pdf', id=item.id)}}">
+                                                <span>Baixar PDF</span>
+                                                <i class=" fas fa-download"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+        <div class="pagination">
+            {% if servisos.has_prev %}
+            {% if busca %}
+            <form action="{{ url_for('searchDadosConsumidor',id=user.id, page=servisos.prev_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button type="submit">&lt;</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('dadosConsumidor',id=user.id, page=servisos.prev_num) }}">&lt;</a>
+            {% endif %}
+            {% endif %}
+            {% if servisos.total > 10 %}
+            {% for page_num in servisos.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+            {% if page_num %}
+            {% if servisos.page == page_num %}
+            {%if busca %}
+            <form action="{{ url_for('searchDadosConsumidor',id=user.id, page=page_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button class="paginationActive" type="submit">{{ page_num }}</button>
+            </form>
+            {% else %}
+            <a class="paginationActive" href="{{ url_for('dadosConsumidor',id=user.id, page=page_num) }}">{{ page_num
+                }}</a>
+            {% endif %}
+            {% else %}
+            {%if busca %}
+            <form action="{{ url_for('searchDadosConsumidor',id=user.id, page=page_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button type="submit">{{ page_num }}</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('dadosConsumidor',id=user.id, page=page_num) }}">{{ page_num }}</a>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% if servisos.has_next %}
+            {% if busca %}
+            <form action="{{ url_for('searchDadosConsumidor',id=user.id, page=servisos.next_num) }}" method="POST">
+                <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
+                <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
+                <button type="submit">&gt;</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('dadosConsumidor',id=user.id, page=servisos.next_num) }}">&gt;</a>
+            {% endif %}
+            {% endif %}
+
+        </div>
+
+        {%else%}
+        <h2>Nenhum serviço encontrado.</h2>
+        <div class="icone-dinamico">
+            <span class="fa-stack fa-lg">
+                <i class="icone-torneira fas fa-faucet fa-stack-1x"></i>
+                <i class="icone-gota fas fa-tint fa-stack-1x drop"></i>
+            </span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<hr style="margin: 10px;">
+<footer class="rodape">
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Sobre Nós</h3>
+            <p>Com mais de três décadas de experiência, somos uma empresa familiar comprometida em oferecer serviços
+                de alta qualidade
+                e agilidade no setor automotivo. Com um legado passado de pai para filho, estamos constantemente nos
+                aperfeiçoando para
+                garantir que nossos clientes recebam o melhor atendimento possível. Especializados em multimarcas,
+                nossos serviços
+                abrangem suspensão, motor, freios e diagnósticos. Conte conosco para cuidar do seu veículo com
+                expertise e dedicação.</p>
+        </div>
+        <div class="col-md-6">
+            <h3>Contato</h3>
+            <ul>
+                <li><a id="whatsapp" class="social-link" href="https://wa.me/5551986927910" target="_blank"><i
+                            class="fab fa-whatsapp"></i><span> (51) 98692-7910</span>
+                    </a></li>
+                <li><a id="instagram" class="social-link"
+                        href="https://www.instagram.com/explore/locations/870229616463082/maica-manutencao-automotiva/"
+                        target="_blank"><i class="fab fa-instagram"></i><span> @auto.maica</span>
+                    </a></li>
+                <li><a id="facebook" class="social-link" href="https://www.facebook.com/maicaauto/?locale=pt_BR"
+                        target="_blank"><i class="fab fa-facebook-f"></i><span> /maicaauto</span> </a></li>
+                <li><a id="google" class="social-link"
+                        href="https://www.google.com/maps/place/Maic%C3%A1+Manuten%C3%A7%C3%A3o+Automotiva/@-29.9099282,-51.1490916,17z/data=!3m1!4b1!4m6!3m5!1s0x9519703a16d7c6d3:0xfac2f982ef75c777!8m2!3d-29.9099282!4d-51.1490916!16s%2Fg%2F11fyzd47tj?entry=ttu"
+                        target="_blank"><i class="fab fa-google"></i><span> Maicá Manutenção Automotiva</span></a>
+                </li>
+                <li><a id="phone" class="social-link" href="tel:+5551986927910"><i class="fas fa-phone"></i><span>
+                            (51) 98692-7910</span>
+                    </a></span>
+                </li>
+                <li><a id="email" class="social-link" href="#" onclick="copyToClipboard('auto.maica@gmail.com')"><i
+                            class="far fa-envelope"></i><span> auto.maica@gmail.com</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+</footer>
+
+<script>
+    function scrollToRow() {
+        document.querySelector('.row').scrollIntoView({
+            behavior: 'smooth'
+        });
+    }
+    document.getElementById('scrollButton').addEventListener('click', function () {
+        document.querySelector('.row').scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+</script>
+{% endblock contentConsumidor %}

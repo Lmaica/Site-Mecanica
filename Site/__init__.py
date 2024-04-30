@@ -27,6 +27,7 @@ def ajustes():
     from Site.Caixa import modelos
     from Site.Servicos import modelos
     from Site.Combo import modelos
+    from Site.Consumidor import modelos
 
     # rotas
     from Site.Admin import rotas
@@ -38,6 +39,7 @@ def ajustes():
     from Site.Servicos import rotas
     from Site.Caixa import rotas
     from Site.Combo import rotas
+    from Site.Consumidor import rotas
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -76,7 +78,6 @@ class BaseDados(db.Model):
         db.DateTime, default=datetime.now(timezone.utc).astimezone(), nullable=False
     )
 
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
@@ -89,6 +90,9 @@ def nome_required(f):
     def decorated_function(*args, **kwargs):
         if current_user.status == "BLOQUEADO":
             flash("Usuário bloqueado", "Longin_Erro")
+            return redirect(url_for("login"))
+        if current_user.nivel != session.get('nivel_nome'):
+            flash("Faça o login novamente.", "Longin_Erro")
             return redirect(url_for("login"))
         elif current_user.is_authenticated and current_user.nome == "" or current_user.apelido == ""or current_user.fone == ""or current_user.email == ""or current_user.niver == ""or current_user.cpf == ""or current_user.rg == ""or current_user.cep == ""or current_user.estado == ""or current_user.cidade == ""or current_user.bairro == ""or current_user.rua == ""or current_user.nuCasa == "":
             flash("Finalize o seu Cadastro Primeiro", "cor-alerta")

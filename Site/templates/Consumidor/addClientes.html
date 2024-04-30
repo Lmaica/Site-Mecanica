@@ -1,0 +1,108 @@
+{% extends 'NavAdimin.html' %}
+
+{% block contentConsumidor %}
+
+{% from "_formularioAjuda.html" import render_field %}
+<h2 style="padding: 20px;">Editar Cadastro</h2>
+<form action="" method="POST" enctype="multipart/form-data">
+    {{form.csrf_token}}
+    {% if cliente.cnpj %}
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados Empresarial</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div id="cadastroPj" class="containerDados ">
+            {{ render_field(form.razaoSocial,id='razaoSocial', placeholder='Razão Social') }}
+            {{ render_field(form.nomeFantasia,id='nomeFantasia', placeholder='Nome Fantasia') }}
+            {{ render_field(form.cnpj,id='cnpj', placeholder='cnpj') }}
+            {{ render_field(form.fone,id='telefone', placeholder='Telefone') }}
+            {{ render_field(form.fone1,id='telefone1', placeholder='Telefone') }}
+            {{ render_field(form.email,id='email',class='anular', placeholder='Email') }}
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados do Proprietário</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div class="containerDados ">
+            {{ render_field(form.nome,id='nome', placeholder='Nome', required=True) }}
+            {{ render_field(form.niver,id='niver', placeholder='Data de Nacimento') }}
+            {{ render_field(form.cpf,id='cpf', placeholder='cpf') }}
+            {{ render_field(form.rg,id='rg', placeholder='RG') }}
+
+        </div>
+    </fieldset>
+    {% else %}
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Dados Pessoais</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div class="containerDados ">
+            {{ render_field(form.nome,id='nome', placeholder='Nome', required=True) }}
+            {{ render_field(form.niver,id='niver', placeholder='Data de Nacimento') }}
+            {{ render_field(form.cpf,id='cpf', placeholder='cpf') }}
+            {{ render_field(form.rg,id='rg', placeholder='RG') }}
+            {{ render_field(form.fone,id='telefone', placeholder='Telefone') }}
+            {{ render_field(form.fone1,id='telefone1', placeholder='Telefone') }}
+        </div>
+    </fieldset>
+    {% endif %}
+
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Endereço</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div class="containerDados ">
+            {{ render_field(form.cep,id='cep', placeholder='CEP') }}
+            {{ render_field(form.rua, placeholder='Rua ou Avenida') }}
+            {{ render_field(form.nuCasa,id='nufor', placeholder='Numero da Casa') }}
+            {{ render_field(form.bairro, placeholder='Bairro') }}
+            {{ render_field(form.cidade, placeholder='Cidade') }}
+            {{ render_field(form.estado, placeholder='Estado') }}
+            {{ render_field(form.complemento, placeholder='Complemento') }}
+        </div>
+    </fieldset>
+    <fieldset class="containerForm">
+        <div class="header toggleButton">
+            <div class="divCentro">
+                <legend>Foto</legend>
+            </div>
+            <span class="arrow">▲</span>
+        </div>
+        <div class="containerDados ">
+            {% if cliente %}
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Adicionar Imagem 1</label>
+                <img src="{{url_for('static',filename='imagens/'+cliente.foto)}}" id="preview-image-1" src=""
+                    alt="Preview Image 1" onclick="openFileInput(1)">
+            </div>
+            {% else %}
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Adicionar Imagem</label>
+                <img id="preview-image-1" src="{{url_for('static',filename='imagens/foto.jpg')}}" alt=""
+                    onclick="openFileInput(1)">
+            </div>
+        </div>
+        {% endif %}
+    </fieldset>
+    <fieldset class="containerForm">
+        {{form.submit(value="ATULIZAR", class="button-grande cor-ok")}}
+        <a href="{{url_for('dadosConsumidor',id=session['id_consumidor'])}}" class="button-medio cor-cancelar">CANCELAR</a>
+    </fieldset>
+</form>
+
+{% endblock contentConsumidor %}
