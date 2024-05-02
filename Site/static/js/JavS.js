@@ -148,7 +148,7 @@ $(document).ready(function () {
     });
 
 });
-// CARROS PARA SERVIÇOS E PEAS
+// CARROS PARA SERVIÇOS E PEcAS
 $(document).ready(function () {
     // Carregar modelos com base na marca selecionada
 

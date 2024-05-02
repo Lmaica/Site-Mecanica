@@ -386,6 +386,15 @@
 </div>
 
 <script>
+    function copyToClipboard(text) {
+        var textarea = document.createElement("textarea");
+        textarea.value = text.toLowerCase();
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("Endereço de e-mail copiado para a área de transferência: " + text);
+    }
     function abrirDetalhes(id) {
         window.location.href = `/dadosInformativos/${id}`;
     }
