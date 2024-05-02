@@ -362,7 +362,7 @@
                 <button class="btn" onclick="openConversar()"><i class="fas fa-car btn-icon"></i>Para outro
                     Carro</button>
                 <button class="btn" onclick="openConversar()"><i
-                        class="fas fa-comment-alt btn-icon"></i>Informe-se</button>
+                        class="fas fa-comment-alt btn-icon"></i>Agendar</button>
             </div>
         </div>
 
@@ -393,22 +393,21 @@
             slidesToScroll: 2,
             dots: true,
             arrows: false,
-            autoplay: true,
-            autoplaySpeed: 3000,
+            autoplay: false, // Desabilita o autoplay
             responsive: [
                 {
                     breakpoint: 767,
                     settings: {
-                        slidesToShow: 2, /* Mostra dois slides por vez no modo mobile */
+                        slidesToShow: 2,
                         slidesToScroll: 1,
-                        infinite: true,
                         dots: true,
                         arrows: false,
                         centerMode: true,
                         centerPadding: '30px'
                     }
                 }
-            ]
+            ],
+            focusOnSelect: true 
         });
     });
 </script>
