@@ -31,7 +31,7 @@ from Site.Servicos.modelos import Serviso
 def combos():
     try:
         page = request.args.get("page", 1, type=int)
-        combos = Combo.query.order_by(Combo.id).paginate(page=page, per_page=10)
+        combos = Combo.query.order_by(desc(Combo.id)).paginate(page=page, per_page=10)
         return render_template(
             "Combo/combo.html",
             combos=combos,
@@ -345,13 +345,38 @@ def AbrirCombo(id):
 @verificacao_nivel(2)
 def addComboServico(id):
     get_serviso = Serviso.query.get_or_404(id)
+    get_carro=get_serviso.veiculo_os.carro.marca +' '+ get_serviso.veiculo_os.carro.modelo
     get_Combo = Combo(
         status="Normal",
+        tipo="Basico",
+        carro=get_carro,
         nome='',
         peca_os_combo=get_serviso.peca_os,
         mo_os_combo=get_serviso.mo_os,
         obs='',
         image_1='foto.jpg',
+    )
+    db.session.add(get_Combo)
+    db.session.commit()
+    filtro = Combo.query.order_by(desc(Combo.id)).first()
+    getCombo = filtro
+    return redirect(f"/AbrirCombo/{getCombo.id}")
+
+@app.route("/duplicarCombo/<int:id>", methods=["GET", "POST"])
+@login_required
+@nome_required
+@verificacao_nivel(2)
+def duplicarCombo(id):
+    get_combo = Combo.query.get_or_404(id)
+    get_Combo = Combo(
+        status="Normal",
+        tipo="Basico",
+        carro=get_combo.carro,
+        nome=get_combo.nome,
+        peca_os_combo=get_combo.peca_os_combo,
+        mo_os_combo=get_combo.mo_os_combo,
+        obs='',
+        image_1=get_combo.image_1,
     )
     db.session.add(get_Combo)
     db.session.commit()

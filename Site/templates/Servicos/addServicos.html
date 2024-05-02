@@ -287,16 +287,19 @@
     <textarea id="obsSer" name="obsSer" rows="5" cols="40">{{Servico.obs}}</textarea>
     {%endif%}
 </div>
+{% if status == 'Finalizado' %}
 <div class="botao-add" style="padding: 10px;">
     <a style="border-radius: 10px; padding-left: 5px;padding-right: 5px; color: #000000; text-decoration: none; background-color: #f4f4f4; border: 1px solid #000000; display: inline-block;"
         href="{{url_for('addComboServico', id=Servico.id)}}">Criar Combo da O.S</a>
 
 </div>
+{%endif%}
+
 <div style="padding: 20px;">
     {%if session["nivel"] >= 3%}
     {% if status == 'Orçamento' %}
     <a href="{{url_for('aprovarServico', id=Servico.id)}}">
-        <input type="submit" style="font-size: 20px;" class="cor-ok" name="" value="APROVAR SERVIcO">
+        <input type="submit" style="font-size: 20px;" class="cor-ok" name="" value="APROVAR SERVIÇO">
     </a>
     {%endif%}
 
@@ -415,7 +418,7 @@
         </div>
     </div>
     {% if status == 'Finalizado' %}
-    <h2 style="text-align: center;">Nota de Servico {{Servico.status}} N:{{ Servico.id }}</h2>
+    <h2 style="text-align: center;">Nota de Serviço {{Servico.status}} N:{{ Servico.id }}</h2>
     {%else%}
     <h2 style="text-align: center;">{{Servico.status}} N:{{ Servico.id }}</h2>
     {%endif%}
@@ -521,14 +524,14 @@
             {%endif%}
         </tbody>
     </table>
-    <p style="text-align: right; padding: 5px; font-size: 18px;"><strong>Total em Pecas:</strong>
+    <p style="text-align: right; padding: 5px; font-size: 18px;"><strong>Total em Peças:</strong>
         {{valor_total_pecas}}
     </p>
 
     <div class="rodape">
         <p><strong>Total:</strong> {{valor_total_total}}</p>
     </div>
-
+    criar combo
     {% if status == 'Finalizado' %}
     {% if status == 'Finalizado' %}
     <div style="font-size: 12px; display: flex; justify-content: space-between; flex-wrap: wrap;">
