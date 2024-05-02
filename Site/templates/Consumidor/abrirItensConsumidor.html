@@ -92,14 +92,6 @@
 
     /* Estilos do container de oferta */
 
-    .container-iterno-consumidor {
-        margin: 0 auto;
-        padding-top: 20px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        grid-gap: 20px;
-    }
-
     .produto {
         position: relative;
         text-align: center;
@@ -107,6 +99,8 @@
         border-radius: 15px;
         margin: 10px;
         box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.5);
+        height: 260px;
+
     }
 
     .produto:hover {
@@ -127,11 +121,6 @@
         font-size: 1.2vw;
         margin: 10px 0;
         padding-bottom: 20px;
-    }
-
-
-    .container-iterno-consumidor {
-        grid-template-columns: repeat(5, minmax(20px, 1fr));
     }
 
     .valor-consumidor {
@@ -222,75 +211,16 @@
         background-color: #45a049;
     }
 
-    /* Estilos para o Conversar */
-    .Conversar {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-        /* Fundo semi-transparente */
+    .spanP {
+        width: 100% !important;
+        text-align: center;
+        font-size: 1vw;
     }
 
-    .Conversar-content {
-        background-color: #fff;
-        margin: 10% auto;
-        padding: 0px;
-        border-radius: 10px;
-        max-width: 400px;
-        position: relative;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        /* Sombra */
-        animation-name: Conversar-show;
-        animation-duration: 0.5s;
-    }
-
-    @keyframes Conversar-show {
-        from {
-            opacity: 0;
-            transform: translateY(-50px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Estilos para os botões dentro do Conversar */
-    .Conversar-content button {
-        margin: 10px;
-        padding: 12px 24px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        background-color: #4CAF50;
-        color: white;
-    }
-
-    .Conversar-content button:hover {
-        background-color: #45a049;
-    }
-
-    .btn-icon {
-        display: inline-block;
-        margin-right: 5px;
-        font-size: 20px;
-    }
-
-    .btn {
-        margin: 10px;
-    }
 
     @media screen and (max-width: 760px) {
-        .Conversar-content {
-            margin: 50% auto;
+        .spanP {
+            font-size: 2vw;
         }
 
         .nomeCabecario {
@@ -370,10 +300,12 @@
 
     <div class="itemConsumidor">
         <div class="div-esquerda">
+
             <div class="details">
                 <table>
                     <thead>
                         <h3>Dados Do Seviço</h3>
+                        <p class="spanP">(Os preços das peças podem variar em até 20% para mais ou para menos.)</p>
                         <tr>
                             <th>Nome</th>
                             <th>Un</th>
@@ -430,84 +362,31 @@
                 <button class="btn" onclick="openConversar()"><i class="fas fa-car btn-icon"></i>Para outro
                     Carro</button>
                 <button class="btn" onclick="openConversar()"><i
-                        class="fas fa-comment-alt btn-icon"></i>Garantir</button>
+                        class="fas fa-comment-alt btn-icon"></i>Informe-se</button>
             </div>
         </div>
 
     </div>
 
-    <div class="container-consumidor-oferta">
-        <div class="carousel">
-            {% for item in similarCombos %}
-            <div class="produto" onclick="abrirDetalhes('{{ item.id }}')">
-                <img src="{{ url_for('static', filename='imagens/' + item.image_1) }}" alt="Produto 1">
-                <h2 class="capitalize">{{item.nome}}</h2>
-                <div class="valor-consumidor">
-                    <p class="valor-consumidor">{{item.valor_total}}</p>
-                </div>
+    <div class="carousel">
+        {% for item in similarCombos %}
+        <div class="produto" onclick="abrirDetalhes('{{ item.id }}')">
+            <img src="{{ url_for('static', filename='imagens/' + item.image_1) }}" alt="Produto 1">
+            <h2 class="capitalize">{{item.nome}}</h2>
+            <div class="valor-consumidor">
+                <p class="valor-consumidor">{{item.valor_total}}</p>
             </div>
-            {% endfor %}
-
         </div>
+        {% endfor %}
     </div>
 </div>
 
-<div id="myConversar" class="Conversar">
-    <div class="Conversar-content">
-        <div class="cor-ok DivFlutanteCabeça">
-            <h3>Escolha!!!</h3>
-            <span onclick="closeConversar()" class="close-btn">&times;</span>
-        </div>
-
-        <h3 style="text-align: center; padding: 10px;">Como deseja entrar em contato?</h3>
-        <div style="text-align: center;">
-            <button onclick="openWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-            <button onclick="call()"><i class="fas fa-phone-alt"></i> Ligar</button>
-        </div>
-        <div style="text-align: center;">
-            <button onclick="mensagem({{Combo.id}})"><i class="far fa-envelope"></i> Quer façamos contato?</button>
-        </div>
-    </div>
-</div>
 
 <script>
-    function openConversar() {
-        var Conversar = document.getElementById("myConversar");
-        Conversar.style.display = "block";
-    }
-
-    // Função para fechar o Conversar
-    function closeConversar() {
-        var Conversar = document.getElementById("myConversar");
-        Conversar.style.display = "none";
-    }
-
-    function openWhatsApp() {
-        var phoneNumber = '5551986927910';
-        var message = 'Olá! Gostaria de falar sobre este serviço.' + window.location.href;
-
-        var encodedMessage = encodeURIComponent(message);
-
-        var whatsappURL = 'https://wa.me/' + phoneNumber + '?text=' + encodedMessage;
-
-        window.open(whatsappURL, '_blank');
-        closeConversar();
-    }
-
-    function call() {
-        window.location.href = 'tel:+5551986927910';
-        closeConversar();
-    }
-
-    // Função para enviar um email
-    function mensagem(id) {
-        window.location.href = '/pedidoContato/'+ id;
-        closeConversar();
-    }
-
     function abrirDetalhes(id) {
         window.location.href = `/dadosInformativos/${id}`;
     }
+
     $(document).ready(function () {
         $('.carousel').slick({
             slidesToShow: 5,

@@ -4,6 +4,72 @@
 
 {% if contentConsumidor %}
 <style>
+    /* Estilos para o Conversar */
+    .Conversar {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Fundo semi-transparente */
+    }
+
+    .Conversar-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 0px;
+        border-radius: 10px;
+        max-width: 400px;
+        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        /* Sombra */
+        animation-name: Conversar-show;
+        animation-duration: 0.5s;
+    }
+
+    @keyframes Conversar-show {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Estilos para os botões dentro do Conversar */
+    .Conversar-content button {
+        margin: 10px;
+        padding: 12px 24px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .Conversar-content button:hover {
+        background-color: #45a049;
+    }
+
+    .btn-icon {
+        display: inline-block;
+        margin-right: 5px;
+        font-size: 20px;
+    }
+
+    .btn {
+        margin: 10px;
+    }
+
     .margens-consumidor {
         padding-bottom: 40px;
         padding-left: 40px;
@@ -26,18 +92,6 @@
         border-bottom: 2px solid #fff;
         padding-bottom: 10px;
         display: inline-block;
-    }
-
-    .rodape h3::after {
-        content: '';
-        position: absolute;
-        left: 50%;
-        bottom: 0;
-        width: 0;
-        height: 2px;
-        background-color: #fff;
-        transition: width 0.3s ease;
-        transform: translateX(-50%);
     }
 
 
@@ -183,8 +237,6 @@
         transform: scale(1.05);
     }
 
-
-
     #content-consumidor {
         position: relative;
         z-index: 1;
@@ -198,7 +250,6 @@
 
     }
 
-
     #DadosAcimaConsumidor {
         display: flex;
         flex-direction: column;
@@ -210,8 +261,6 @@
         top: 0;
         border-top: 1px solid #ffffff00;
     }
-
-
 
     .consumidorMenuDesk {
         display: block;
@@ -271,6 +320,10 @@
     }
 
     @media screen and (max-width: 768px) {
+        .Conversar-content {
+            margin: 50% auto;
+        }
+
         .rodape ul li a span {
             display: none;
         }
@@ -281,6 +334,7 @@
             align-items: flex-start;
             padding-bottom: 80px;
         }
+
 
         .rodape .col-md-6 {
             margin-bottom: 0;
@@ -394,7 +448,7 @@
                 <li class="principalCorUnica"><a href="{{url_for('loginCliente')}}">Área
                         Cliente</a></li>
                 {% endif %}
-                <li id="scrollButton" class="principalCorUnica "><a href="#">Fale Conosco</a></li>
+                <li class="principalCorUnica "><a href="#" onclick="openConversar()">Fale Conosco</a></li>
             </ul>
         </nav>
     </div>
@@ -428,7 +482,6 @@
         </div>
         {% endif %}
 
-
         <ul>
             <li class="principalCorUnica"><a href="/" onclick="closeMenu()"><img
                         src="{{ url_for('static', filename='img/casa.png') }}" alt="">
@@ -445,7 +498,7 @@
                     <p>Ária Cliente</p>
                 </a></li>
             {% endif %}
-            <li id="scrollButton" class="principalCorUnica"><a href="#" onclick="scrollToRow() ,closeMenu()"><img
+            <li class="principalCorUnica"><a href="#" onclick="openConversar() ,closeMenu()"><img
                         src="{{ url_for('static', filename='img/equipe.png') }}" alt="">
                     <p>Fale Conosco</p>
                 </a></li>
@@ -457,12 +510,37 @@
     </div>
 </div>
 
+
 <main id="content-consumidor" onclick="closeMenu()">
+    <div id="myConversar" class="Conversar">
+        <div class="Conversar-content">
+            <div class="cor-ok DivFlutanteCabeça">
+                <h3>Escolha!!!</h3>
+                <span onclick="closeConversar()" class="close-btn">&times;</span>
+            </div>
+
+            <h3 style="text-align: center; padding: 10px;">Como deseja entrar em contato?</h3>
+            <div style="text-align: center;">
+                {% if Combo %}
+                <button onclick="openWhatsApp({{Combo.id}})"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                {% else %}
+                <button onclick="openWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                {% endif %}
+                <button onclick="call()"><i class="fas fa-phone-alt"></i> Ligar</button>
+            </div>
+            <div style="text-align: center;">
+                <button onclick="mandarMensagem()">
+                    <i class="far fa-envelope"></i> Quer façamos contato?
+                </button>
+            </div>
+        </div>
+    </div>
     <div style="min-height: 700px;">
         {% block contentConsumidor %}
 
         {% endblock contentConsumidor %}
     </div>
+
     <footer class="rodape">
         <div class="row">
             <div class="col-md-6">
@@ -478,26 +556,36 @@
             </div>
             <div class="col-md-6">
                 <h3>Contato</h3>
-                <ul>
-                    <li><a id="whatsapp" class="social-link" href="https://wa.me/5551986927910" target="_blank"><i
-                                class="fab fa-whatsapp"></i><span> (51) 98692-7910</span>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 10px;"><a id="whatsapp" class="social-link"
+                            href="https://wa.me/5551986927910" target="_blank"><i class="fab fa-whatsapp"></i><span>
+                                (51) 98692-7910</span>
                         </a></li>
-                    <li><a id="instagram" class="social-link"
+                    <li style="margin-bottom: 10px;"><a id="instagram" class="social-link"
                             href="https://www.instagram.com/explore/locations/870229616463082/maica-manutencao-automotiva/"
                             target="_blank"><i class="fab fa-instagram"></i><span> @auto.maica</span>
                         </a></li>
-                    <li><a id="facebook" class="social-link" href="https://www.facebook.com/maicaauto/?locale=pt_BR"
-                            target="_blank"><i class="fab fa-facebook-f"></i><span> /maicaauto</span> </a></li>
-                    <li><a id="google" class="social-link"
-                            href="https://www.google.com/maps/place/Maic%C3%A1+Manuten%C3%A7%C3%A3o+Automotiva/@-29.9099282,-51.1490916,17z/data=!3m1!4b1!4m6!3m5!1s0x9519703a16d7c6d3:0xfac2f982ef75c777!8m2!3d-29.9099282!4d-51.1490916!16s%2Fg%2F11fyzd47tj?entry=ttu"
+                    <li style="margin-bottom: 10px;"><a id="facebook" class="social-link"
+                            href="https://www.facebook.com/maicaauto/?locale=pt_BR" target="_blank"><i
+                                class="fab fa-facebook-f"></i><span> /maicaauto</span> </a></li>
+                    <li style="margin-bottom: 10px;"><a id="google" class="social-link"
+                            href="https://www.google.com/search?q=maica+manuten%C3%A7ao+automotiva&oq=Maica+manuten%C3%A7ao+automotiva&gs_lcrp=EgZjaHJvbWUqBggAEEUYOzIGCAAQRRg7MgoIARAAGIAEGKIEMgoIAhAAGIAEGKIEMgoIAxAAGIAEGKIEMgoIBBAAGIAEGKIE0gEIODE1MmowajSoAgCwAgA&sourceid=chrome&ie=UTF-8"
                             target="_blank"><i class="fab fa-google"></i><span> Maicá Manutenção Automotiva</span></a>
                     </li>
-                    <li><a id="phone" class="social-link" href="tel:+5551986927910"><i class="fas fa-phone"></i><span>
+                    <li style="margin-bottom: 10px;"><a id="phone" class="social-link" href="tel:+5551986927910"><i
+                                class="fas fa-phone"></i><span>
                                 (51) 98692-7910</span>
                         </a></span>
                     </li>
-                    <li><a id="email" class="social-link" href="#" onclick="copyToClipboard('auto.maica@gmail.com')"><i
-                                class="far fa-envelope"></i><span> auto.maica@gmail.com</span></a></li>
+                    <li style="margin-bottom: 10px;">
+                        <a id="local" class="social-link"
+                            href="https://www.google.com/maps/place/Maic%C3%A1+Manuten%C3%A7%C3%A3o+Automotiva/@-29.9099282,-51.1490916,17z/data=!3m1!4b1!4m6!3m5!1s0x9519703a16d7c6d3:0xfac2f982ef75c777!8m2!3d-29.9099282!4d-51.1490916!16s%2Fg%2F11fyzd47tj?entry=ttu"
+                            target="_blank">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Local</span>
+                        </a>
+                    </li>
+
                 </ul>
             </div>
         </div>
@@ -506,17 +594,92 @@
 
 </main>
 <script>
-    function scrollToRow() {
-        document.querySelector('.row').scrollIntoView({
-            behavior: 'smooth'
-        });
+    function openConversar() {
+        var Conversar = document.getElementById("myConversar");
+        Conversar.style.display = "block";
     }
 
-    document.getElementById('scrollButton').addEventListener('click', function () {
-        document.querySelector('.row').scrollIntoView({
-            behavior: 'smooth'
-        });
-    });
+    function closeConversar() {
+        var Conversar = document.getElementById("myConversar");
+        Conversar.style.display = "none";
+    }
+
+    function openWhatsApp(tipo) {
+        var phoneNumber = '5551986927910';
+        if (tipo) {
+            var message = 'Olá! Gostaria de falar sobre este serviço.' + window.location.href;
+        } else {
+            var message = 'Olá!';
+        }
+
+        var encodedMessage = encodeURIComponent(message);
+
+        var whatsappURL = 'https://wa.me/' + phoneNumber + '?text=' + encodedMessage;
+
+        window.open(whatsappURL, '_blank');
+        closeConversar();
+    }
+
+    function call() {
+        window.location.href = 'tel:+5551986927910';
+        closeConversar();
+    }
+    function mandarMensagem() {
+        closeConversar()
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', '/pedidoContato', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                try {
+                    var resposta = JSON.parse(xhr.responseText);
+                    if (resposta.success) {
+                        if (resposta.message) {
+                            var message = resposta.message;
+                            var cor = resposta.cor;
+                            exibirMensagem(message, cor);
+                        } else {
+                            window.location.href = "/loginCliente"
+                        }
+                    } else {
+                        exibirMensagem("Desculpe, algo não ocorreu conforme esperado. Por favor, entre em contato utilizando outra forma disponível.", "cor-cancelar");
+                    }
+                } catch (e) {
+                    console.error("Erro ao processar resposta do servidor.");
+                    exibirMensagem("Desculpe, algo não ocorreu conforme esperado. Por favor, entre em contato utilizando outra forma disponível.", "cor-cancelar");
+                }
+            } else {
+                exibirMensagem("Desculpe, algo não ocorreu conforme esperado. Por favor, entre em contato utilizando outra forma disponível.", "cor-cancelar");
+            }
+        };
+
+        xhr.onerror = function () {
+            console.error("Erro ao fazer requisição ao servidor.");
+            exibirMensagem("Desculpe, ocorreu um erro. Por favor, entre em contato utilizando outra forma disponível.", "cor-cancelar");
+        };
+
+        xhr.send();
+    }
+
+
+    function exibirMensagem(message, cor) {
+        var DivFlutante = document.createElement('div');
+        DivFlutante.innerHTML = `
+       <div id="DivFlutante">
+            <div class="${cor} DivFlutanteCabeça">
+                <h3>AVISO!!!</h3>
+                <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+            </div>
+            <div class="DivFlutanteConte">
+                <p>${message}</p>
+            </div>
+        </div>
+    `;
+        document.body.appendChild(DivFlutante);
+    }
+
+
 </script>
 {% else %}
 <header id="NavAdmin">

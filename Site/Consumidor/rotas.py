@@ -55,11 +55,11 @@ from functools import wraps
 def verifica_cliente_ativo(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        session['next_url'] = request.path
-        if 'id' in kwargs:
-            id_conferi = session.get('id_consumidor')
-            cliente_id = kwargs['id']
-            cliente = Cliente.query.filter_by(id=cliente_id).first()
+        id_conferi = session.get('id_consumidor')
+        email_conferi = session.get('email_consumidor')
+        if id_conferi:
+            session['next_url'] = request.path
+            cliente = Cliente.query.filter_by(email=email_conferi).first()
             if id_conferi != cliente.id:
                 MSG = f"Favor, evite usar a barra de pesquisa para navegar no Site."
                 return render_template("pagina_erro.html", MSG=MSG)
@@ -190,7 +190,6 @@ def searchConsumidor():
     except Exception as erro:
         MSG = f"Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
-
 
 @app.route("/dadosInformativos/<int:id>", methods=["GET", "POST"])
 def dadosInformativos(id):
@@ -382,26 +381,42 @@ def dadosInformativos(id):
         marcas=marcas,
     )
 
-@app.route("/pedidoContato/<int:id>", methods=["GET", "POST"])
-def pedidoContato(id):
+@app.route("/pedidoContato", methods=["PUT"])
+def pedidoContato():
     id_conferi = session.get('email_consumidor')
-    nome_conferi = session.get('nome_consumidor')
-    msg = "O cliente" + str(nome_conferi) + "id " + str(id_conferi) + ' Gostaria de informaçoens sobre o Combo de id ' + str(id)
-    data_atual = datetime.now()
-    data_atual_mais_30_dias = data_atual + timedelta(days=30)
-    lembrete = Lembretestodos(
-        titulo='SERVIÇO ENTRAR EM CONTATO',
-        msg= msg,
-        tipo='ADIVERTENCIA',
-        autor='Erro',
-        destinatario='TODOS',
-        data_inicil=data_atual,
-        data_fim=data_atual_mais_30_dias,
-    )
-    db.session.add(lembrete)
-    db.session.commit()
-    flash('Entraremos em contato assim que possível.', 'cor-ok')
-    return redirect("/dadosInformativos/{}".format(id))
+    if id_conferi:
+        nome_conferi = session.get('nome_consumidor')
+        msg = "O cliente" + str(nome_conferi) + "id " + str(id_conferi) + ' Gostaria de informações.'
+        data_atual = datetime.now()
+        data_atual_mais_30_dias = data_atual + timedelta(days=30)
+        lembrete = Lembretestodos(
+            titulo='SERVIÇO ENTRAR EM CONTATO',
+            msg= msg,
+            tipo='ADIVERTENCIA',
+            autor='Erro',
+            destinatario='TODOS',
+            data_inicil=data_atual,
+            data_fim=data_atual_mais_30_dias,
+        )
+        db.session.add(lembrete)
+        db.session.commit()
+        flash='Entraremos em contato assim que possível.'
+        
+        response_data = {
+            "success": True,
+            "message": flash,
+            "cor": "cor-ok",
+        }
+        return jsonify(response_data)
+    else:
+        flash=False
+        response_data = {
+            "success": True,
+            "message": flash,
+            "cor": "cor-ok",
+        }
+        return jsonify(response_data)
+
     
 #login cliente
 

@@ -95,6 +95,9 @@
         <tbody>
             {% for item in servisos %}
 
+            {%if item.id == 0 %}
+            {% else %}
+
             {%if status == 'Todo'%}
             <tr>
                 <td>{{ item.status}}</td>
@@ -202,6 +205,7 @@
                     </table>
                 </td>
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>
