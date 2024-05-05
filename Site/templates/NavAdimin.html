@@ -142,11 +142,14 @@
 
     #DadosAcimaConsumidor {
         display: flex;
-        position: absolute;
+        flex-direction: column;
+        justify-content: space-between;
+        position: fixed;
         width: 100%;
-        height: 8%;
+        height: 10vh;
         bottom: 0;
-        top: auto;
+        left: 0;
+        top: 0;
         border-top: 1px solid #ffffff00;
         z-index: 2;
     }
@@ -250,17 +253,7 @@
 
     }
 
-    #DadosAcimaConsumidor {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: fixed;
-        width: 100%;
-        height: 10vh;
-        left: 0;
-        top: 0;
-        border-top: 1px solid #ffffff00;
-    }
+
 
     .consumidorMenuDesk {
         display: block;
@@ -418,7 +411,7 @@
         }
     }
 </style>
-<footer id="DadosAcimaConsumidor" class="principalCorMesclada">
+<header id="DadosAcimaConsumidor" class="principalCorMesclada">
     <div class="dados-superior-consumidor">
         <div class="title-logo">
             <div class="img-logo">
@@ -452,7 +445,7 @@
             </ul>
         </nav>
     </div>
-</footer>
+</header>
 <div id="menuConsumidor">
     <header id="NavAdmin">
         <input id="menuButton" type="checkbox" />
