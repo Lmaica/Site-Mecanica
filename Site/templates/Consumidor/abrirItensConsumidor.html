@@ -218,7 +218,42 @@
     }
 
 
+    .tipo-item {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    /* Estilos para os botões */
+    .tipo-estilo-boton {
+        width: 100%;
+        text-align: center;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+    }
+
+    .description-item {
+        width: 96%;
+        text-align: left;
+        padding: 10px;
+        border-radius: 10px;
+        background-color: rgb(237, 237, 237);
+        margin: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .description-item p {
+        color: #000000;
+        font-size: 1vw;
+    }
+
+
     @media screen and (max-width: 760px) {
+        .description-item p {
+            font-size: 3vw;
+        }
+
         .spanP {
             font-size: 2vw;
         }
@@ -329,8 +364,7 @@
                         {% for items_MDO in items_data_MDO %}
                         <tr>
                             <td>{{items_MDO.nome}}</td>
-                            <td></td>
-                            <td></td>
+                            <td colspan="2">Mão de obra</td>
                             <td>{{items_MDO.preso}}</td>
                         </tr>
                         {%endfor%}
@@ -346,26 +380,42 @@
                 </table>
 
             </div>
+
+            {% if Combo.tipo == 'Basico' %}
+            <div class="tipo-item">
+                <button class="tipo-estilo-boton cor-cancelar "><i class="far fa-circle"></i> Serviço (Básico)</button>
+            </div>
+            {% endif %}
+            {% if Combo.tipo == 'Parcial' %}
+            <div class="tipo-item">
+                <button class="tipo-estilo-boton cor-alerta"><i class="fas fa-adjust"></i> Serviço (Parcial)</button>
+            </div>
+            {% endif %}
+            {% if Combo.tipo == 'Completo' %}
+            <div class="tipo-item">
+                <button class="tipo-estilo-boton cor-ok"><i class="fas fa-circle"></i> Serviço (Completo)</button>
+            </div>
+            {% endif %}
         </div>
+
         <div class="div-direita">
             <img class="produto-img" src="{{url_for('static',filename='imagens/'+Combo.image_1)}}"
                 alt="Nome do Produto">
-            <div style="display: flex; padding: 10px; color: black;">
-                <label for="Descricao">Descrição: </label>
-                <textarea name="Descricao" id="Descricao" cols="" rows="5" disabled>{{Combo.obs}}</textarea>
+            <div class="description-item">
+                <p><strong>Descrição: </strong>{{Combo.obs}}</p>
             </div>
-            <div style="display: flex; padding: 10px; color: black;">
-                <label for="carros">Carros: </label>
-                <textarea name="carros" id="carros" cols="" rows="5" disabled>{{Combo.carro}}</textarea>
+            <div class="description-item">
+                <p><strong>Carros: </strong>{{Combo.carro}}</p>
             </div>
+            <p class="spanP">(O valor pode variar de acordo com o ano e o motor do veículo.)</p>
+
             <div class="botoes-container">
                 <button class="btn" onclick="openConversar()"><i class="fas fa-car btn-icon"></i>Para outro
                     Carro</button>
                 <button class="btn" onclick="openConversar()"><i
-                        class="fas fa-comment-alt btn-icon"></i>Agendar</button>
+                        class="fas fa-comment-alt btn-icon"></i>Consultar</button>
             </div>
         </div>
-
     </div>
 
     <div class="carousel">
@@ -391,7 +441,7 @@
         $('.carousel').slick({
             slidesToShow: 5,
             slidesToScroll: 2,
-            dots: true,
+            dots: false,
             arrows: false,
             autoplay: false, // Desabilita o autoplay
             responsive: [
@@ -402,12 +452,12 @@
                         slidesToScroll: 1,
                         dots: true,
                         arrows: false,
-                        centerMode: true,
+                        centerMode: false,
                         centerPadding: '30px'
                     }
                 }
             ],
-            focusOnSelect: true 
+            focusOnSelect: true
         });
     });
 </script>

@@ -573,7 +573,7 @@
 
     .mobile-table>tbody>tr:nth-child(2n+1):hover,
     .mobile-table>tbody>tr:nth-child(2n+1):hover {
-        background-color: #626262;
+        background-color: #fffdfd;
         cursor: pointer;
     }
 

@@ -376,7 +376,7 @@ def duplicarCombo(id):
         peca_os_combo=get_combo.peca_os_combo,
         mo_os_combo=get_combo.mo_os_combo,
         obs='',
-        image_1=get_combo.image_1,
+        image_1='foto.jpg',
     )
     db.session.add(get_Combo)
     db.session.commit()

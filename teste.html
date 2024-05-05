@@ -4,157 +4,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar em Contato</title>
-    <!-- Adicionando Font Awesome -->
+    <title>Descrição da Peça</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
     <style>
-        /* Estilos para o botão */
-        .btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 16px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
         }
 
-        .btn:hover {
-            background-color: #45a049;
-        }
-
-        /* Estilos para o Conversar */
-        .Conversar {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            /* Fundo semi-transparente */
-        }
-
-        .Conversar-content {
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
             background-color: #fff;
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 400px;
-            position: relative;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            /* Sombra */
-            animation-name: Conversar-show;
-            animation-duration: 0.5s;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        @keyframes Conversar-show {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        h1 {
+            color: #343a40;
+            margin-bottom: 20px;
+            text-align: center;
         }
 
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #aaa;
+        .image-container {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .close:hover {
-            color: #555;
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilos para os botões dentro do Conversar */
-        .Conversar-content button {
-            margin: 10px;
-            padding: 12px 24px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            background-color: #4CAF50;
-            color: white;
+        p {
+            color: #495057;
+            line-height: 1.6;
         }
 
-        .Conversar-content button:hover {
-            background-color: #45a049;
+        .contact-info {
+            margin-top: 20px;
+            border-top: 1px solid #ced4da;
+            padding-top: 20px;
         }
 
-        .btn-icon {
-            display: inline-block;
+        .contact-info i {
             margin-right: 10px;
-            font-size: 20px;
+            color: #6c757d;
+        }
+
+        .description {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .description-item {
+            width: 48%;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Botão para abrir o Conversar -->
-    <button class="btn" onclick="openConversar()"><i class="fas fa-comment-alt btn-icon"></i> Entrar em Contato</button>
+    <div class="container">
+        <h1>Descrição da Peça</h1>
 
-    <!-- Conversar -->
-    <div id="myConversar" class="Conversar">
-        <div class="Conversar-content">
-            <span class="close" onclick="closeConversar()">&times;</span>
-            <h2 style="text-align: center;">Como você deseja entrar em contato?</h2>
-            <button onclick="openWhatsApp()"><i class="fab fa-whatsapp btn-icon"></i> WhatsApp</button>
-            <button onclick="call()"><i class="fas fa-phone-alt btn-icon"></i> Ligar</button>
-            <button onclick="sendEmail()"><i class="far fa-envelope btn-icon"></i> Enviar Email</button>
+        <div class="image-container">
+            <img src="caminho/para/imagem-da-peca.jpg" alt="Imagem da Peça">
+        </div>
+
+        <p><strong>Nome da Peça:</strong> Nome da Peça Aqui</p>
+
+        <div class="description">
+            <div class="description-item">
+                <p><strong>Descrição:</strong> Descrição detalhada da peça, incluindo suas características, materiais,
+                    dimensões, etc.</p>
+            </div>
+            <div class="description-item">
+                <p><strong>Preço:</strong> R$ XX,XX</p>
+
+                <p><strong>Disponibilidade:</strong> Em estoque / Sob encomenda</p>
+
+                <p><strong>Prazo de entrega:</strong> X dias úteis</p>
+            </div>
+        </div>
+
+        <div class="contact-info">
+            <p><i class="fas fa-phone"></i> Telefone: (XX) XXXX-XXXX</p>
+            <p><i class="fas fa-envelope"></i> Email: exemplo@email.com</p>
         </div>
     </div>
-
-    <!-- Adicionando Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-
-    <script>
-        // Função para abrir o Conversar
-        function openConversar() {
-            var Conversar = document.getElementById("myConversar");
-            Conversar.style.display = "block";
-        }
-
-        // Função para fechar o Conversar
-        function closeConversar() {
-            var Conversar = document.getElementById("myConversar");
-            Conversar.style.display = "none";
-        }
-
-        // Função para abrir o WhatsApp
-        function openWhatsApp() {
-            // Aqui você pode adicionar o código para abrir o WhatsApp
-            alert("Abrir WhatsApp");
-            closeConversar(); // Fechar o Conversar após escolha
-        }
-
-        // Função para fazer uma ligação
-        function call() {
-            // Aqui você pode adicionar o código para fazer uma ligação
-            alert("Fazer ligação");
-            closeConversar(); // Fechar o Conversar após escolha
-        }
-
-        // Função para enviar um email
-        function sendEmail() {
-            // Aqui você pode adicionar o código para enviar um email
-            alert("Enviar email");
-            closeConversar(); // Fechar o Conversar após escolha
-        }
-    </script>
 
 </body>
 

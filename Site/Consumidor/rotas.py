@@ -55,9 +55,9 @@ from functools import wraps
 def verifica_cliente_ativo(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        id_conferi = session.get('id_consumidor')
-        email_conferi = session.get('email_consumidor')
-        if id_conferi:
+        if 'id' in kwargs:
+            id_conferi = kwargs['id']
+            email_conferi = session.get('email_consumidor')
             session['next_url'] = request.path
             cliente = Cliente.query.filter_by(email=email_conferi).first()
             if id_conferi != cliente.id:
@@ -136,8 +136,8 @@ def verificar_tentativas_login():
 @app.route("/")
 def Consumidor():
     page = request.args.get("page", 1, type=int)
-    combos = Combo.query.filter(Combo.atividade == 'Ativo').order_by(Combo.id).paginate(page=page, per_page=10)
-    combosOfertas = Combo.query.filter(and_(Combo.status == 'Oferta', Combo.atividade == 'Ativo')).order_by(Combo.id)
+    combos = Combo.query.filter(Combo.atividade == 'Ativo').order_by(desc(Combo.id)).paginate(page=page, per_page=10)
+    combosOfertas = Combo.query.filter(and_(Combo.status == 'Oferta', Combo.atividade == 'Ativo')).order_by(desc(Combo.id))
     return render_template(
         "Consumidor/index.html",
         contentConsumidor=True,
@@ -383,17 +383,17 @@ def dadosInformativos(id):
 
 @app.route("/pedidoContato", methods=["PUT"])
 def pedidoContato():
-    id_conferi = session.get('email_consumidor')
+    id_conferi = session.get('id_consumidor')
     if id_conferi:
-        nome_conferi = session.get('nome_consumidor')
-        msg = "O cliente" + str(nome_conferi) + "id " + str(id_conferi) + ' Gostaria de informações.'
+        nome_conferi = session.get('consumidor')
+        msg = "O cliente " + str(nome_conferi) + " id " + str(id_conferi) + ' Gostaria de informações.'
         data_atual = datetime.now()
         data_atual_mais_30_dias = data_atual + timedelta(days=30)
         lembrete = Lembretestodos(
-            titulo='SERVIÇO ENTRAR EM CONTATO',
+            titulo='ENTRAR EM CONTATO',
             msg= msg,
             tipo='ADIVERTENCIA',
-            autor='Erro',
+            autor='CLIENTE',
             destinatario='TODOS',
             data_inicil=data_atual,
             data_fim=data_atual_mais_30_dias,
@@ -684,6 +684,7 @@ def dadosConsumidor(id):
             pass
         else:
             servisos=False
+        print(users)
         servisos_atual = (Serviso.query.filter(Serviso.cliente_os == users)
             .filter(Serviso.status == "Aprovado")
             .filter(

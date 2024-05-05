@@ -306,7 +306,23 @@ def Admin():
 
 @app.route('/cartaoVisita')
 def cartaoVisita():
-    return render_template("/Admin/cartaoVisita.html")
+    dados = session
+    agora = datetime.now()
+    msg = "Acesso session " + str(dados) + " hora do Acesso " + str(agora)
+    data_atual = datetime.now()
+    data_atual_mais_30_dias = data_atual + timedelta(days=30)
+    lembrete = Lembretestodos(
+        titulo='Acesso pelo QR CODE',
+        msg= msg,
+        tipo='ADIVERTENCIA',
+        autor='PLACA',
+        destinatario='TODOS',
+        data_inicil=data_atual,
+        data_fim=data_atual_mais_30_dias,
+    )
+    db.session.add(lembrete)
+    db.session.commit()
+    return redirect(url_for("Consumidor"))
 
 # Configuração de estilo
 @app.route('/salvar_config', methods=['POST'])
