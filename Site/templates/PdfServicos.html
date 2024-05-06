@@ -71,12 +71,13 @@
 
         .nota-servico .company-container div,
         .nota-servico .adireita {
-            width: 50%;
+            width: 60%;
             box-sizing: border-box;
             padding: 5px;
         }
 
         .company-container-nomes {
+            display: flex;
             overflow: hidden;
         }
 
@@ -121,7 +122,8 @@
                 <h3>{{empresa.nomeFantasia}}</h3>
                 <p><strong>Telefone:</strong> {{empresa.fone}}-{{empresa.fone1}}</p>
                 <p><strong>E-mail:</strong> {{empresa.email}}</p>
-                <p><strong>Endereço:</strong> {{empresa.estado}}</p>
+                <p><strong>Endereço:</strong>
+                    {{empresa.rua}}-{{empresa.nuCasa}}-{{empresa.bairro}}-{{empresa.cidade}}-{{empresa.estado}}</p>
                 <p><strong>Criador:</strong> {{Servico.user_os.apelido}}</p>
             </div>
         </div>
@@ -130,8 +132,10 @@
         {% else %}
         <h2>{{Servico.status}} N:{{ Servico.id }}</h2>
         {% endif %}
+
         <div class="company-container-nomes">
             <div class="company-logo">
+                {%if Servico.cliente_os_id > 0%}
                 {% if Servico.cliente_os.nomeFantasia %}
                 <p><strong>Nome:</strong>{{Servico.cliente_os.nomeFantasia}}</p>
                 {% else %}
@@ -139,8 +143,15 @@
                 {% endif %}
                 <p><strong>Telefone:</strong>{{Servico.cliente_os.fone}}</p>
                 <p><strong>Email:</strong>{{Servico.cliente_os.email}}</p>
+                {%else%}
+                <div style="display: flex;"><strong>Nome:</strong>
+                    <p id="nomecliente">{{nome_cliente_os}}</p>
+                </div>
+                <p><strong>Telefon:</strong>{{nome_telefone_os}}</p>
+                <p><strong>Email:</strong>{{nome_email_os}}</p>
+                {%endif%}
             </div>
-
+            {%if Servico.veiculo_os_id > 0%}
             <div class="adireita-nomes">
                 <p><strong>Placa:</strong>{{Servico.veiculo_os.placa}}</p>
                 <p><strong>Marca:</strong>{{Servico.veiculo_os.carro.marca}}</p>
@@ -149,8 +160,24 @@
             <div class="adireita-nomes">
                 <p><strong>Ano:</strong>{{Servico.veiculo_os.carro.ano}}</p>
                 <p><strong>Motor:</strong>{{Servico.veiculo_os.carro.motor}}</p>
+                {%if Servico.status == 'Finalizado'%}
                 <p><strong>KM:</strong>{{Servico.km_final}}</p>
+                {%else%}
+                <p><strong>KM:</strong>{{Servico.veiculo_os.km}}</p>
+                {% endif %}
             </div>
+            {% else %}
+            <div class="adireita-nomes">
+                <p><strong>Placa:</strong>{{placa}}</p>
+                <p><strong>Marca:</strong>{{marca}}</p>
+                <p><strong>Modelo:</strong>{{modelo}}</p>
+            </div>
+            <div class="adireita-nomes">
+                <p><strong>Ano:</strong>{{ano}}</p>
+                <p><strong>Motor:</strong>{{motor}}</p>
+                <p><strong>KM:</strong>{{km}}</p>
+            </div>
+            {% endif %}
         </div>
         <hr>
         <table>
@@ -200,26 +227,25 @@
         </div>
         <div></div>
 
-        <div class="company-container-nomes">
+        <div class="">
             {% if Servico.status == 'Finalizado' %}
+            <div style="font-size: 12px; display: flex; justify-content: space-between;">
+                <p><strong>Vendedor:</strong> {{Servico.vendedor.apelido}}</p>
+                <p><strong>Mecanico:</strong> {{Servico.mecanico.apelido}} </p>
+                <p><strong>Data inicil:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
+                <p><strong>Data fim:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
             <div style="font-size: 12px;">
-                <div class="company-logo">
-                    <p><strong>Vendedor:</strong> {{Servico.vendedor.apelido}}</p>
-                </div>
-                <div class="adireita-nomes">
-                    <p><strong>Mecanico:</strong> {{Servico.mecanico.apelido}} </p>
-                </div>
-                <div class="adireita-nomes">
-                    <p><strong>Data:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
-                </div>
+                <p><strong>observação:</strong>
+                    {{ Servico.obs }}
+                </p>
+            </div>
+            {% else %}
+            <div style="font-size: 12px; display: flex; justify-content: space-between;">
+                <p><strong>Data incial:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
                 <p style="text-align: right; padding: 5px;"><strong>observação:</strong>
                     {{ Servico.obs }}
                 </p>
-
-            </div>
-            {% else %}
-            <div style="font-size: 12px;">
-                <p><strong>Data:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
             </div>
             {% endif %}
 

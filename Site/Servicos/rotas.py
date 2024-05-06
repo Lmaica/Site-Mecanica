@@ -4,6 +4,7 @@ from flask import (
     url_for,
     flash,
     request,
+    make_response,
     jsonify,
 )
 from Site import db, app, nome_required, verificacao_nivel
@@ -22,6 +23,9 @@ from Site.Admin.modelos import User
 from .formularios import Responsaveis
 from flask_login import login_required, current_user
 from Site.Combo.modelos import Combo
+import pdfkit
+import base64
+import os
 
 # Dados do Serviços 
 @app.route("/servisos/<string:status>", methods=["GET", "POST"])
@@ -659,7 +663,255 @@ def AbrirServico(id, tratatar):
         valor_total_total=valor_total_total,
     )
 
+@app.route('/pdf/<int:id>', methods=['GET', 'POST'])
+def generate_pdf(id):
+    if request.args.get('download', True):
+        empresa = User.query.get(1)
+        get_serviso = Serviso.query.get_or_404(id)
+        if not get_serviso:
+            return "Servico não encontrado", 404
 
+        peca_os = json.loads(get_serviso.peca_os)
+        getPecas = Peca.query.order_by(Peca.id).all()
+        mo_os = json.loads(get_serviso.mo_os)
+        get_MDO = Maoobra.query.order_by(Maoobra.id).all()
+        carteira_servico = json.loads(get_serviso.carteira_id)
+        carteiras = Carteirabanco.query.filter().all()
+        Cliente_os_atual = json.loads(get_serviso.cliente_veiculo)
+        nome_cliente_os, nome_telefone_os, nome_email_os = "", "", ""
+        placa, marca, modelo, ano, motor, km = "", "", "", "", "", ""
+
+        if len(Cliente_os_atual["itens"]) > 0:
+            for item in Cliente_os_atual["itens"]:
+                nome_cliente_os = item.get("nome")
+                nome_telefone_os = item.get("telefone")
+                nome_email_os = item.get("email")
+                placa = item.get("placa")
+                marca = item.get("marca")
+                modelo = item.get("modelo")
+                ano = item.get("ano")
+                motor = item.get("motor")
+                km = item.get("km")
+
+        items_data_pecas = []
+        soma_pagos = []
+        soma_pecas = []
+        soma_total = []
+        if "itens" in peca_os:
+            for item in peca_os["itens"]:
+                peca_id = item.get("peca_id")
+                un = item.get("un")
+                peca_nome = item.get("peca_nome")
+                lado = item.get("lado")
+                valor_final = item.get("valor_final")
+                peca_codigo = item.get("peca_codigo")
+                valor_custo = item.get("valor_custo")
+                if peca_id is not None:
+                    if len(getPecas) == 0:
+                        Pagosoma = Calculos_gloabal.valor_para_Calculos(valor_custo) * int(un)
+                        PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                        soma_pagos.append(Pagosoma)
+                        somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
+                        soma_do_valor = int(un) * somar_dados_uni
+                        soma_pecas.append(soma_do_valor)
+                        soma_total.append(soma_do_valor)
+                        soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                        items_data_pecas.append(
+                            {
+                                "codigo": peca_codigo,
+                                "nome": peca_nome,
+                                "preso": valor_final,
+                                "pago_total": soma_formarmatado,
+                                "pago": PagoFor,
+                                "un": un,
+                                "lado": lado,
+                            }
+                        )
+                    else:
+                        peca_encontrada = False
+                        for getPeca in getPecas:
+                            if getPeca.id == peca_id:
+                                peca_encontrada = True
+                                Pagosoma = Calculos_gloabal.valor_para_Calculos(
+                                    getPeca.pago
+                                ) * int(un)
+                                PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                                
+                                soma_pagos.append(Pagosoma)
+                                if get_serviso.status != "Orçamento":
+                                    somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
+                                    soma_do_valor = int(un) * somar_dados_uni
+                                    soma_pecas.append(soma_do_valor)
+                                    soma_total.append(soma_do_valor)
+                                    soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                                    items_data_pecas.append(
+                                        {
+                                            "codigo": peca_codigo,
+                                            "nome": peca_nome,
+                                            "preso": valor_final,
+                                            "pago_total": soma_formarmatado,
+                                            "pago": PagoFor,
+                                            "un": un,
+                                            "lado": lado,
+                                        }
+                                    )
+                                else:
+                                    somar_dados_uni = Calculos_gloabal.valor_para_Calculos(getPeca.preso)
+                                    soma_do_valor = int(un) * somar_dados_uni
+                                    soma_pecas.append(soma_do_valor)
+                                    soma_total.append(soma_do_valor)
+                                    soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                                    items_data_pecas.append(
+                                        {
+                                            "codigo": getPeca.codigo,
+                                            "nome": getPeca.nome,
+                                            "preso": getPeca.preso,
+                                            "pago_total": soma_formarmatado,
+                                            "pago": PagoFor,
+                                            "un": un,
+                                            "lado": lado,
+                                        }
+                                    )
+                        if not peca_encontrada:
+                            Pagosoma = Calculos_gloabal.valor_para_Calculos(
+                                valor_custo
+                            ) * int(un)
+                            PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                            somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
+                            soma_do_valor = int(un) * somar_dados_uni
+                            soma_pecas.append(soma_do_valor)
+                            soma_total.append(soma_do_valor)
+                            soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                            soma_pagos.append(Pagosoma)
+                            items_data_pecas.append(
+                                {
+                                    "codigo": peca_codigo,
+                                    "nome": peca_nome,
+                                    "preso": valor_final,
+                                    "pago_total": soma_formarmatado,
+                                    "pago": PagoFor,
+                                    "un": un,
+                                    "lado": lado,
+                                }
+                            )
+        items_data_MDO = []
+        if "itens" in mo_os:
+            for item_MDO in mo_os["itens"]:
+                mo_id = item_MDO.get("MDO_id")
+                mo_preso = item_MDO.get("MDO_preso")
+                mo_nome = item_MDO.get("MDO_nome")
+                if mo_id is not None:
+                    if len(get_MDO) == 0:
+                        mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
+                        soma_total.append(mdo_valor_para_soma)
+                        items_data_MDO.append(
+                            {
+                                "nome": mo_nome,
+                                "preso": mo_preso,
+                            }
+                        )
+                    else:
+                        encontrado = False
+                        for getmo in get_MDO:
+                            if getmo.id == mo_id:
+                                encontrado = True
+                                if get_serviso.status != "Orçamento":
+                                    mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
+                                    soma_total.append(mdo_valor_para_soma)
+                                    items_data_MDO.append(
+                                        {
+                                            "nome": mo_nome,
+                                            "preso": mo_preso,
+                                        }
+                                    )
+                                else:
+                                    mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(getmo.preso)
+                                    soma_total.append(mdo_valor_para_soma)
+                                    items_data_MDO.append(
+                                        {
+                                            "nome": getmo.nomemaoobra.nome,
+                                            "preso": getmo.preso,
+                                        }
+                                    )
+                                break
+                        
+                        if not encontrado:
+                            mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
+                            soma_total.append(mdo_valor_para_soma)
+                            items_data_MDO.append(
+                                {
+                                    "nome": mo_nome,
+                                    "preso": mo_preso,
+                                }
+                            )
+
+        SomarPago = sum(soma_pagos)
+        SomarPecas = sum(soma_pecas)
+        SomarTotal = sum(soma_total)
+
+        valor_total_pago = Calculos_gloabal.format_valor_moeda(SomarPago)
+        valor_total_pecas = Calculos_gloabal.format_valor_moeda(SomarPecas)
+        valor_total_total = Calculos_gloabal.format_valor_moeda(SomarTotal)
+        
+        items_data_carteira = []
+        if "itens" in carteira_servico:
+            for item_carteira in carteira_servico["itens"]:
+                carteira_id_servico = item_carteira.get("carteira_id")
+                carteira_preso_servico = item_carteira.get("valor_recebido")
+                carteira_detales_servico = item_carteira.get("detalesPago")
+                if carteira_id_servico is not None:
+                    for getcarteira in carteiras:
+                        if int(getcarteira.id) == int(carteira_id_servico):
+                            items_data_carteira.append(
+                                {
+                                    "carteira_id":carteira_id_servico,
+                                    "carteira_nome":getcarteira.nome,
+                                    "valor_recebido":carteira_preso_servico,
+                                    "detalesPago":carteira_detales_servico,
+                                }
+                            )
+        if get_serviso.veiculo_os:
+            nomePDF = get_serviso.cliente_os.nome+' ' + get_serviso.veiculo_os.carro.modelo
+        else:
+            nomePDF = 'Orçamento'+'-'+str(nome_cliente_os)
+        
+        caminho_imagem = os.path.join(app.root_path, 'static', 'imagens', empresa.foto)
+    
+        with open(caminho_imagem, 'rb') as img_file:
+            # Lê o conteúdo da imagem
+            imagem_bytes = img_file.read()
+            
+            # Codifica a imagem para Base64
+            imagem_base64 = base64.b64encode(imagem_bytes).decode('utf-8')
+
+        rendered_html = render_template('PdfServicos.html',Servico=get_serviso,
+        imagem_codificada_base64=imagem_base64,
+        items_data_pecas=items_data_pecas,
+        items_data_MDO=items_data_MDO,
+        nome_cliente_os=nome_cliente_os,
+        nome_telefone_os=nome_telefone_os,
+        nome_email_os=nome_email_os,
+        placa=placa,
+        marca=marca,
+        modelo=modelo,
+        ano=ano,
+        motor=motor,
+        km=km,
+        valor_total_pago=valor_total_pago,
+        valor_total_pecas=valor_total_pecas,
+        valor_total_total=valor_total_total,
+        empresa=empresa)
+
+        # Converter o HTML em PDF
+        pdf = pdfkit.from_string(rendered_html, False)
+
+        # Criar uma resposta com o PDF
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+
+        response.headers['Content-Disposition'] = 'attachment; filename='+ str(nomePDF) +'.pdf'
+        return response
+    
 # itens do Serviços
 @app.route("/AddItensManual/<int:id>", methods=["GET", "POST"])
 @login_required
@@ -1492,6 +1744,58 @@ def searchAdicionarCliente():
                     .order_by(Cliente.id.desc())
                     .paginate(page=page, per_page=10)
                 )
+            elif escolha == "todos":
+                search_terms = search_value.split()
+                veiculo_salve = []
+                for term in search_terms:
+                    veiculo_salve.append(
+                        or_(
+                            Veiculo.placa.like(f'%{term}%'), 
+                            Veiculo.carro.has(Carro.marca.like(f'%{term}%')),
+                            Veiculo.carro.has(Carro.modelo.like(f'%{term}%')),
+                            Veiculo.carro.has(Carro.ano.like(f'%{term}%')),
+                            Veiculo.carro.has(Carro.motor.like(f'%{term}%')),
+                            
+                            Veiculo.cliente.has(Cliente.id.like(f'%{term}%')), 
+                            Veiculo.cliente.has(Cliente.nome.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.fone.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.fone1.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.email.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.niver.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.razaoSocial.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.nomeFantasia.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.cnpj.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.cpf.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.rg.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.cep.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.estado.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.cidade.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.bairro.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.rua.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.nuCasa.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.complemento.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.data_criado.like(f'%{term}%')),
+                            Veiculo.cliente.has(Cliente.statu.like(f'%{term}%')),
+                        )
+                    )
+                veiculos_sistema = (
+                    Veiculo.query.filter(
+                        *veiculo_salve,
+                    )
+                    .all()
+                )
+                cliente_ids = []
+                for veic in veiculos_sistema:
+                    cliente_ids.append(veic.cliente_id)
+
+                clientes = (
+                    Cliente.query.filter(
+                        Cliente.id.in_(cliente_ids),
+                    )
+                    .order_by(Cliente.data_criado.desc())
+                    .paginate(page=page, per_page=10)
+                )
+
             else:
                 clientes = (
                     Cliente.query.filter(getattr(Cliente, escolha).like(search))

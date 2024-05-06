@@ -12,9 +12,9 @@
         style="background-color: aliceblue; font-size: 20px; display: inline-block; border-radius: 20px; padding: 10px;">
         <strong>ID: </strong>{{ Servico.id }}
     </div>
-    <a class="download-button" href="#" onclick="gerarPDF({{Servico.id}})">
-        <span class="button-text">PDF</span>
-        <i class="fas fa-download"></i>
+    <a class="download-button" href="{{url_for('generate_pdf', id=Servico.id)}}">
+        <span>Baixar PDF</span>
+        <i class=" fas fa-download"></i>
     </a>
 </div>
 {%endif%}
@@ -404,151 +404,6 @@
     {%endif%}
 </div>
 
-<div class="nota-servico" style="width: 100%; margin: 0 auto;">
-    <div class="company-container">
-        <img src="{{ url_for('static', filename='imagens/' + session['dados_empresa_logo']) }}">
-
-        <div class="adireita">
-            <h3>{{session['dados_empresa_nome']}}</h3>
-            <p><strong>Telefone:</strong> {{session['dados_empresa_fone']}} - {{session['dados_empresa_fone1']}}</p>
-            <p><strong>E-mail:</strong> {{session['dados_empresa_email']}}</p>
-            <p><strong>Endereço:</strong> {{session['dados_empresa_endereço']}}</p>
-            <p><strong>Criado:</strong> {{Servico.user_os.apelido}}</p>
-
-        </div>
-    </div>
-    {% if status == 'Finalizado' %}
-    <h2 style="text-align: center;">Nota de Serviço {{Servico.status}} N:{{ Servico.id }}</h2>
-    {%else%}
-    <h2 style="text-align: center;">{{Servico.status}} N:{{ Servico.id }}</h2>
-    {%endif%}
-
-    <div style="padding: 5px;" class="info-group">
-        {%if Servico.cliente_os_id > 0%}
-        {% if Servico.cliente_os.nomeFantasia %}
-        <div style="display: flex;"><strong>Nome:</strong>
-            <p id="nomecliente">{{Servico.cliente_os.nomeFantasia}}</p>
-        </div>
-        {% else %}
-        <div style="display: flex;"><strong>Nome:</strong>
-            <p id="nomecliente">{{Servico.cliente_os.nome}}</p>
-        </div>
-        {% endif %}
-        <p><strong>Telefone:</strong>{{Servico.cliente_os.fone}}</p>
-        <p><strong>Email:</strong>{{Servico.cliente_os.email}}</p>
-        {%else%}
-        <div style="display: flex;"><strong>Nome:</strong>
-            <p id="nomecliente">{{nome_cliente_os}}</p>
-        </div>
-        <p><strong>Telefon:</strong>{{nome_telefone_os}}</p>
-        <p><strong>Email:</strong>{{nome_email_os}}</p>
-        {%endif%}
-    </div>
-
-    <div style="padding: 2px;" class="info-group">
-        {%if Servico.veiculo_os_id > 0%}
-        <p><strong>Placa:</strong>{{Servico.veiculo_os.placa}}</p>
-
-        <p><strong>Marca:</strong>{{Servico.veiculo_os.carro.marca}}</p>
-
-        <div style="display: flex;"><strong>Modelo:</strong>
-            <p id="modelocarro">{{Servico.veiculo_os.carro.modelo}}</p>
-        </div>
-
-        <p><strong>Ano:</strong>{{Servico.veiculo_os.carro.ano}}</p>
-
-        <p><strong>Motor:</strong>{{Servico.veiculo_os.carro.motor}}</p>
-
-        {%if status == 'Finalizado' or status == 'Editar Finazados'%}
-        <p><strong>Motor:</strong>{{Servico.km_final}}</p>
-        {%else%}
-        <p><strong>Motor:</strong>{{Servico.veiculo_os.km}}</p>
-        {% endif %}
-        {% else %}
-
-        <p><strong>Placa:</strong>{{placa}}</p>
-
-        <p><strong>Marca:</strong>{{marca}}</p>
-
-        <div style="display: flex;"><strong>Modelo:</strong>
-            <p id="modelocarro">{{modelo}}</p>
-        </div>
-
-        <p><strong>Ano:</strong>{{ano}}</p>
-
-        <p><strong>Motor:</strong>{{motor}}</p>
-
-        <p><strong>Km:</strong>{{km}}</p>
-
-        {% endif %}
-
-    </div>
-    <hr>
-    <table>
-        <thead>
-            <tr>
-                <th>Codigo/Tipo</th>
-                <th>Nome</th>
-                <th>Lado</th>
-                <th>Un</th>
-                <th>Valor Unitário</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if items_data_pecas %}
-            {% for item_peca in items_data_pecas %}
-            <tr>
-                <td>{{item_peca.codigo}}</td>
-                <td>{{item_peca.nome}}</td>
-                <td>{{item_peca.lado}}</td>
-                <td>{{item_peca.un}}</td>
-                <td style="white-space: nowrap;">{{item_peca.preso}}</td>
-                <td style="white-space: nowrap;">{{item_peca.pago_total}}</td>
-            </tr>
-            {%endfor%}
-            {%else%}
-            {%endif%}
-            {% if items_data_MDO %}
-            {% for items_MDO in items_data_MDO %}
-            <tr>
-                <td>Mão de Obra</td>
-                <td>{{items_MDO.nome}}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td style="white-space: nowrap;">{{items_MDO.preso}}</td>
-            </tr>
-            {%endfor%}
-            {%else%}
-            {%endif%}
-        </tbody>
-    </table>
-    <p style="text-align: right; padding: 5px; font-size: 18px;"><strong>Total em Peças:</strong>
-        {{valor_total_pecas}}
-    </p>
-
-    <div class="rodape">
-        <p><strong>Total:</strong> {{valor_total_total}}</p>
-    </div>
-    {% if status == 'Finalizado' %}
-    {% if status == 'Finalizado' %}
-    <div style="font-size: 12px; display: flex; justify-content: space-between; flex-wrap: wrap;">
-        <p><strong>Vendedor:</strong> {{Servico.vendedor.apelido}}</p>
-        <p><strong>Mecanico:</strong> {{Servico.mecanico.apelido}}</p>
-    </div>
-    {%else%}
-    {%endif%}
-    <div style="font-size: 12px; display: flex;">
-        <p><strong>Data:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
-    </div>
-    {%else%}
-    <div style="font-size: 12px; display: flex;">
-        <p><strong>Data:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
-    </div>
-    {%endif%}
-
-</div>
 <script>
     var modelocarro = document.getElementById("modelocarro");
     var modelocarroconteudoParagrafo = modelocarro.innerHTML;
@@ -618,18 +473,5 @@
 
     }
 
-    function gerarPDF(numero_servico) {
-        $.ajax({
-            url: '/AbrirServico/' + numero_servico + '/tratar',
-            method: 'GET',
-            success: function (dados) {
-                $('#content').html(dados);
-                CriarPDF()
-            },
-            error: function (erro) {
-                console.error('Erro ao buscar dados do servidor:', erro);
-            }
-        });
-    }
 </script>
 {% endblock content %}

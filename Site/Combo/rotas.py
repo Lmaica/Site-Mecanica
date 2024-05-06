@@ -961,7 +961,7 @@ def dadosCombo(Com_id):
     getCombo.valor_total = totalInput 
     getCombo.data_inicil_combo = data_inicial_for
     getCombo.data_final_combo = data_fim_for
-    getCombo.obs = obs
-    getCombo.carro = carrosInput 
+    getCombo.obs = obs.upper()
+    getCombo.carro = carrosInput.upper()
     db.session.commit()
     return jsonify({"message": getCombo.atividade})

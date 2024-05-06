@@ -354,8 +354,8 @@
                         <tr>
                             <td>{{item_peca.nome}}</td>
                             <td>{{item_peca.un}}</td>
-                            <td>{{item_peca.preso}}</td>
-                            <td>{{item_peca.pago_total}}</td>
+                            <td style="white-space: nowrap;">{{item_peca.preso}}</td>
+                            <td style="white-space: nowrap;">{{item_peca.pago_total}}</td>
                         </tr>
                         {%endfor%}
                         {% else %}
@@ -365,7 +365,7 @@
                         <tr>
                             <td>{{items_MDO.nome}}</td>
                             <td colspan="2">Mão de obra</td>
-                            <td>{{items_MDO.preso}}</td>
+                            <td style="white-space: nowrap;">{{items_MDO.preso}}</td>
                         </tr>
                         {%endfor%}
                         {% else %}
