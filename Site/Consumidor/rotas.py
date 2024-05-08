@@ -58,8 +58,7 @@ def verifica_cliente_ativo(f):
             session['next_url'] = request.path
             cliente = Cliente.query.filter_by(email=email_conferi).first()
             if id_conferi != cliente.id:
-                MSG = f"Favor, evite usar a barra de pesquisa para navegar no Site."
-                return render_template("pagina_erro.html", MSG=MSG)
+                return redirect(url_for("Consumidor"))
             if cliente.statu == 'ATIVO':
                 return f(*args, **kwargs)
             else:
@@ -133,8 +132,8 @@ def verificar_tentativas_login():
 @app.route("/")
 def Consumidor():
     page = request.args.get("page", 1, type=int)
-    combos = Combo.query.filter(Combo.atividade == 'Ativo').order_by(desc(Combo.id)).paginate(page=page, per_page=10)
-    combosOfertas = Combo.query.filter(and_(Combo.status == 'Oferta', Combo.atividade == 'Ativo')).order_by(desc(Combo.id))
+    combos = Combo.query.filter_by(atividade='Ativo').order_by(Combo.id.desc()).paginate(page=page, per_page=10)
+    combosOfertas = Combo.query.filter(Combo.status == 'Oferta', Combo.atividade == 'Ativo').order_by(Combo.id.desc())
     return render_template(
         "Consumidor/index.html",
         contentConsumidor=True,
@@ -416,7 +415,6 @@ def pedidoContato():
 
     
 #login cliente
-
 @app.route("/loginCliente", methods=["GET", "POST"])
 def loginCliente():
     form = LoginFormulario(request.form)
@@ -451,6 +449,7 @@ def loginCliente():
                 flash("E-mail ou senha inválido", "Longin_Erro_Utrapado")
                 return redirect(url_for("loginCliente"))
         return render_template("Consumidor/login.html", form=form)
+
 
 @app.route("/AvisoEnvio", methods=["GET", "POST"])
 def AvisoEnvio():
@@ -498,7 +497,6 @@ def CriarLogin():
             db.session.commit()
             flash('Erro ao enviar o e-mail.', 'Longin_Erro_Utrapado')
     return render_template("Consumidor/EmailConfirme.html", form=form)
-
 
 @app.route('/confirm/<string:usuario>/<string:token>', methods=['GET', 'POST'])
 def confirm_email(usuario, token):

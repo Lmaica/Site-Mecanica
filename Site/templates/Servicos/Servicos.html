@@ -184,6 +184,10 @@
                             {% else %}
                             {% endif %}
                             <tr>
+                                <th>Serviço</th>
+                                <td colspan="3" class="mdo_nome_json">{{ item.mo_os }}</td>
+                            </tr>
+                            <tr>
                                 <th>OBS</th>
                                 <td colspan="3">{{ item.obs }}</td>
                             </tr>
@@ -388,13 +392,53 @@
             elemento.appendChild(nomeElemento);
         } else {
             const nomeElemento = document.createElement("span");
-            nomeElemento.textContent = "Não há nome";
+            nomeElemento.textContent = "Não há Mão de obra";
 
             elemento.innerHTML = "";
             elemento.appendChild(nomeElemento);
         }
     });
+    const elementosMDOnome = document.querySelectorAll(".mdo_nome_json");
+
+    elementosMDOnome.forEach(elemento => {
+        const dadosJSON = JSON.parse(elemento.textContent);
+
+        // Verifica se existem itens no objeto JSON
+        if (dadosJSON.itens && dadosJSON.itens.length > 0) {
+            // Cria um div para armazenar os nomes
+            const divNomes = document.createElement("div");
+
+            // Itera sobre todos os itens do objeto JSON
+            dadosJSON.itens.forEach(item => {
+                // Verifica se há um nome neste item
+                if (item.MDO_nome) {
+                    // Remove os pontos do nome
+                    const nomeSemPontos = item.MDO_nome;
+
+                    // Cria um elemento de texto para o nome e adiciona à div
+                    const nomeTexto = document.createElement("span");
+                    nomeTexto.textContent = nomeSemPontos;
+                    divNomes.appendChild(nomeTexto);
+
+                    // Adiciona uma quebra de linha entre os nomes
+                    const quebraLinha = document.createElement("br");
+                    divNomes.appendChild(quebraLinha);
+                }
+            });
+
+            // Limpa o conteúdo do elemento original e adiciona a div de nomes
+            elemento.innerHTML = "";
+            elemento.appendChild(divNomes);
+        } else {
+            // Se não houver itens, exibe "Não há nome" como antes
+            const nomeElemento = document.createElement("span");
+            nomeElemento.textContent = "Não há Mão de obra";
+            elemento.innerHTML = "";
+            elemento.appendChild(nomeElemento);
+        }
+    });
 </script>
+
 
 {%endif%}
 

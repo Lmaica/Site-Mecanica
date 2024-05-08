@@ -355,7 +355,7 @@
             <button class="paginationActive" type="submit">{{ page_num }}</button>
         </form>
         {% else %}
-        <a class="paginationActive" href="{{ url_for('combos', page=page_num) }}">{{ page_num }}</a>
+        <a class="paginationActive" href="{{ url_for('Consumidor', page=page_num) }}">{{ page_num }}</a>
         {% endif %}
         {% else %}
         {%if busca %}
