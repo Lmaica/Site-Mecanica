@@ -69,11 +69,22 @@
     </div>
     {% endif %}
 </div>
+<div id="search-container">
+    <div class="search-box">
+        <form style="display: flex; width: 100%;" method="dialog">
+            <input class="anular" type="text" id="searchinput" placeholder="Digite o termo de busca"
+                autofocus="autofocus" name="search_string" aria-label="searchCombo">
+
+            <button id="search-button">Buscar</button>
+        </form>
+    </div>
+</div>
+
 <div id="MenuInicial">
     <ul>
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/colaborador.png') }}" alt=""> Colaborador<i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;">
                 <hr>
                 <li><a href="{{url_for('dadosUsuario',id=session['_user_id'])}}">Dados<a></li>
                 {% if session["nivel"] >= 3 %}
@@ -104,7 +115,7 @@
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/MDO.png') }}" alt="">
                 Mão de Obra <i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;">
                 <hr>
                 <li><a href="{{url_for('MaoObras')}}">Mão de Obras</a></li>
                 <li><a href="{{url_for('Nome_para_Mao_de_Obra')}}">Nomes</a></li>
@@ -124,7 +135,7 @@
         {%if session["nivel"] >= 3%}
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/pistao.png') }}" alt="">Peças<i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;" >
                 <hr>
                 <li><a href="{{url_for('Pecas')}}">Peças</a></li>
                 <li><a href="{{url_for('Marca_das_Pecas')}}"> Marcas</a></li>
@@ -144,7 +155,7 @@
         {%if session["nivel"] >= 3%}
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/fornecedor.png') }}" alt="">Fornecedor<i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;">
                 <hr>
                 <li><a href="{{url_for('Fornecedors')}}">Fornecedor</a></li>
                 <li><a href="{{url_for('Cateforia_do_Fornecedor')}}">Cateogorias</a></li>
@@ -156,7 +167,7 @@
         {%if session["nivel"] >= 2%}
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/servico.png') }}" alt="">Serviços <i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;">
                 <hr>
                 <li><a href="{{url_for('servisos',status='Orçamento')}}">Orçamentos</a></li>
                 {%if session["nivel"] >= 3%}
@@ -179,7 +190,7 @@
         {%if session["nivel"] >= 4%}
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/moeda.png') }}" alt="">Administrativo<i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;">
                 <hr>
                 <li><a href="{{url_for('Caixas',tipo='Todos')}}">Caixa</a></li>
                 <li><a href="{{url_for('Caixas',tipo='Entrada')}}">Entrada</a></li>
@@ -194,7 +205,7 @@
         {% if session["nivel"] >= 5 %}
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/grafico.png') }}" alt=""> Metas<i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;">
                 <hr>
                 <li><a href="{{url_for('MetaBruta')}}">Bruto</a></li>
                 <li><a href="{{url_for('MetaLiquida')}}">Liquido</a></li>
@@ -208,7 +219,7 @@
         {% if session["nivel"] >= 5 %}
         <li class="principalCorUnica"><a href="#" onclick="toggleSubMenu(this)"><img
                     src="{{ url_for('static', filename='img/equipe.png') }}" alt=""> Equipe<i>&#8595;</i></a>
-            <ul class="principalCorMesclada submenu">
+            <ul class="principalCorMesclada submenu" style="border-radius: 10px;">
                 <hr>
                 <li><a href="{{url_for('Users')}}">Colaboradores</a></li>
                 <li><a href="{{url_for('Cargos')}}">Cargos</a></li>
@@ -223,8 +234,44 @@
 </div>
 
 <script>
+    document.getElementById('search-button').addEventListener('click', function () {
+        filterMenu();
+    });
+
+    function filterMenu() {
+        var searchTerm = document.getElementById('searchinput').value.toLowerCase();
+        var menus = document.querySelectorAll('#MenuInicial > ul > li');
+
+        menus.forEach(function (menu) {
+            var menuText = menu.textContent.toLowerCase(); // Obtém o texto do menu
+            var hasMatchingItems = menuText.includes(searchTerm); // Verifica se o texto do menu contém o termo de busca
+
+            if (!hasMatchingItems) {
+                hideMenu(menu); // Oculta o menu e seus submenus se não houver correspondências
+            } else {
+                showMenu(menu); // Restaura o menu e seus submenus para serem exibidos
+            }
+        });
+    }
+
+    function hideMenu(menu) {
+        menu.style.display = 'none'; // Oculta o menu principal
+        var submenus = menu.querySelectorAll('.submenu'); // Obtém todos os submenus dentro do menu principal
+
+        submenus.forEach(function (submenu) {
+            submenu.style.display = 'none'; // Oculta cada submenu
+        });
+    }
+
+    function showMenu(menu) {
+        menu.style.display = 'block'; // Restaura o menu principal
+        var submenus = menu.querySelectorAll('.submenu'); // Obtém todos os submenus dentro do menu principal
+
+        submenus.forEach(function (submenu) {
+            submenu.style.display = 'block'; // Restaura cada submenu
+        });
+    }
 
 </script>
-
 
 {% endblock content %}

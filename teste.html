@@ -1,102 +1,228 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descrição da Peça</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Rolagem de Itens</title>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #343a40;
+        /* Estilos de exemplo para ilustrar a rolagem de itens */
+        .container-iterno-consumidor {
+            overflow-x: auto;
+            /* Permite rolar horizontalmente */
+            white-space: nowrap;
+            /* Impede a quebra de linha */
             margin-bottom: 20px;
-            text-align: center;
+            /* Adiciona espaço entre os grupos */
         }
 
-        .image-container {
-            text-align: center;
-            margin-bottom: 20px;
+        .produto {
+            display: inline-block;
+            width: calc(25% - 10px);
+            /* Ajusta a largura dos itens para caber quatro na tela */
+            margin-right: 10px;
+            /* Adiciona margem entre os itens */
+            vertical-align: top;
+            /* Alinha os itens no topo */
+            position: relative;
+            /* Define posição relativa para facilitar a criação de separadores */
         }
 
-        img {
+        .produto img {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        p {
-            color: #495057;
-            line-height: 1.6;
+        .produto h2 {
+            margin: 5px 0;
+            font-size: 16px;
         }
 
-        .contact-info {
-            margin-top: 20px;
-            border-top: 1px solid #ced4da;
-            padding-top: 20px;
+        .valor-consumidor {
+            font-weight: bold;
         }
 
-        .contact-info i {
-            margin-right: 10px;
-            color: #6c757d;
-        }
-
-        .description {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .description-item {
-            width: 48%;
+        /* Estilizando os separadores entre os grupos */
+        .produto:not(:nth-child(4n))::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -5px;
+            /* Ajusta a posição do separador */
+            height: 100%;
+            width: 1px;
+            background-color: #ccc;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <h1>Descrição da Peça</h1>
-
-        <div class="image-container">
-            <img src="caminho/para/imagem-da-peca.jpg" alt="Imagem da Peça">
-        </div>
-
-        <p><strong>Nome da Peça:</strong> Nome da Peça Aqui</p>
-
-        <div class="description">
-            <div class="description-item">
-                <p><strong>Descrição:</strong> Descrição detalhada da peça, incluindo suas características, materiais,
-                    dimensões, etc.</p>
-            </div>
-            <div class="description-item">
-                <p><strong>Preço:</strong> R$ XX,XX</p>
-
-                <p><strong>Disponibilidade:</strong> Em estoque / Sob encomenda</p>
-
-                <p><strong>Prazo de entrega:</strong> X dias úteis</p>
+    <div class="container-iterno-consumidor">
+        <!-- Itens fictícios -->
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 1">
+            <h2>Produto 1</h2>
+            <div class="valor-consumidor">
+                <p>R$ 50,00</p>
             </div>
         </div>
-
-        <div class="contact-info">
-            <p><i class="fas fa-phone"></i> Telefone: (XX) XXXX-XXXX</p>
-            <p><i class="fas fa-envelope"></i> Email: exemplo@email.com</p>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 2">
+            <h2>Produto 2</h2>
+            <div class="valor-consumidor">
+                <p>R$ 40,00</p>
+            </div>
         </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 3">
+            <h2>Produto 3</h2>
+            <div class="valor-consumidor">
+                <p>R$ 60,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <div class="produto">
+            <img src="https://via.placeholder.com/150" alt="Produto 4">
+            <h2>Produto 4</h2>
+            <div class="valor-consumidor">
+                <p>R$ 45,00</p>
+            </div>
+        </div>
+        <!-- Mais itens fictícios -->
+        <!-- Repita os mesmos itens fictícios conforme necessário -->
     </div>
 
 </body>

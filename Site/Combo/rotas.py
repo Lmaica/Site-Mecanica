@@ -861,7 +861,7 @@ def apagar_item_mos_combo(Combo_id, item_index):
         return render_template("pagina_erro.html", MSG=MSG)
 
 
-# Dados cliente Orçamento
+# Dados Combo
 @app.route("/dadosCombo/<int:Com_id>",methods=["PUT"])
 @login_required
 @nome_required
@@ -870,7 +870,7 @@ def dadosCombo(Com_id):
     data_atual = datetime.now()
     atividade_combo = 0
     nome = request.form.get("nome").strip()
-    totalInput = request.form.get("totalInput").strip()
+    totalInput = request.form.get("totalInput")
     if nome == '':
         atividade_combo = 0
     else:
@@ -907,9 +907,6 @@ def dadosCombo(Com_id):
         data_fim_for = None
         atividade_combo += 1
     getCombo = Combo.query.get(Com_id)
-    if not getCombo:
-        flash("Algo deu Errado. Consulte o Desenvolvedor!!!", "cor-cancelar")
-        return jsonify({"message": "Erro ao atualizar o item"})
     
     imagem = request.files.get("image_1")
 
@@ -940,6 +937,8 @@ def dadosCombo(Com_id):
             except Exception as e:
                 getCombo.image_1 = "foto.jpg"
                 atividade_combo = 0
+                print(type(e).__name__, str(e))
+                return jsonify({"messagefoto": "Opa, parece que houve um problema. A imagem não é compatível!!!"})
     if getCombo.image_1 == 'foto.jpg':
         atividade_combo = 0
     else:
@@ -965,3 +964,4 @@ def dadosCombo(Com_id):
     getCombo.carro = carrosInput.upper()
     db.session.commit()
     return jsonify({"message": getCombo.atividade})
+

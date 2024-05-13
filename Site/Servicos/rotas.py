@@ -977,7 +977,7 @@ def AbriCombosSevico(id):
         semItens = request.args.get('semItens')
         get_serviso = Serviso.query.get_or_404(id)
         page = request.args.get("page", 1, type=int)
-        combos = Combo.query.order_by(Combo.id).paginate(page=page, per_page=10)
+        combos = Combo.query.filter(Combo.atividade != 'ATIVO').order_by(desc(Combo.id)).paginate(page=page, per_page=10)
         if semItens is None: 
             flash("Ao adicionar o Combo, todos os outros itens no Serviço serão apagados!", "cor-cancelar")
         return render_template(
@@ -1007,30 +1007,34 @@ def searchComboServico(id):
             busca = search_value = form["search_string"]
             if escolha == "todos":
                 search_terms = search.split()  
+                nova_palavra = "Ativo"
+                search_terms += [nova_palavra]
                 conditions = []
                 for term in search_terms:
                     conditions.append(
                         or_(
-                            Combo.id.like(f'%{term}%'),
-                            Combo.nome.like(f'%{term}%'),
+                            Combo.nome.like(f'%{term}%'), 
+                            Combo.atividade.like(f'%{term}%'),
                             Combo.status.like(f'%{term}%'),
-                            Combo.status.like(f'%{term}%'),
+                            Combo.carro.like(f'%{term}%'),
+                            Combo.tipo.like(f'%{term}%'),
                             Combo.peca_os_combo.like(f'%{term}%'),
                             Combo.mo_os_combo.like(f'%{term}%'),
                             Combo.obs.like(f'%{term}%'),
                         )
                     )
                 get_combos = (
-                    Combo.query.filter(
-                        *conditions
+                        Combo.query.filter(
+                            *conditions
+                        )
+                        .order_by(Combo.id.desc())
+                        .paginate(page=page, per_page=10)
                     )
-                    .order_by(Combo.id.desc())
-                    .paginate(page=page, per_page=10)
-                )
             else:
                 get_combos = (
                     Combo.query.filter(getattr(Combo, escolha).like(search))
                     .filter(Combo.id != 0)
+                    .filter(Combo.atividade != 'ATIVO') 
                     .order_by(Combo.data_inicil_combo.desc())
                     .paginate(page=page, per_page=10)
                 )

@@ -56,9 +56,11 @@ with app.app_context():
         SERVIÇO = Catcaixa(nome="*SERVIÇO*")
         TRASFERIR = Catcaixa(nome="*TRASFERIR*")
         PEÇAS = Catcaixa(nome="PEÇAS")
+        GANHOS = Catcaixa(nome="*GANHOS*")
         db.session.add(SERVIÇO)
         db.session.add(TRASFERIR)
         db.session.add(PEÇAS)
+        db.session.add(GANHOS)
         db.session.commit()
     if Carteirabanco.query.count() == 0:
         DINHERO = Carteirabanco(nome="DINHERO")

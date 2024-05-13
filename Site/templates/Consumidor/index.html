@@ -3,6 +3,14 @@
 {% block contentConsumidor %}
 
 <style>
+    .mobile-produtos {
+        display: none;
+    }
+
+    .desktop-produtos {
+        display: block;
+    }
+
     .capitalize {
         text-transform: lowercase;
     }
@@ -247,10 +255,49 @@
     }
 
 
-    @media screen and (max-width: 760px) {
-        .container-iterno-consumidor {
-            grid-template-columns: repeat(2, minmax(20px, 1fr));
 
+    @media screen and (max-width: 760px) {
+        .produto img {
+            max-width: 200px;
+        }
+
+        .mobile-produtos {
+            display: block;
+        }
+
+
+        .desktop-produtos {
+            display: none;
+        }
+
+        .container-iterno-consumidor {
+            display: block;
+            overflow-y: none;
+        }
+
+        .grupo-produtos-container {
+            overflow-x: auto;
+            overflow-y: none;
+            margin: 0;
+            left: 0;
+            display: flex;
+        }
+
+        .grupo-produtos {
+            display: flex;
+            width: 100%;
+        }
+
+        .produto {
+            min-width: 200px;
+            margin: 10px;
+            width: 100%;
+        }
+
+        .produto-tratamento {
+            min-width: 200px;
+            margin: 10px;
+            width: 100%;
         }
 
         .produto-oferta {
@@ -273,21 +320,6 @@
         .valor-consumidor-oferta {
             margin-top: 10px;
             font-size: 5vw;
-        }
-    }
-
-    @media screen and (max-width: 479px) {
-        .container-iterno-consumidor {
-            grid-template-columns: repeat(2, minmax(20px, 1fr));
-
-        }
-
-    }
-
-    @media screen and (max-width: 358px) {
-        .container-iterno-consumidor {
-            grid-template-columns: repeat(2, minmax(20px, 1fr));
-
         }
     }
 </style>
@@ -320,17 +352,41 @@
             </form>
         </div>
     </div>
-    <div class="container-iterno-consumidor">
-        {% for item in combos %}
-        <div class="produto" onclick="abrirDetalhes('{{ item.id }}')">
-            <img src="{{ url_for('static', filename='imagens/' + item.image_1) }}" alt="Produto 1">
-            <h2 class="capitalize">{{item.nome}}</h2>
-            <div class="valor-consumidor">
-                <p class="valor-consumidor">{{item.valor_total}}</p>
+    <div class="desktop-produtos">
+        <div class="container-iterno-consumidor" id="container-iterno-consumidor">
+            {% for item in combos %}
+            <div class="produto" onclick="abrirDetalhes('{{ item.id }}')">
+                <img src="{{ url_for('static', filename='imagens/' + item.image_1) }}" alt="Produto 1">
+                <h2 class="capitalize">{{item.nome}}</h2>
+                <div class="valor-consumidor">
+                    <p class="valor-consumidor">{{item.valor_total}}</p>
+                </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
+    <div class="mobile-produtos">
+        <div class="container-iterno-consumidor" id="container-iterno-consumidor">
+            {% for group in combos|batch(3) %}
+            <div class="grupo-produtos-container">
+                {% for item in group %}
+                <div class="grupo-produtos">
+                    <div class="produto" onclick="abrirDetalhes('{{ item.id }}')">
+                        <img src="{{ url_for('static', filename='imagens/' + item.image_1) }}" alt="Produto 1">
+                        <h2 class="capitalize">{{ item.nome }}</h2>
+                        <div class="valor-consumidor">
+                            <p class="valor-consumidor">{{ item.valor_total }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
 
     <div class="pagination">
         {% if combos.has_prev %}
@@ -386,15 +442,6 @@
 </div>
 
 <script>
-    function copyToClipboard(text) {
-        var textarea = document.createElement("textarea");
-        textarea.value = text.toLowerCase();
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-        alert("Endereço de e-mail copiado para a área de transferência: " + text);
-    }
     function abrirDetalhes(id) {
         window.location.href = `/dadosInformativos/${id}`;
     }
@@ -422,7 +469,6 @@
             ]
         });
     });
-
 </script>
 
 {% endblock contentConsumidor %}

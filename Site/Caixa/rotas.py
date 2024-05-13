@@ -53,7 +53,8 @@ def addCategorias_de_Caixa():
 @nome_required
 @verificacao_nivel(4)
 def atulizCategorias_de_Caixa(id):
-    if id == 1 or id == 2:
+    getCatCaixa = Catcaixa.query.get_or_404(id)
+    if id == 1 or id == 2 or getCatCaixa.nome == '*GANHOS*':
         flash(f"A Categoria, Não pode ser Editada!!!", "cor-cancelar")
         return redirect(url_for("Categorias_de_Caixa"))
     return Redutor_codigo.handle_generic_update(
@@ -66,7 +67,8 @@ def atulizCategorias_de_Caixa(id):
 @nome_required
 @verificacao_nivel(4)
 def deleteCategorias_de_Caixa(id):
-    if id == 1 or id == 2:
+    getCatCaixa = Catcaixa.query.get_or_404(id)
+    if id == 1 or id == 2 or getCatCaixa.nome == '*GANHOS*':
         flash(f"A Categoria, Não pode ser Deletada!!!", "cor-cancelar")
         return jsonify()
     return Redutor_codigo.handle_generic_delete(

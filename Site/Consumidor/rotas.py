@@ -679,7 +679,7 @@ def dadosConsumidor(id):
             pass
         else:
             servisos=False
-        print(users)
+
         servisos_atual = (Serviso.query.filter(Serviso.cliente_os == users)
             .filter(Serviso.status == "Aprovado")
             .filter(

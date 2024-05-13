@@ -191,17 +191,17 @@
 <div class="pagination">
     {% if combos.has_prev %}
     {% if busca %}
-    <form action="{{ url_for('searchComboServico',id=Adicionar.id, page=AbriCombosSevico.prev_num) }}" method="POST">
+    <form action="{{ url_for('searchComboServico',id=Adicionar.id, page=combos.prev_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&lt;</button>
     </form>
     {% else %}
-    <a href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=AbriCombosSevico.prev_num) }}">&lt;</a>
+    <a href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=combos.prev_num) }}">&lt;</a>
     {% endif %}
     {% endif %}
     {% if combos.total > 10 %}
-    {% for page_num in AbriCombosSevico.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% for page_num in combos.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
     {% if page_num %}
     {% if combos.page == page_num %}
     {%if busca %}
@@ -230,13 +230,13 @@
     {% endif %}
     {% if combos.has_next %}
     {% if busca %}
-    <form action="{{ url_for('searchComboServico', id=Adicionar.id, page=AbriCombosSevico.next_num) }}" method="POST">
+    <form action="{{ url_for('searchComboServico', id=Adicionar.id, page=combos.next_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&gt;</button>
     </form>
     {% else %}
-    <a href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=AbriCombosSevico.next_num) }}">&gt;</a>
+    <a href="{{ url_for('AbriCombosSevico', id=Adicionar.id, page=combos.next_num) }}">&gt;</a>
     {% endif %}
     {% endif %}
 </div>

@@ -3,9 +3,9 @@
 {% block content %}
 {% from "_formularioAjuda.html" import render_field %}
 {% if lembrete %}
-<h2  class="cabeçario-pagina">Editar Lembrete</h2>
+<h2 class="cabeçario-pagina">Editar Lembrete</h2>
 {% else %}
-<h2  class="cabeçario-pagina">Adicionar Lembrete</h2>
+<h2 class="cabeçario-pagina">Adicionar Lembrete</h2>
 {% endif %}
 <form action="" method="POST" enctype="multipart/form-data">
     <fieldset class="containerForm">
@@ -18,8 +18,19 @@
         {{ render_field(form.msg,id='msg',style="width: 100%; height: 150px;",class ='anular', placeholder='Qual seu
         Mensagem',
         required=True) }}
-        {{ render_field(form.data_inicial,id='data_inicial', placeholder='Qual a Data de Inicial', required=True,value=data_formatada_inicil) }}
-        {{ render_field(form.data_fim,id='data_fim', placeholder='Qual a Data de Terminar o Aviso', required=True , value=data_formatada_fim) }}
+        {% if lembrete %}
+        {{ render_field(form.data_inicial, placeholder='Qual a Data de Inicial',
+        required=True,value=data_formatada_inicil) }}
+        {{ render_field(form.data_fim, placeholder='Qual a Data de Terminar o Aviso', required=True ,
+        value=data_formatada_fim) }}
+        {% else %}
+        {{ render_field(form.data_inicial,id='data_inicial', placeholder='Qual a Data de Inicial',
+        required=True,value=data_formatada_inicil) }}
+        {{ render_field(form.data_fim,id='data_fim', placeholder='Qual a Data de Terminar o Aviso', required=True ,
+        value=data_formatada_fim) }}
+        {% endif %}
+
+
         <input type="submit" value="CADASTRAR" class="button-grande cor-ok">
         <a href="{{url_for('Lembretes')}}" class="button-medio cor-cancelar">CANCELAR</a>
     </fieldset>

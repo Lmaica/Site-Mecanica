@@ -29,7 +29,7 @@ from Site.Global.fun_global import (
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from Site.Servicos.modelos import Serviso
-from datetime import datetime, timedelta 
+from datetime import datetime, timedelta,timezone
 from sqlalchemy import and_, or_, desc,func, extract,cast,Integer, Numeric
 import requests
 from Site.Carros.modelos import Carro
@@ -108,6 +108,7 @@ def buscar_dados_dois_banco(data_objeto_data_inicio, data_objeto_data_fim, granu
             Caixa.tipo == 'Entrada',
             Caixa.catcaixa_id != 1,
             Caixa.catcaixa_id != 2,
+            Caixa.catcaixa.has(Catcaixa.nome == '*GANHOS*'),
         )
         .group_by(cast(func.strftime('%Y', Caixa.data_criado), Integer),
                 cast(func.strftime('%m', Caixa.data_criado), Integer),
@@ -240,7 +241,6 @@ def buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias_
     return resultados_finais
 
 
-
 @app.route("/MaicaATLJ")
 @login_required
 @nome_required
@@ -281,6 +281,7 @@ def Admin():
             Lembretestodos.destinatario == user.apelido,
         ),
         Lembretestodos.tipo == "AVISO",
+        Lembretestodos.data_inicil <= data_atual,
     ).order_by(Lembretestodos.data_inicil.desc())
 
     adivertencias = Lembretestodos.query.filter(
@@ -290,6 +291,7 @@ def Admin():
             Lembretestodos.destinatario == user.apelido,
         ),
         Lembretestodos.tipo == "ADIVERTENCIA",
+        Lembretestodos.data_inicil <= data_atual,
     ).order_by(Lembretestodos.data_inicil.desc())
     
     limite = data_atual - timedelta(hours=24)
@@ -304,10 +306,11 @@ def Admin():
         teste='Teste valor em Pagina',
     )
 
+
 @app.route('/cartaoVisita')
 def cartaoVisita():
     dados = session
-    agora = datetime.now()
+    agora = datetime.now(timezone.utc).astimezone()
     msg = "Acesso session " + str(dados) + " hora do Acesso " + str(agora)
     data_atual = datetime.now()
     data_atual_mais_30_dias = data_atual + timedelta(days=30)
@@ -1627,13 +1630,12 @@ def atulizLembretes(id):
         getdata_fim = request.form.get("data_fim")
         data_inicial_for = datetime.strptime(getdata_inicil, "%Y-%m-%d")
         data_fim_for = datetime.strptime(getdata_fim, "%Y-%m-%d")
-
         lembrete.titulo = gettitulo
         lembrete.autor = getautor
         lembrete.destinatario = getdestinatario
         lembrete.tipo = gettipo
         lembrete.msg = getmsg
-        lembrete.data_inicial = data_inicial_for
+        lembrete.data_inicil = data_inicial_for
         lembrete.data_fim = data_fim_for
         db.session.commit()
         flash(

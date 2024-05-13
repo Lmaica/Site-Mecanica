@@ -299,7 +299,7 @@ $(document).ready(function () {
 });
 
 
-// Função para atualizar o preço total quando o valor do input muda
+// Função para atualizar o preço total quando o valor do input muda dadosCombo
 function formatCurrency(value) {
     return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
@@ -721,59 +721,6 @@ function atualizarLadoPecasCombo(selectElement) {
         }
     });
 }
-
-//Adicionar Carro no multiplo select2
-$(document).ready(function () {
-    $('#add-button-combo').on('click', function (event) {
-
-        event.preventDefault();
-        var option1 = $('#marcaT').val();
-        var option2 = $('#modeloT').val();
-        var option3 = $('#anoIniT').val();
-        var option4 = $('#anoFinT').val();
-        var option5 = $('#motorT').val();
-
-        // Substitua "TODOS" por uma string vazia ("")
-        option1 = option1 === 'TODOS' ? '' : option1;
-        option2 = option2 === 'TODOS' ? '' : option2;
-        option3 = option3 === 'TODOS' ? '' : option3;
-        option4 = option4 === 'TODOS' ? '' : option4;
-        option5 = option5 === 'TODOS' ? '' : option5;
-        if (option1 === '' && option2 === '' && option3 === '' && option4 === '' && option5 === '') {
-            return;
-        }
-        var newOptionValue = option1 + ' ' + option2 + ' ' + option3 + ' ' + option4 + ' ' + option5;
-
-        var currentValue = $('#carrosInput').val();
-        if (currentValue.indexOf(newOptionValue) === -1) {
-            var newValue = currentValue ? currentValue + '\n' + newOptionValue : newOptionValue;
-            $('#carrosInput').val(newValue);
-        }
-
-        var Com_id = $("#Com_id").val();
-        var campos = ["nome", "status", "data_inicil_combo", "data_final_combo", "obs", "carrosInput"];
-        var formData = new FormData();
-        campos.forEach(function (campo) {
-            formData.append(campo, $("#" + campo).val());
-        });
-        var fileInput = document.getElementById('image_1');
-        var file = fileInput.files[0];
-        formData.append('image_1', file);
-
-
-        $.ajax({
-            url: "/dadosCombo/" + Com_id,
-            method: "PUT",
-            data: formData,
-            contentType: false,
-            processData: false,
-            error: function () {
-                console.log("Erro ao atualizar o item");
-            }
-        });
-    });
-});
-
 
 
 //Função do menu para mobile 
