@@ -2237,97 +2237,75 @@ def finalizarEdit(id):
         return redirect(f"/AbrirServico/0/Editar")
     else:
         servisos = Serviso.query.get_or_404(id)
-        data_hora_atual = datetime.now()
-        data_serv_buscar = data_hora_atual - timedelta(days=5*365, minutes=3)
-
-        # Criar objeto datetime com a nova data
-        data_hora_especifica = datetime(
-            data_serv_buscar.year,
-            data_serv_buscar.month,
-            data_serv_buscar.day,
-            data_serv_buscar.hour,
-            data_serv_buscar.minute,
-            data_serv_buscar.second,
-        )
-        filtro = Caixa.query.filter(
-            (servisos.data_finalizada > data_hora_especifica)
-        ).first()
-        if filtro:
-            filtro_0 = Serviso.query.filter(Serviso.id == 0).first()
-            if filtro_0:
-                data_atualizacao_finalizacao = filtro_0.data_atulizado_finalizado
-                uma_hora_atras = datetime.now() - timedelta(minutes=3)
-                if data_atualizacao_finalizacao <= uma_hora_atras:
-                    filtro_0.notafiscal = servisos.notafiscal
-                    filtro_0.status = 'Editar'
-                    filtro_0.cliente_veiculo = servisos.cliente_veiculo
-                    filtro_0.data_criado = servisos.data_criado
-                    filtro_0.data_finalizada = servisos.data_finalizada
-                    filtro_0.peca_os = servisos.peca_os
-                    filtro_0.mo_os = servisos.mo_os
-                    filtro_0.obs = servisos.obs
-                    filtro_0.km_final = servisos.km_final
-                    filtro_0.carteira_id = servisos.carteira_id
-                    filtro_0.valor_pesas = servisos.valor_pesas
-                    filtro_0.valor_mdo = servisos.valor_mdo
-                    filtro_0.valor_gasto = servisos.valor_gasto
-                    filtro_0.valor_recebido = servisos.valor_recebido
-                    filtro_0.valor_total = servisos.valor_total
-                    filtro_0.desconto_sobra = servisos.desconto_sobra
-                    filtro_0.valor_ganho = servisos.valor_ganho
-                    filtro_0.cliente_os_id = servisos.cliente_os_id
-                    filtro_0.veiculo_os_id = servisos.veiculo_os_id
-                    filtro_0.user_os_id = servisos.user_os_id
-                    filtro_0.mecanico_id = servisos.mecanico_id
-                    filtro_0.vendedor_id = servisos.vendedor_id
-                    filtro_0.editor_finalizado_id = servisos.id
-                    filtro_0.data_atulizado_finalizado = datetime.now(
-                        timezone.utc
-                    ).astimezone()
-                    db.session.commit()
-                else:
-                    flash(
-                        "No momento, não é possível modificar este registro. Por favor, aguarde pelo menos 3 minutos e tente novamente",
-                        "cor-cancelar",
-                    )
-                    return redirect(f"/AbrirServico/{id}/tratatar")
-            else:
-                get_Serviso = Serviso(
-                    id=0,
-                    notafiscal=servisos.notafiscal,
-                    status=servisos.status,
-                    cliente_veiculo=servisos.cliente_veiculo,
-                    data_criado=servisos.data_criado,
-                    data_finalizada=servisos.data_finalizada,
-                    peca_os=servisos.peca_os,
-                    mo_os=servisos.mo_os,
-                    obs=servisos.obs,
-                    km_final=servisos.km_final,
-                    carteira_id=servisos.carteira_id,
-                    valor_pesas=servisos.valor_pesas,
-                    valor_mdo=servisos.valor_mdo,
-                    valor_gasto=servisos.valor_gasto,
-                    valor_recebido=servisos.valor_recebido,
-                    valor_total=servisos.valor_total,
-                    desconto_sobra=servisos.desconto_sobra,
-                    cliente_os_id=servisos.cliente_os_id,
-                    veiculo_os_id=servisos.veiculo_os_id,
-                    user_os_id=servisos.user_os_id,
-                    mecanico_id=servisos.mecanico_id,
-                    vendedor_id=servisos.vendedor_id,
-                    editor_finalizado_id=servisos.id,
-                    data_atulizado_finalizado=datetime.now(timezone.utc).astimezone(),
-                )
-                db.session.add(get_Serviso)
+        filtro_0 = Serviso.query.filter(Serviso.id == 0).first()
+        if filtro_0:
+            data_atualizacao_finalizacao = filtro_0.data_atulizado_finalizado
+            uma_hora_atras = datetime.now() - timedelta(minutes=3)
+            if data_atualizacao_finalizacao <= uma_hora_atras:
+                filtro_0.notafiscal = servisos.notafiscal
+                filtro_0.status = 'Editar'
+                filtro_0.cliente_veiculo = servisos.cliente_veiculo
+                filtro_0.data_criado = servisos.data_criado
+                filtro_0.data_finalizada = servisos.data_finalizada
+                filtro_0.peca_os = servisos.peca_os
+                filtro_0.mo_os = servisos.mo_os
+                filtro_0.obs = servisos.obs
+                filtro_0.km_final = servisos.km_final
+                filtro_0.carteira_id = servisos.carteira_id
+                filtro_0.valor_pesas = servisos.valor_pesas
+                filtro_0.valor_mdo = servisos.valor_mdo
+                filtro_0.valor_gasto = servisos.valor_gasto
+                filtro_0.valor_recebido = servisos.valor_recebido
+                filtro_0.valor_total = servisos.valor_total
+                filtro_0.desconto_sobra = servisos.desconto_sobra
+                filtro_0.valor_ganho = servisos.valor_ganho
+                filtro_0.cliente_os_id = servisos.cliente_os_id
+                filtro_0.veiculo_os_id = servisos.veiculo_os_id
+                filtro_0.user_os_id = servisos.user_os_id
+                filtro_0.mecanico_id = servisos.mecanico_id
+                filtro_0.vendedor_id = servisos.vendedor_id
+                filtro_0.editor_finalizado_id = servisos.id
+                filtro_0.data_atulizado_finalizado = datetime.now(
+                    timezone.utc
+                ).astimezone()
                 db.session.commit()
-
-            return redirect(f"/AbrirServico/0/Editar")
+            else:
+                flash(
+                    "No momento, não é possível modificar este registro. Por favor, aguarde pelo menos 3 minutos e tente novamente",
+                    "cor-cancelar",
+                )
+                return redirect(f"/AbrirServico/{id}/tratatar")
         else:
-            flash(
-                "Os servicos finalizados nos meses anteriores não podem ser modificados.",
-                "cor-cancelar",
+            get_Serviso = Serviso(
+                id=0,
+                notafiscal=servisos.notafiscal,
+                status=servisos.status,
+                cliente_veiculo=servisos.cliente_veiculo,
+                data_criado=servisos.data_criado,
+                data_finalizada=servisos.data_finalizada,
+                peca_os=servisos.peca_os,
+                mo_os=servisos.mo_os,
+                obs=servisos.obs,
+                km_final=servisos.km_final,
+                carteira_id=servisos.carteira_id,
+                valor_pesas=servisos.valor_pesas,
+                valor_mdo=servisos.valor_mdo,
+                valor_gasto=servisos.valor_gasto,
+                valor_recebido=servisos.valor_recebido,
+                valor_total=servisos.valor_total,
+                desconto_sobra=servisos.desconto_sobra,
+                cliente_os_id=servisos.cliente_os_id,
+                veiculo_os_id=servisos.veiculo_os_id,
+                user_os_id=servisos.user_os_id,
+                mecanico_id=servisos.mecanico_id,
+                vendedor_id=servisos.vendedor_id,
+                editor_finalizado_id=servisos.id,
+                data_atulizado_finalizado=datetime.now(timezone.utc).astimezone(),
             )
-            return redirect(f"/AbrirServico/{id}/tratatar")
+            db.session.add(get_Serviso)
+            db.session.commit()
+
+        return redirect(f"/AbrirServico/0/Editar")
 
 
 @app.route("/finalizarEditVolt/<int:id>", methods=["GET", "POST"])

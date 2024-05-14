@@ -60,18 +60,19 @@
 
 
     input[type="button"]:hover {
-        background-color: #9d3b3b;
         cursor: pointer;
+        transform: scale(1.02);
     }
 
     input[type="submit"]:hover {
-        background-color: #9d3b3b;
         cursor: pointer;
+        transform: scale(1.02);
     }
 
     legend {
         font-weight: bold;
         font-size: 20pl;
+        transform: scale(1.02);
     }
 
     img {
@@ -82,7 +83,7 @@
         border-bottom-right-radius: 10px;
     }
 
-    /*  Caregamento de Pagina */
+    /*  Caregamento de Pagina*/
     #loader {
         position: fixed;
         top: 50%;
@@ -372,6 +373,7 @@
         font-size: 16pl;
         margin: 10px 2px;
         border-radius: 50px;
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.5);
     }
 
     .button-medio {
@@ -382,7 +384,7 @@
         font-size: 16pl;
         margin: 10px 2px;
         border-radius: 50px;
-
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.5);
     }
 
     .button-pequeno {
@@ -393,6 +395,19 @@
         font-size: 16pl;
         margin: 10px 2px;
         border-radius: 50px;
+        box-shadow: 2px 2px 6px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .button-grande:hover {
+        transform: scale(1.02);
+    }
+
+    .button-medio:hover {
+        transform: scale(1.02);
+    }
+
+    .button-pequeno:hover {
+        transform: scale(1.02);
     }
 
     .cor-ok {
@@ -972,7 +987,7 @@
     }
 
     /* mensagem dinamica JS */
-    #MensagemServiço {
+    #MensagemServico {
         background-color: #f44336;
         color: white;
         padding: 10px;
@@ -1369,13 +1384,16 @@
     }
 
     .div_admistrador {
-        width: 40%;
+        position: relative;
+        left: 50%;
+        max-width: 400px;
+        transform: translateX(-50%);
+        width: 50%;
         border: solid;
         padding: 5px;
         text-align: center;
         border-radius: 50px;
         background-color: rgb(170, 170, 170);
-
     }
 
     .div_admistrador_flutuante {

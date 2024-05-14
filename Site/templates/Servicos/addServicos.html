@@ -287,130 +287,133 @@
     <textarea id="obsSer" name="obsSer" rows="5" cols="40">{{Servico.obs}}</textarea>
     {%endif%}
 </div>
+
+{% if status == 'Aprovado' or status == 'Editar Finazados' %}
+<fieldset class="lado-lado containerForm">
+    <div style="display: flex; justify-content: space-between;">
+        <div style="padding: 5px;  width: 50%;">
+            {{ form.mecanico.label }} {{ form.mecanico(id="mecanico") }}
+        </div>
+        <div style="padding: 5px; width: 50%;">
+            {{ form.vendedor.label }} {{ form.vendedor(id="vendedor") }}
+        </div>
+    </div>
+    <hr>
+</fieldset>
+{%endif%}
 {% if status == 'Finalizado' %}
+<div style="display: flex; justify-content: space-between;">
+    <div style="padding: 1px;  width: 50%;">
+        <label>Mecanico:</label>
+        <p>{{Servico.mecanico.apelido}}</p>
+    </div>
+    <div style="padding: 1px; width: 50%;">
+        <label>Vendedor:</label>
+        <p>{{Servico.vendedor.apelido}}</p>
+    </div>
+</div>
+{%endif%}
+{% if status != 'Editar Finazados' %}
+<fieldset class="lado-a-lado containerForm">
+    <div style="width: 40%; margin-right: 10px; ">
+        <a href="{{url_for('servisos',status=Servico.status)}}"><input class="button-grande cor-cancelar" type="button"
+                value="VOLTAR"></a>
+    </div>
+
+    <div style="width: 100%; margin-right: 10px;">
+        {%if session["nivel"] >= 3%}
+        {% if status == 'Orçamento' %}
+        <a href="{{url_for('aprovarServico', id=Servico.id)}}"><input class="button-grande cor-ok" type="button"
+                value="APROVAR SERVIÇO"></a>
+        {%endif%}
+        {%endif%}
+        {%if session["nivel"] >= 4%}
+        {% if status == 'Aprovado'%}
+        <a href="{{url_for('finalizarServico', id=Servico.id)}}">
+            <input type="button" class="button-grande cor-ok" value="FINALIZAR">
+        </a>
+        {%endif%}
+        {%endif%}
+        {%if session["nivel"] >= 4%}
+        {% if status == 'Finalizado' %}
+        <a href="{{url_for('finalizarEdit', id=Servico.id)}}">
+            <input type="button" class="button-grande cor-alerta" value="EDITAR">
+        </a>
+        {%endif%}
+        {%endif%}
+    </div>
+</fieldset>
+{%endif%}
+{% if status != 'Orçamento' and status != 'Editar Finazados' %}
 <div class="botao-add" style="padding: 10px;">
     <a style="border-radius: 10px; padding-left: 5px;padding-right: 5px; color: #000000; text-decoration: none; background-color: #f4f4f4; border: 1px solid #000000; display: inline-block;"
         href="{{url_for('addComboServico', id=Servico.id)}}">Criar Combo da O.S</a>
 
 </div>
 {%endif%}
+{% if status == 'Editar Finazados' %}
 
-<div style="padding: 20px;">
-    {%if session["nivel"] >= 3%}
-    {% if status == 'Orçamento' %}
-    <a href="{{url_for('aprovarServico', id=Servico.id)}}">
-        <input type="submit" style="font-size: 20px;" class="cor-ok" name="" value="APROVAR SERVIÇO">
-    </a>
-    {%endif%}
+<div class="div_admistrador">
+    <h3>Modificar Finalizado</h3>
+    <form action="/finalizarEditVolt/{{Servico.id }}" method="POST">
+        <input type="hidden" id="valordaspesas" name="valordaspesas" value="R$ 0,00">
+        <input type="hidden" id="valortodos" name="valortodos" value="R$ 0,00">
+        <div>
+            <div style="background-color: brown; border-radius: 20px;" class="lado-a-lado">
+                <label for="gasto">Valor Gasto:</label>
+                <input type="text" name="gasto" id="gasto" class="inputReais" value="{{Servico.valor_gasto}}">
+            </div>
+        </div>
 
-    {% if status == 'Aprovado' %}
-    <div style="display: flex; justify-content: space-between;">
-        <div style="padding: 5px;  width: 50%;">
-            {{ form.mecanico.label }} {{ form.mecanico(id="mecanico") }}
-        </div>
-        <div style="padding: 5px; width: 50%;">
-            {{ form.vendedor.label }} {{ form.vendedor(id="vendedor") }}
-        </div>
-    </div>
-    <hr>
-    <a href="{{url_for('finalizarServico', id=Servico.id)}}">
-        <input type="submit" style="margin: 5px; font-size: 20px;" class="cor-ok" name="" value="FINALIZAR">
-    </a>
-    {%endif%}
-
-    {%else%}
-    {%endif%}
-    {% if status == 'Finalizado' %}
-    <div style="display: flex; justify-content: space-between;">
-        <div style="padding: 1px;  width: 50%;">
-            <label>Mecanico:</label>
-            <p>{{Servico.mecanico.apelido}}</p>
-        </div>
-        <div style="padding: 1px; width: 50%;">
-            <label>Vendedor:</label>
-            <p>{{Servico.vendedor.apelido}}</p>
-        </div>
-    </div>
-    <hr>
-    {%if session["nivel"] >= 4%}
-    <a href="{{url_for('finalizarEdit', id=Servico.id)}}">
-        <input type="submit" style="font-size: 10px;" class="cor-alerta" name="" value="EDITAR">
-    </a>
-    {%endif%}
-    {%endif%}
-    {% if status == 'Editar Finazados' %}
-    <div style="display: flex; justify-content: space-between;">
-        <div style="padding: 5px;  width: 50%;">
-            {{ form.mecanico.label }} {{ form.mecanico(id="mecanico") }}
-        </div>
-        <div style="padding: 5px; width: 50%;">
-            {{ form.vendedor.label }} {{ form.vendedor(id="vendedor") }}
-        </div>
-    </div>
-    <hr>
-    <div class="div_admistrador">
-        <h3>Modificar Finalizado</h3>
-        <form action="/finalizarEditVolt/{{Servico.id }}" method="POST">
-            <input type="hidden" id="valordaspesas" name="valordaspesas" value="R$ 0,00">
-            <input type="hidden" id="valortodos" name="valortodos" value="R$ 0,00">
-            <div>
-                <div style="background-color: brown; border-radius: 20px;" class="lado-a-lado">
-                    <label for="gasto">Valor Gasto:</label>
-                    <input type="text" name="gasto" id="gasto" class="inputReais" value="{{Servico.valor_gasto}}">
+        <div style="background-color: green; border-radius: 20px; padding: 5px;">
+            {% for items_carteira in items_data_carteira %}
+            <div
+                style="border: solid; padding: 2px; text-align: center; border-radius: 10px; border-color: rgb(170, 170, 170);">
+                <div>
+                    <label for="carteira">Adicione Carteira:</label>
+                    <select class="searchselector" name="carteira" id="carteira"
+                        style="width: 80%; height: 30px;font-size: 20pl;border-top-left-radius: 10px;border-top-right-radius: 10px; border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;text-align: center; font-size: 16px;"
+                        required>
+                        <option style="background-color: #444343;" value="{{items_carteira.carteira_id}}" selected>
+                            {{items_carteira.carteira_nome}}
+                        </option>
+                        {%for carteira in carteiras%}
+                        <option value="{{carteira.id}}">{{carteira.nome}}</option>
+                        {%endfor%}
+                    </select>
                 </div>
-            </div>
-
-            <div style="background-color: green; border-radius: 20px; padding: 5px;">
-                {% for items_carteira in items_data_carteira %}
-                <div
-                    style="border: solid; padding: 2px; text-align: center; border-radius: 10px; border-color: rgb(170, 170, 170);">
-                    <div>
-                        <label for="carteira">Adicione Carteira:</label>
-                        <select class="searchselector" name="carteira" id="carteira"
-                            style="width: 80%; height: 30px;font-size: 20pl;border-top-left-radius: 10px;border-top-right-radius: 10px; border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;text-align: center; font-size: 16px;"
-                            required>
-                            <option style="background-color: #444343;" value="{{items_carteira.carteira_id}}" selected>
-                                {{items_carteira.carteira_nome}}
-                            </option>
-                            {%for carteira in carteiras%}
-                            <option value="{{carteira.id}}">{{carteira.nome}}</option>
-                            {%endfor%}
-                        </select>
-                    </div>
-                    <div class="lado-a-lado">
-                        <label for="pago">Valor Pago:</label>
-                        <input type="text" name="pago" id="pago" class="inputReais" placeholder="R$ 0,00"
-                            value="{{items_carteira.valor_recebido}}" required>
-                    </div>
-                    <label for="detalesPago">Detale do Pagamento:</label>
-                    <input type="text" name="detalesPago" value="{{items_carteira.detalesPago}}" required>
+                <div class="lado-a-lado">
+                    <label for="pago">Valor Pago:</label>
+                    <input type="text" name="pago" id="pago" class="inputReais" placeholder="R$ 0,00"
+                        value="{{items_carteira.valor_recebido}}" required>
                 </div>
-                {%endfor%}
+                <label for="detalesPago">Detale do Pagamento:</label>
+                <input type="text" name="detalesPago" value="{{items_carteira.detalesPago}}" required>
             </div>
-            <div>
-                <label for="kmAtualiza">Adicione o KM:</label>
-                <input type="number" name="kmAtualiza" id="kmAtualiza" value="{{Servico.km_final}}" required>
+            {%endfor%}
+        </div>
+        <div>
+            <label for="kmAtualiza">Adicione o KM:</label>
+            <input type="number" name="kmAtualiza" id="kmAtualiza" value="{{Servico.km_final}}" required>
+        </div>
+        <div class="lado-a-lado ">
+            <div style="width: 50%; margin-right: 10px;">
+                <input class="button-grande cor-cancelar" id="meuBotao" type="button" value="CANCELAR">
             </div>
-            <div style="padding: 0px 0px 0px 0px;" class="lado-a-lado">
-                <input type="submit" class="button-grande cor-ok" name="" value="SALVAR">
+            <div style="width: 100%; margin-right: 10px;">
+                <a href="#"><input type="submit" class="button-grande cor-ok" name="" value="SALVAR"></a>
             </div>
-        </form>
+        </div>
+    </form>
+    <input type="hidden" id="servico_id" value="{{ Servico.editor_finalizado_id }}">
 
-        <input type="hidden" id="servico_id" value="{{ Servico.editor_finalizado_id }}">
-        <button class="button-pequeno cor-cancelar" id="meuBotao">CANCELAR</button>
-    </div>
-
-    {%else%}
-    {%endif%}
 </div>
 
+</div>
+{%else%}
+{%endif%}
+
 <script>
-    var modelocarro = document.getElementById("modelocarro");
-    var modelocarroconteudoParagrafo = modelocarro.innerHTML;
-
-    var nomecliente = document.getElementById("nomecliente");
-    var nomeclienteconteudoParagrafo = nomecliente.innerHTML;
-
     function redirecionar() {
         var idInput = document.getElementById("servico_id");
 
@@ -428,7 +431,7 @@
 
         setTimeout(function () {
             redirecionar();
-        }, 120000);
+        }, 129000);
 
         botao.addEventListener("click", redirecionar);
         botao.addEventListener("keydown", function (event) {
@@ -443,34 +446,6 @@
         if (divs.length > 0) {
             adicioneados.removeChild(divs[divs.length - 1]);
         }
-    }
-
-    function CriarPDF() {
-
-        var notasFiscais = document.querySelectorAll('.nota-servico');
-        var element = document.createElement('div');
-        var estilosOriginais = [];
-        notasFiscais.forEach(function (notaFiscal) {
-            estilosOriginais.push({ element: notaFiscal, display: notaFiscal.style.display });
-
-            notaFiscal.style.display = 'block';
-            element.appendChild(notaFiscal.cloneNode(true));
-        });
-
-
-        html2pdf(element, {
-            margin: 0,
-            filename: nomeclienteconteudoParagrafo + ' ' + modelocarroconteudoParagrafo + '.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        });
-
-
-        estilosOriginais.forEach(function (estiloOriginal) {
-            estiloOriginal.element.style.display = estiloOriginal.display;
-        });
-
     }
 
 </script>

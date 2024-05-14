@@ -2,6 +2,25 @@
 
 {% block contentConsumidor %}
 <style>
+    .alert {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        position: relative;
+        font-family: Arial, sans-serif;
+    }
+
+    .alert i {
+        color: #721c24;
+    }
+
+    .alert-text {
+        margin-left: 30px;
+    }
+
     .nomeCabecario {
         font-size: 2vw;
         font-weight: bold;
@@ -292,6 +311,14 @@
     }
 </style>
 <div class="margens-consumidor">
+    {% if Combo.atividade %}
+    {% else %}
+    <div class="alert">
+        <i class="fas fa-exclamation-circle"></i>
+        <span class="alert-text"><strong>LAMENTAMOS INFORMAR:</strong> Este serviço não está atualmente
+            disponível.</span>
+    </div>
+    {% endif %}
     <div class="nomeCabecario">
         <h2>{{Combo.nome}}</h2>
     </div>
@@ -373,8 +400,17 @@
             <p class="spanP">(O valor pode variar de acordo com o ano e o motor do veículo.)</p>
 
             <div class="botoes-container">
+
+                {%if session["nivel"]%}
+                {%if session["nivel"] >= 3%}
+                <button class="btn" onclick="AbrirCombo({{ Combo.id }})"><i class="fas fa-car btn-icon"></i>Modificar
+                Combo !!!</button>
+                {% else %}
+                {% endif %}
+                {% else %}
                 <button class="btn" onclick="openConversar()"><i class="fas fa-car btn-icon"></i>Para outro
                     Carro</button>
+                {% endif %}
                 <button class="btn" onclick="openConversar()"><i
                         class="fas fa-comment-alt btn-icon"></i>Consultar</button>
             </div>
@@ -396,6 +432,9 @@
 
 
 <script>
+    function AbrirCombo(id) {
+        window.location.href = `/AbrirCombo/${id}`;
+    }
     function abrirDetalhes(id) {
         window.location.href = `/dadosInformativos/${id}`;
     }

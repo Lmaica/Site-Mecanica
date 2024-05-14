@@ -419,23 +419,21 @@ function validarCampos() {
     var email = document.getElementById("email").value;
     var missingFields = [];
 
-    if (clientName === "") {
+    if (clientName.trim() === "") {
         missingFields.push("(Nome do Cliente)");
     }
-
-    if (phoneNumber === "" && email === "") {
+    if (phoneNumber.trim() === "" && email.trim() === "") {
         missingFields.push("(Telefone ou Email)");
     }
-
     if (missingFields.length > 0) {
-        MensagemServiço = document.getElementById('MensagemServiço')
-        MensagemServiço.classList.remove('retira');
-        document.getElementById('MensagemServiço').innerHTML = `Por favor, preencha os seguintes campos obrigatórios:<br>${formatCurrency(missingFields)}`;
+        var mensagemServico = document.getElementById('MensagemServico');
+        mensagemServico.classList.remove('retira');
+        mensagemServico.innerHTML = `Por favor, preencha os seguintes campos obrigatórios:<br>${missingFields.join(', ')}`;
         return false;
     }
-
     return true;
 }
+
 
 //atulizar cliente no Orçamento
 $(document).ready(function () {
@@ -476,7 +474,7 @@ $(document).ready(function () {
     });
 });
 
-//atulizar Vendedor no Orçamento
+//atulizar Vendedor 
 $(document).ready(function () {
     $("#vendedor").on("change", function () {
         var Ser_id = $("#Ser_id").val();
@@ -491,7 +489,7 @@ $(document).ready(function () {
     });
 });
 
-//atulizar Mecanico no Orçamento
+//atulizar Mecanico 
 $(document).ready(function () {
     $("#mecanico").on("change", function () {
         var Ser_id = $("#Ser_id").val();
