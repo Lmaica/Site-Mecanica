@@ -3,9 +3,9 @@
 {% block content %}
 {% from "_formularioAjuda.html" import render_field %}
 {% if lembrete %}
-<h2 class="cabeçario-pagina">Editar Lembrete</h2>
+<h2 class="cabeçario-pagina">Editar Avisos</h2>
 {% else %}
-<h2 class="cabeçario-pagina">Adicionar Lembrete</h2>
+<h2 class="cabeçario-pagina">Adicionar Avisos</h2>
 {% endif %}
 <form action="" method="POST" enctype="multipart/form-data">
     <fieldset class="containerForm">
@@ -29,11 +29,95 @@
         {{ render_field(form.data_fim,id='data_fim', placeholder='Qual a Data de Terminar o Aviso', required=True ,
         value=data_formatada_fim) }}
         {% endif %}
+        {% if lembrete%}
+        {% if lembrete.repet %}
+        <div style="display: flex; width: 100%; justify-content: center;">
+            <p style="padding: 10px;">Modificar as outras repetições?</p>
+            <div class="cor-ok"
+                style="display: flex; align-items: center; border: 2px solid #aaa; border-radius: 10px; padding: 2px; margin: 2px;">
+                <input type="radio" id="sim" name="modificar_repeticoes" value="True"
+                    style="width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 4px; outline: none; cursor: pointer; transition: background-color 0.3s, border-color 0.3s; vertical-align: middle;">
+                <label for="sim"
+                    style="font-size: 14px; cursor: pointer; vertical-align: middle; margin-left: 5px;">Sim</label>
+            </div>
+            <div class="cor-cancelar"
+                style="display: flex; align-items: center; border: 2px solid #aaa; border-radius: 10px; padding: 2px; margin: 2px;">
+                <input type="radio" id="no" name="modificar_repeticoes" value="False" checked
+                    style="width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 4px; outline: none; cursor: pointer; transition: background-color 0.3s, border-color 0.3s; vertical-align: middle;">
+                <label for="no"
+                    style="font-size: 14px; cursor: pointer; vertical-align: middle; margin-left: 5px;">Não</label>
+            </div>
+        </div>
 
+        {% else %}
+        <div style="display: flex; width: 100%; justify-content: center;">
+            <div class="cor-alerta"
+                style="display: flex; align-items: center; border: 2px solid #aaa; border-radius: 10px; padding: 5px; margin: 5px;">
+                <input type="checkbox" id="show-repeat-count" name="show-repeat-count"
+                    style="width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 4px; outline: none; cursor: pointer; transition: background-color 0.3s, border-color 0.3s; vertical-align: middle;">
+                <label for="show-repeat-count"
+                    style="font-size: 16px; cursor: pointer; vertical-align: middle; margin-left: 5px;">Repetir
+                    Aviso</label>
+            </div>
+        </div>
+        {% endif %}
+        {% else %}
+        <div style="display: flex; width: 100%; justify-content: center;">
+            <div class="cor-alerta"
+                style="display: flex; align-items: center; border: 2px solid #aaa; border-radius: 10px; padding: 5px; margin: 5px;">
+                <input type="checkbox" id="show-repeat-count" name="show-repeat-count"
+                    style="width: 20px; height: 20px; border: 2px solid #aaa; border-radius: 4px; outline: none; cursor: pointer; transition: background-color 0.3s, border-color 0.3s; vertical-align: middle;">
+                <label for="show-repeat-count"
+                    style="font-size: 16px; cursor: pointer; vertical-align: middle; margin-left: 5px;">Repetir
+                    Aviso</label>
+            </div>
+        </div>
+        {% endif %}
 
+        <div id="dynamic-content"></div>
+        {% if lembrete %}
+        <input type="submit" value="EDITAR" class="button-grande cor-ok">
+        {% else %}
         <input type="submit" value="CADASTRAR" class="button-grande cor-ok">
+        {% endif %}
+       
         <a href="{{url_for('Lembretes')}}" class="button-medio cor-cancelar">CANCELAR</a>
     </fieldset>
 </form>
 
+<script>
+    document.getElementById('show-repeat-count').addEventListener('click', function () {
+        var dynamicContent = document.getElementById('dynamic-content');
+        var label = document.querySelector('label[for="show-repeat-count"]');
+        var checkbox = document.getElementById('show-repeat-count');
+        if (checkbox.checked) {
+            dynamicContent.innerHTML = `
+            <div class="form-group" id="repeat-count-group">
+                <div class="lado-a-lado">
+                    <label style="padding-right: 10px;" for="periodo">Período: </label>
+                    <select style="font-size: 100%;  border-radius: 10px; width: 50%; max-width: 400px;" id="periodo" name="periodo" required>
+                        <option value="">-Escolha o Período-</option>
+                        <option value="diario">Diariamente</option>
+                        <option value="semanal">Semanalmente</option>
+                        <option value="quinzenal">Quinzenalmente</option>
+                        <option value="mensal">Mensalmente</option>
+                        <option value="trimestral">Trimestralmente</option>
+                        <option value="anual">Anualmente</option>
+                    </select>
+                </div>
+                <div class="lado-a-lado">
+                    <label style="padding-right: 10px;" for="repetir">Quantidade: </label>
+                    <input style="width: 100px;" type="number" id="repetir" name="repetir" min="2" placeholder="Quantidade" required>
+                </div>
+            </div>
+        `;
+            label.textContent = "Retirar repetição";
+        } else {
+            dynamicContent.innerHTML = "";
+            label.textContent = "Repetir Aviso";
+        }
+    });
+
+
+</script>
 {% endblock content %}

@@ -50,6 +50,7 @@ class Lembretestodos(db.Model):
     tipo = db.Column(db.String, nullable=False)
     data_inicil = db.Column(db.String, nullable=False)
     data_fim = db.Column(db.String, nullable=False)
+    repet = db.Column(db.String, nullable=True, default=None)
 
 
 @login_manager.user_loader

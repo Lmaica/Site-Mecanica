@@ -2,13 +2,15 @@ from flask import (
     redirect,
     render_template,
     url_for,
+    session,
     flash,
     request,
     make_response,
     jsonify,
+    current_app,
 )
-from Site import db, app, nome_required, verificacao_nivel
-from .modelos import Serviso
+from Site import db, app,photos, nome_required, verificacao_nivel
+from .modelos import Serviso,Registrospreservados
 from Site.Global.fun_global import Calculos_gloabal, Redutor_codigo
 from Site.Fornecedor.modelos import Fornecedor
 from Site.Pecas.modelos import Marcapeca, Peca
@@ -26,6 +28,15 @@ from Site.Combo.modelos import Combo
 import pdfkit
 import base64
 import os
+from Site.Consumidor.modelos import Token
+import random
+import string
+import pyperclip
+import requests
+import uuid
+import secrets
+from werkzeug.utils import secure_filename
+import socket
 
 # Dados do Serviços 
 @app.route("/servisos/<string:status>", methods=["GET", "POST"])
@@ -330,8 +341,46 @@ def deleteServisos(id):
                         for apagar  in getCaixa:
                             db.session.delete(apagar)
                     db.session.commit()
+                    if registro:
+                        if registro.images_carro:
+                            filenames_images_carro = json.loads(registro.images_carro)
+                            for filename in filenames_images_carro:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.videos_carro:
+                            filenames_videos_carro = json.loads(registro.videos_carro)
+                            for filename in filenames_videos_carro:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.images_serviso:
+                            filenames_images_serviso = json.loads(registro.images_serviso)
+                            for filename in filenames_images_serviso:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.videos_serviso:
+                            filenames_videos_serviso = json.loads(registro.videos_serviso)
+                            for filename in filenames_videos_serviso:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.image_token and registro.image_token != 'foto.jpg':
+                            file_path = os.path.join(current_app.root_path, "static/preservados", registro.image_token)
+                            if os.path.exists(file_path):
+                                os.unlink(file_path)
+
+                        db.session.delete(registro)
+                        db.session.commit()
                     db.session.delete(servisos)
                     db.session.commit()
+                    registro = Registrospreservados.query.filter_by(serviso_id=servisos.id).first()
+                    print(registro)
                     flash(
                         f"O Serviço com ID: {servisosnome} foi Deletada com Sucesso!!!",
                         "cor-ok",
@@ -353,6 +402,43 @@ def deleteServisos(id):
                                         )
                                         peca_modificar.estoque = valor_atual
                                         db.session.commit()
+                    registro = Registrospreservados.query.filter_by(serviso_id=servisos.id).first()
+                    if registro:
+                        if registro.images_carro:
+                            filenames_images_carro = json.loads(registro.images_carro)
+                            for filename in filenames_images_carro:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.videos_carro:
+                            filenames_videos_carro = json.loads(registro.videos_carro)
+                            for filename in filenames_videos_carro:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.images_serviso:
+                            filenames_images_serviso = json.loads(registro.images_serviso)
+                            for filename in filenames_images_serviso:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.videos_serviso:
+                            filenames_videos_serviso = json.loads(registro.videos_serviso)
+                            for filename in filenames_videos_serviso:
+                                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                                if os.path.exists(file_path):
+                                    os.unlink(file_path)
+
+                        if registro.image_token and registro.image_token != 'foto.jpg':
+                            file_path = os.path.join(current_app.root_path, "static/preservados", registro.image_token)
+                            if os.path.exists(file_path):
+                                os.unlink(file_path)
+
+                        db.session.delete(registro)
+                        db.session.commit()
                     db.session.delete(servisos)
                     db.session.commit()
                     flash(
@@ -360,6 +446,7 @@ def deleteServisos(id):
                         "cor-ok",
                     )
                     return jsonify()
+                
                 else:
                     flash(
                         f"O Serviço com ID: {servisosnome} não foi APAGADA, O Seviços dos meses anteriores não podem ser apagados!",
@@ -404,6 +491,7 @@ def AddServico():
 def AbrirServico(id, tratatar):
     form = Responsaveis()
     get_serviso = Serviso.query.get_or_404(id)
+    get_serviso = Serviso.query.get_or_404(get_serviso.id)
     if tratatar == "alertar" and get_serviso.status != "Finalizado":
         flash(
             "Os dados modificados aqui serão automaticamente atualizados.",
@@ -640,6 +728,26 @@ def AbrirServico(id, tratatar):
                                 "detalesPago":carteira_detales_servico,
                             }
                         )
+    registros_preservados = Registrospreservados.query.filter_by(serviso_id=get_serviso.id).first()
+
+    def parse_json_field(json_field):
+        try:
+            return json.loads(json_field) if json_field else None
+        except json.JSONDecodeError:
+            return None
+
+    if registros_preservados:
+        preservados_img = {}
+        if registros_preservados.images_carro:
+            preservados_img["images_carro"] = parse_json_field(registros_preservados.images_carro)
+        if registros_preservados.images_serviso:
+            preservados_img["images_serviso"] = parse_json_field(registros_preservados.images_serviso)
+        if registros_preservados.videos_carro:
+            preservados_img["videos_carro"] = parse_json_field(registros_preservados.videos_carro)
+        if registros_preservados.videos_serviso:
+            preservados_img["videos_serviso"] = parse_json_field(registros_preservados.videos_serviso)
+    else:
+        preservados_img = None
     return render_template(
         "/Servicos/addServicos.html",
         Servico=get_serviso,
@@ -661,7 +769,10 @@ def AbrirServico(id, tratatar):
         items_data_carteira=items_data_carteira,
         valor_total_pecas=valor_total_pecas,
         valor_total_total=valor_total_total,
+        registros_preservados=registros_preservados,
+        preservados_img=preservados_img,
     )
+
 
 @app.route('/pdf/<int:id>', methods=['GET', 'POST'])
 def generate_pdf(id):
@@ -2027,66 +2138,105 @@ def aprovarServico(id):
         getMaoobra = Maoobra.query.order_by(Maoobra.id)
         if servisoAprovado.cliente_os_id > 0 and servisoAprovado.veiculo_os_id > 0:
             if request.method == "POST":
-                for peca_um in getPeca:
-                    if "itens" in pecas_os:
-                        for index, item in enumerate(pecas_os["itens"]):
-                            peca_id = item.get("peca_id")
-                            if peca_um.id == peca_id:
-                                pecas_os["itens"][index]["valor_final"] = peca_um.preso
-                                pecas_os["itens"][index]["peca_codigo"] = peca_um.codigo
-                                pecas_os["itens"][index]["peca_nome"] = peca_um.nome
-                                servisoAprovado.peca_os = json.dumps(pecas_os)
-                                db.session.commit()
-                for mo_um in getMaoobra:
-                    if "itens" in mos_os:
-                        for index, item in enumerate(mos_os["itens"]):
-                            mo_id = item.get("MDO_id")
-                            if mo_um.id == mo_id:
-                                mos_os["itens"][index]["MDO_preso"] = mo_um.preso
-                                mos_os["itens"][index][
-                                    "MDO_nome"
-                                ] = mo_um.nomemaoobra.nome
-                                servisoAprovado.mo_os = json.dumps(mos_os)
-
-                                db.session.commit()
-                if len(pecas_os["itens"]) > 0:
-                    for peca_um in getPeca:
-                        for index, item in enumerate(pecas_os["itens"]):
-                            pecaid = item.get("peca_id")
-                            pecaUn = item.get("un")
-                            if pecaid == peca_um.id:
-                                peca_modificar = Peca.query.get_or_404(peca_um.id)
-                                if peca_modificar.estoque != 0:
-                                    valor_atual = int(peca_modificar.estoque) - int(
-                                        pecaUn
-                                    )
-                                    valor_estoque = 0
-                                    if int(peca_modificar.estoque) > int(pecaUn):
-                                        valor_estoque = pecaUn
-                                    else:
-                                        valor_estoque = peca_modificar.estoque
-                                    if valor_atual < 0:
-                                        valor_atual = 0
-                                    peca_modificar.estoque = valor_atual
-
-                                    db.session.commit()
-                                    peca_os_atual = json.loads(servisoAprovado.peca_os)
-                                    peca_os_atual["itens"][index][
-                                        "em_estoque"
-                                    ] = valor_estoque
-                                    servisoAprovado.peca_os = json.dumps(peca_os_atual)
-                                    db.session.commit()
-                km = request.form.get("kmAtualiza")
+                nova_senha = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                aprovar_url = url_for('aprovacao',usuario=servisoAprovado.cliente_os.email ,token=nova_senha,serviso=servisoAprovado.id, _external=True)
+                get_token = Token(
+                            requisitor=servisoAprovado.cliente_os.email,
+                            token=nova_senha,
+                        )
+                db.session.add(get_token)
+                db.session.commit()
+                registro = Registrospreservados.query.filter_by(serviso_id=servisoAprovado.id).first()
                 veiculo = Veiculo.query.get_or_404(servisoAprovado.veiculo_os_id)
-                veiculo.km = km
+                veiculo.km = request.form.get("kmAtualiza")
                 db.session.commit()
-                servisoAprovado.status = "Aprovado"
-                db.session.commit()
-                flash(
-                    f"O Serviço foi Aprovado, com Sucesso!!!",
-                    "cor-ok",
-                )
-                return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
+                if 'email' in request.form:
+                    if servisoAprovado.cliente_os.email:
+                        Redutor_codigo.enviar_email_confirmar(servisoAprovado.cliente_os.email, nova_senha, 'APROVAR', servisoAprovado)
+                        registro.status = 'AGUARDANDO'
+                        registro.modo_aprovado = 'Link enviado ao e-mail do cliente'
+                        db.session.commit()
+                        flash(
+                            f"Email enviado com sucesso!!!",
+                            "cor-ok",
+                        )
+                        return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
+                    else:
+                        flash(
+                            f"Para Aprovar o serviço, é necessário adicionar um email ao cliente no sistema.",
+                            "cor-alerta",
+                        )
+                        return redirect(f"/AbrirServico/{servisoAprovado.id}/dados")
+                if 'copia' in request.form:
+                    pyperclip.copy(aprovar_url)
+                    registro.status = 'AGUARDANDO'
+                    registro.modo_aprovado = 'Link copiado e enviado ao cliente'
+                    db.session.commit()
+                    flash(
+                            f"Link Copiado para a área de transferência. Para aprovar o serviço, é fundamental que o cliente Aprove.",
+                            "cor-ok",
+                        )
+                    return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
+                if 'imprimir' in request.form:
+                    for peca_um in getPeca:
+                        if "itens" in pecas_os:
+                            for index, item in enumerate(pecas_os["itens"]):
+                                peca_id = item.get("peca_id")
+                                if peca_um.id == peca_id:
+                                    pecas_os["itens"][index]["valor_final"] = peca_um.preso
+                                    pecas_os["itens"][index]["peca_codigo"] = peca_um.codigo
+                                    pecas_os["itens"][index]["peca_nome"] = peca_um.nome
+                                    servisoAprovado.peca_os = json.dumps(pecas_os)
+                                    db.session.commit()
+                    for mo_um in getMaoobra:
+                        if "itens" in mos_os:
+                            for index, item in enumerate(mos_os["itens"]):
+                                mo_id = item.get("MDO_id")
+                                if mo_um.id == mo_id:
+                                    mos_os["itens"][index]["MDO_preso"] = mo_um.preso
+                                    mos_os["itens"][index][
+                                        "MDO_nome"
+                                    ] = mo_um.nomemaoobra.nome
+                                    servisoAprovado.mo_os = json.dumps(mos_os)
+
+                                    db.session.commit()
+                    if len(pecas_os["itens"]) > 0:
+                        for peca_um in getPeca:
+                            for index, item in enumerate(pecas_os["itens"]):
+                                pecaid = item.get("peca_id")
+                                pecaUn = item.get("un")
+                                if pecaid == peca_um.id:
+                                    peca_modificar = Peca.query.get_or_404(peca_um.id)
+                                    if peca_modificar.estoque != 0:
+                                        valor_atual = int(peca_modificar.estoque) - int(
+                                            pecaUn
+                                        )
+                                        valor_estoque = 0
+                                        if int(peca_modificar.estoque) > int(pecaUn):
+                                            valor_estoque = pecaUn
+                                        else:
+                                            valor_estoque = peca_modificar.estoque
+                                        if valor_atual < 0:
+                                            valor_atual = 0
+                                        peca_modificar.estoque = valor_atual
+
+                                        db.session.commit()
+                                        peca_os_atual = json.loads(servisoAprovado.peca_os)
+                                        peca_os_atual["itens"][index][
+                                            "em_estoque"
+                                        ] = valor_estoque
+                                        servisoAprovado.peca_os = json.dumps(peca_os_atual)
+                                        db.session.commit()
+                    servisoAprovado.status = "Aprovado"
+                    db.session.commit()
+                    registro.modo_aprovado = 'Assinado pelo cliente'
+                    registro.status = '!Autorizado!--Escolha o status do serviço--'
+                    db.session.commit()
+                    flash(
+                        f"O Serviço foi Aprovado, com Sucesso!!!",
+                        "cor-ok",
+                    )
+                    return generate_pdf(servisoAprovado.id)
             flash(f"{servisoAprovado.id}", "Aprovado")
             return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
         else:
@@ -2099,7 +2249,7 @@ def aprovarServico(id):
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
-
+ 
 # SERVIcOS FINALIZAR
 @app.route("/finalizarServico/<int:id>", methods=["GET", "POST"])
 @login_required
@@ -2434,5 +2584,471 @@ def finalizarEditVolt(id):
             "cor-alerta",
         )
         return redirect(f"/AbrirServico/{servisos.id}/Editar")
+
+#aprovação de serviço pelo cliente 
+
+@app.route('/aprovacao/<string:usuario>/<string:token>/<string:serviso>', methods=['GET', 'POST'])
+def aprovacao(usuario, token,serviso):
+    try:
+        user = Token.query.filter_by(requisitor=usuario, token=token).first_or_404()
+        userCliente = Cliente.query.filter_by(email=usuario).first()
+        get_serviso = Serviso.query.get_or_404(serviso)
+        pecas_os = json.loads(get_serviso.peca_os)
+        mos_os = json.loads(get_serviso.mo_os)
+        getPeca = Peca.query.order_by(Peca.id)
+        getMaoobra = Maoobra.query.order_by(Maoobra.id)
+        if user and userCliente:
+            if request.method == 'POST':
+                for peca_um in getPeca:
+                    if "itens" in pecas_os:
+                        for index, item in enumerate(pecas_os["itens"]):
+                            peca_id = item.get("peca_id")
+                            if peca_um.id == peca_id:
+                                pecas_os["itens"][index]["valor_final"] = peca_um.preso
+                                pecas_os["itens"][index]["peca_codigo"] = peca_um.codigo
+                                pecas_os["itens"][index]["peca_nome"] = peca_um.nome
+                                get_serviso.peca_os = json.dumps(pecas_os)
+                                db.session.commit()
+                    for mo_um in getMaoobra:
+                        if "itens" in mos_os:
+                            for index, item in enumerate(mos_os["itens"]):
+                                mo_id = item.get("MDO_id")
+                                if mo_um.id == mo_id:
+                                    mos_os["itens"][index]["MDO_preso"] = mo_um.preso
+                                    mos_os["itens"][index][
+                                        "MDO_nome"
+                                    ] = mo_um.nomemaoobra.nome
+                                    get_serviso.mo_os = json.dumps(mos_os)
+
+                                    db.session.commit()
+                    if len(pecas_os["itens"]) > 0:
+                        for peca_um in getPeca:
+                            for index, item in enumerate(pecas_os["itens"]):
+                                pecaid = item.get("peca_id")
+                                pecaUn = item.get("un")
+                                if pecaid == peca_um.id:
+                                    peca_modificar = Peca.query.get_or_404(peca_um.id)
+                                    if peca_modificar.estoque != 0:
+                                        valor_atual = int(peca_modificar.estoque) - int(
+                                            pecaUn
+                                        )
+                                        valor_estoque = 0
+                                        if int(peca_modificar.estoque) > int(pecaUn):
+                                            valor_estoque = pecaUn
+                                        else:
+                                            valor_estoque = peca_modificar.estoque
+                                        if valor_atual < 0:
+                                            valor_atual = 0
+                                        peca_modificar.estoque = valor_atual
+
+                                        db.session.commit()
+                                        peca_os_atual = json.loads(get_serviso.peca_os)
+                                        peca_os_atual["itens"][index][
+                                            "em_estoque"
+                                        ] = valor_estoque
+                                        get_serviso.peca_os = json.dumps(peca_os_atual)
+                                        db.session.commit()
+                    get_serviso.status = "Aprovado"
+                    db.session.commit()
+                    db.session.delete(user)
+                    db.session.commit()
+                    registro = Registrospreservados.query.filter_by(serviso_id=get_serviso.id).first()
+                    if request.headers.getlist("X-Forwarded-For"):
+                        client_ip = request.headers.getlist("X-Forwarded-For")[0]
+                    else:
+                        client_ip = request.remote_addr
+                    server_ip = socket.gethostbyname(socket.gethostname())
+                    user_agent = request.headers.get('User-Agent')
+                    registro.token = f'Token: {token} | Endereço IP Cliente: {client_ip} | Endereço IP Servidor: {server_ip} | Identificação do dispositivo: {user_agent}'
+                    
+                    registro.status = '!Autorizado!--Escolha o status do serviço--'
+                    registro.data = datetime.now(timezone.utc).astimezone()
+                    db.session.commit()
+                    flash(
+                        f"O Serviço foi Aprovado, com Sucesso!!!",
+                        "cor-ok",
+                    )
+                    return redirect("/")
+            empresa = User.query.get(1)
+            
+            if not get_serviso:
+                return "Servico não encontrado", 404
+
+            peca_os = json.loads(get_serviso.peca_os)
+            getPecas = Peca.query.order_by(Peca.id).all()
+            mo_os = json.loads(get_serviso.mo_os)
+            get_MDO = Maoobra.query.order_by(Maoobra.id).all()
+
+
+            items_data_pecas = []
+            soma_pagos = []
+            soma_pecas = []
+            soma_total = []
+            if "itens" in peca_os:
+                for item in peca_os["itens"]:
+                    peca_id = item.get("peca_id")
+                    un = item.get("un")
+                    peca_nome = item.get("peca_nome")
+                    lado = item.get("lado")
+                    valor_final = item.get("valor_final")
+                    peca_codigo = item.get("peca_codigo")
+                    valor_custo = item.get("valor_custo")
+                    if peca_id is not None:
+                        if len(getPecas) == 0:
+                            Pagosoma = Calculos_gloabal.valor_para_Calculos(valor_custo) * int(un)
+                            PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                            soma_pagos.append(Pagosoma)
+                            somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
+                            soma_do_valor = int(un) * somar_dados_uni
+                            soma_pecas.append(soma_do_valor)
+                            soma_total.append(soma_do_valor)
+                            soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                            items_data_pecas.append(
+                                {
+                                    "codigo": peca_codigo,
+                                    "nome": peca_nome,
+                                    "preso": valor_final,
+                                    "pago_total": soma_formarmatado,
+                                    "pago": PagoFor,
+                                    "un": un,
+                                    "lado": lado,
+                                }
+                            )
+                        else:
+                            peca_encontrada = False
+                            for getPeca in getPecas:
+                                if getPeca.id == peca_id:
+                                    peca_encontrada = True
+                                    Pagosoma = Calculos_gloabal.valor_para_Calculos(
+                                        getPeca.pago
+                                    ) * int(un)
+                                    PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                                    
+                                    soma_pagos.append(Pagosoma)
+                                    if get_serviso.status != "Orçamento":
+                                        somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
+                                        soma_do_valor = int(un) * somar_dados_uni
+                                        soma_pecas.append(soma_do_valor)
+                                        soma_total.append(soma_do_valor)
+                                        soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                                        items_data_pecas.append(
+                                            {
+                                                "codigo": peca_codigo,
+                                                "nome": peca_nome,
+                                                "preso": valor_final,
+                                                "pago_total": soma_formarmatado,
+                                                "pago": PagoFor,
+                                                "un": un,
+                                                "lado": lado,
+                                            }
+                                        )
+                                    else:
+                                        somar_dados_uni = Calculos_gloabal.valor_para_Calculos(getPeca.preso)
+                                        soma_do_valor = int(un) * somar_dados_uni
+                                        soma_pecas.append(soma_do_valor)
+                                        soma_total.append(soma_do_valor)
+                                        soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                                        items_data_pecas.append(
+                                            {
+                                                "codigo": getPeca.codigo,
+                                                "nome": getPeca.nome,
+                                                "preso": getPeca.preso,
+                                                "pago_total": soma_formarmatado,
+                                                "pago": PagoFor,
+                                                "un": un,
+                                                "lado": lado,
+                                            }
+                                        )
+                            if not peca_encontrada:
+                                Pagosoma = Calculos_gloabal.valor_para_Calculos(
+                                    valor_custo
+                                ) * int(un)
+                                PagoFor = Calculos_gloabal.format_valor_moeda(Pagosoma)
+                                somar_dados_uni = Calculos_gloabal.valor_para_Calculos(valor_final)
+                                soma_do_valor = int(un) * somar_dados_uni
+                                soma_pecas.append(soma_do_valor)
+                                soma_total.append(soma_do_valor)
+                                soma_formarmatado = Calculos_gloabal.format_valor_moeda(soma_do_valor)
+                                soma_pagos.append(Pagosoma)
+                                items_data_pecas.append(
+                                    {
+                                        "codigo": peca_codigo,
+                                        "nome": peca_nome,
+                                        "preso": valor_final,
+                                        "pago_total": soma_formarmatado,
+                                        "pago": PagoFor,
+                                        "un": un,
+                                        "lado": lado,
+                                    }
+                                )
+            items_data_MDO = []
+            if "itens" in mo_os:
+                for item_MDO in mo_os["itens"]:
+                    mo_id = item_MDO.get("MDO_id")
+                    mo_preso = item_MDO.get("MDO_preso")
+                    mo_nome = item_MDO.get("MDO_nome")
+                    if mo_id is not None:
+                        if len(get_MDO) == 0:
+                            mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
+                            soma_total.append(mdo_valor_para_soma)
+                            items_data_MDO.append(
+                                {
+                                    "nome": mo_nome,
+                                    "preso": mo_preso,
+                                }
+                            )
+                        else:
+                            encontrado = False
+                            for getmo in get_MDO:
+                                if getmo.id == mo_id:
+                                    encontrado = True
+                                    if get_serviso.status != "Orçamento":
+                                        mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
+                                        soma_total.append(mdo_valor_para_soma)
+                                        items_data_MDO.append(
+                                            {
+                                                "nome": mo_nome,
+                                                "preso": mo_preso,
+                                            }
+                                        )
+                                    else:
+                                        mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(getmo.preso)
+                                        soma_total.append(mdo_valor_para_soma)
+                                        items_data_MDO.append(
+                                            {
+                                                "nome": getmo.nomemaoobra.nome,
+                                                "preso": getmo.preso,
+                                            }
+                                        )
+                                    break
+                            
+                            if not encontrado:
+                                mdo_valor_para_soma = Calculos_gloabal.valor_para_Calculos(mo_preso)
+                                soma_total.append(mdo_valor_para_soma)
+                                items_data_MDO.append(
+                                    {
+                                        "nome": mo_nome,
+                                        "preso": mo_preso,
+                                    }
+                                )
+
+            SomarPago = sum(soma_pagos)
+            SomarPecas = sum(soma_pecas)
+            SomarTotal = sum(soma_total)
+
+            valor_total_pago = Calculos_gloabal.format_valor_moeda(SomarPago)
+            valor_total_pecas = Calculos_gloabal.format_valor_moeda(SomarPecas)
+            valor_total_total = Calculos_gloabal.format_valor_moeda(SomarTotal)
+            
+            caminho_imagem = os.path.join(app.root_path, 'static', 'imagens', empresa.foto)
+        
+            with open(caminho_imagem, 'rb') as img_file:
+                imagem_bytes = img_file.read()
+                
+                imagem_base64 = base64.b64encode(imagem_bytes).decode('utf-8')
+            registros_preservados = Registrospreservados.query.filter_by(serviso_id=get_serviso.id).first()
+
+            def parse_json_field(json_field):
+                try:
+                    return json.loads(json_field) if json_field else None
+                except json.JSONDecodeError:
+                    return None
+                
+            if registros_preservados:
+                preservados_img = {}
+                if registros_preservados.images_carro:
+                    preservados_img["images_carro"] = parse_json_field(registros_preservados.images_carro)
+                if registros_preservados.images_serviso:
+                    preservados_img["images_serviso"] = parse_json_field(registros_preservados.images_serviso)
+                if registros_preservados.videos_carro:
+                    preservados_img["videos_carro"] = parse_json_field(registros_preservados.videos_carro)
+                if registros_preservados.videos_serviso:
+                    preservados_img["videos_serviso"] = parse_json_field(registros_preservados.videos_serviso)
+            else:
+                preservados_img = None
+            return render_template('PdfServicosAprovar.html',Servico=get_serviso,
+                imagem_codificada_base64=imagem_base64,
+                items_data_pecas=items_data_pecas,
+                items_data_MDO=items_data_MDO,
+                valor_total_pago=valor_total_pago,
+                valor_total_pecas=valor_total_pecas,
+                valor_total_total=valor_total_total,
+                empresa=empresa,
+                registros_preservados=registros_preservados,
+                preservados_img=preservados_img,
+                usuario=usuario,
+                token=token,
+                )
+        else:
+            flash("Este link já foi usado.", "Longin_Erro_Utrapado")
+            return redirect(url_for("loginCliente"))
+    except:
+        flash("Este link já foi usado.", "Longin_Erro_Utrapado")
+        return redirect(url_for("loginCliente"))
+        
+#Guradados Temporarios
+
+@app.route('/add_or_update_registro', methods=['PUT'])
+def add_or_update_registro():
+    Ser_id = request.form.get("Ser_id")
+    imagem = request.files.get("image_1")
+    registro = Registrospreservados.query.filter_by(serviso_id=Ser_id).first()
+    if registro:
+        if imagem != None:
+            if registro.image_token != "foto.jpg":
+                try:
+                    os.unlink(
+                        os.path.join(
+                            current_app.root_path,
+                            "static/preservados/" + registro.image_token,
+                        )
+                    )
+                    image_file = request.files.get("image_1")
+                    filename = secrets.token_hex(10) + os.path.splitext(image_file.filename)[1]
+                    filepath = os.path.join(current_app.root_path, "static", "preservados", filename)
+                    image_file.save(filepath)
+
+                    registro.image_token = filename
+                    db.session.commit()
+                except:
+                    registro.image_token = "foto.jpg"
+            else:
+                try:
+                    image_file = request.files.get("image_1")
+                    filename = secrets.token_hex(10) + os.path.splitext(image_file.filename)[1]
+                    filepath = os.path.join(current_app.root_path, "static", "preservados", filename)
+                    image_file.save(filepath)
+                    
+                    registro.image_token = filename
+                    db.session.commit()
+                except Exception as e:
+                    registro.image_token = "foto.jpg"
+                    print(type(e).__name__, str(e))
+                    return jsonify({"messagefoto": "Opa, parece que houve um problema. A imagem não é compatível!!!"})
+        verificarstatus =request.form.get("statusServ")
+        if verificarstatus != 'undefined':
+            registro.status = verificarstatus
+        registro.descricao = request.form.get("descricao").strip()
+        registro.obs = request.form.get("obsAdicionais").strip()
+        db.session.commit()
+        return jsonify({"message": "Registro atualizado com sucesso!"}), 200
+    else:
+        image_file = request.files.get("image_1")
+        if image_file:
+            try:
+                filename = secrets.token_hex(10) + os.path.splitext(image_file.filename)[1]
+                filepath = os.path.join(current_app.root_path, "static", "preservados", filename)
+                image_file.save(filepath)
+            except Exception as e:
+                registro.image_token = "foto.jpg"
+                print(type(e).__name__, str(e))
+                return jsonify({"messagefoto": "Opa, parece que houve um problema. A imagem não é compatível!!!"})
+        else:
+            filename = "foto.jpg"
+        novo_registro = Registrospreservados(
+            serviso_id = request.form.get("Ser_id"),
+            modo_aprovado='AGUARDANDO...',
+            descricao=request.form.get("descricao").strip(),
+            obs=request.form.get("obsAdicionais").strip(),
+            status='ESPERANDO',
+            images_carro= '[]',
+            videos_carro='[]',
+            images_serviso= '[]',
+            videos_serviso='[]',
+            image_token = filename if filename else 'foto.jpg',
+            token='',
+        )
+        db.session.add(novo_registro)
+        db.session.commit()
+
+
+    return jsonify({'message': 'Registro adicionado/atualizado com sucesso'})
+
+@app.route('/upload_registro_img', methods=['POST'])
+def upload():
+    if 'file' in request.files:
+        registro = Registrospreservados.query.filter_by(serviso_id=request.form.get("Ser_id")).first()
+        if registro:
+            filename = secrets.token_hex(10) + "." + request.files['file'].filename.split('.')[-1]
+            filepath = os.path.join(current_app.root_path, "static", "preservados", filename)
+            request.files['file'].save(filepath)
+
+            chave_imagens = request.form.get("tipo")
+
+            new_image_paths = json.loads(getattr(registro, chave_imagens)) if getattr(registro, chave_imagens) else []
+            new_image_paths.append(filename)
+
+            setattr(registro, chave_imagens, json.dumps(new_image_paths))
+            db.session.commit()
+
+            return jsonify({"filename": filename})
+        else:
+            novo_registro = Registrospreservados(
+                serviso_id = request.form.get("Ser_id"),
+                modo_aprovado='AGUARDANDO...',
+                descricao='',
+                obs='',
+                status='ESPERANDO',
+                images_carro= '[]',
+                videos_carro='[]',
+                images_serviso= '[]',
+                videos_serviso='[]',
+                image_token = 'foto.jpg',
+                token='',
+            )
+            db.session.add(novo_registro)
+            db.session.commit()
+            
+            filename = secrets.token_hex(10) + "." + request.files['file'].filename.split('.')[-1]
+            filepath = os.path.join(current_app.root_path, "static", "preservados", filename)
+            request.files['file'].save(filepath)
+
+            chave_imagens = request.form.get("tipo")
+
+            new_image_paths = json.loads(getattr(novo_registro, chave_imagens)) if getattr(novo_registro, chave_imagens) else []
+            new_image_paths.append(filename)
+
+            setattr(novo_registro, chave_imagens, json.dumps(new_image_paths))
+            db.session.commit()
+
+            return jsonify({"filename": filename})
+    else:
+        return jsonify({"error": "Nenhum arquivo enviado"}), 400
+
+@app.route('/delete_registro_img/<filename>', methods=['POST'])
+def delete(filename):
+    file_path = os.path.join(current_app.root_path, "static/preservados/" + filename)
+    if os.path.exists(file_path):
+        registro = Registrospreservados.query.filter_by(serviso_id=request.form.get("Ser_id")).first()
+        if registro:
+            chave_imagens = request.form.get("tipo")
+            new_image_paths = json.loads(getattr(registro, chave_imagens)) if getattr(registro, chave_imagens) else []
+            new_image_paths.remove(filename)
+            os.unlink(file_path)
+            setattr(registro, chave_imagens, json.dumps(new_image_paths))
+            db.session.commit()
+            return jsonify({"success": True})
+    return jsonify({"error": "File not found"}), 404
+
+@app.route('/edit_registro_img/<filename>', methods=['POST'])
+def edit(filename):
+    registro = Registrospreservados.query.filter_by(serviso_id=request.form.get("Ser_id")).first()
+    if registro:
+        chave_imagens = request.form.get("tipo")
+        new_image_paths = json.loads(getattr(registro, chave_imagens)) if getattr(registro, chave_imagens) else []
+        if 'file' in request.files:
+            old_file_path = os.path.join(current_app.root_path, "static/preservados/" + filename)
+            if os.path.exists(old_file_path):
+                os.unlink(old_file_path)
+                new_image_paths.remove(filename)
+            new_filename = secrets.token_hex(10) + "." + request.files['file'].filename.split('.')[-1]
+            new_filepath = os.path.join(current_app.root_path, "static/preservados/" + new_filename)
+            request.files['file'].save(new_filepath)
+            new_image_paths.append(new_filename)
+            setattr(registro, chave_imagens, json.dumps(new_image_paths))
+            db.session.commit()
+
+            return jsonify({"filename": new_filename})
+    return jsonify({"error": "No file uploaded"}), 400
 
 

@@ -1,230 +1,180 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rolagem de Itens</title>
+    <title>Sistema de Aprovação de Serviço</title>
     <style>
-        /* Estilos de exemplo para ilustrar a rolagem de itens */
-        .container-iterno-consumidor {
-            overflow-x: auto;
-            /* Permite rolar horizontalmente */
-            white-space: nowrap;
-            /* Impede a quebra de linha */
-            margin-bottom: 20px;
-            /* Adiciona espaço entre os grupos */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        .produto {
-            display: inline-block;
-            width: calc(25% - 10px);
-            /* Ajusta a largura dos itens para caber quatro na tela */
-            margin-right: 10px;
-            /* Adiciona margem entre os itens */
-            vertical-align: top;
-            /* Alinha os itens no topo */
-            position: relative;
-            /* Define posição relativa para facilitar a criação de separadores */
+        .approval-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
         }
 
-        .produto img {
-            max-width: 100%;
-            height: auto;
+        .approval-form {
+            display: flex;
+            flex-direction: column;
         }
 
-        .produto h2 {
-            margin: 5px 0;
-            font-size: 16px;
-        }
-
-        .valor-consumidor {
+        .approval-label {
+            margin-bottom: 8px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
         }
 
-        /* Estilizando os separadores entre os grupos */
-        .produto:not(:nth-child(4n))::after {
-            content: '';
-            position: absolute;
+        .approval-button {
+            margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            width: calc(100% - 22px);
+            resize: none;
+        }
+
+        .approval-checkbox:focus,
+        .approval-button:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .approval-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .approval-button:hover {
+            background-color: #0056b3;
+        }
+
+        .approval-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
             top: 0;
-            right: -5px;
-            /* Ajusta a posição do separador */
+            width: 100%;
             height: 100%;
-            width: 1px;
-            background-color: #ccc;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .approval-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .approval-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .approval-close:hover,
+        .approval-close:focus {
+            color: #333;
+            text-decoration: none;
         }
     </style>
 </head>
 
 <body>
+    <div class="approval-container">
+        <label class="approval-label">
+            <input type="checkbox" id="termsCheckbox" class="approval-checkbox" required>
+            Eu li e concordo com os <a href="#" id="openTermsButton">termos de responsabilidade</a>.
+        </label>
+        <button type="submit" class="approval-button">Enviar para Aprovação</button>
 
-    <div class="container-iterno-consumidor">
-        <!-- Itens fictícios -->
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 1">
-            <h2>Produto 1</h2>
-            <div class="valor-consumidor">
-                <p>R$ 50,00</p>
+        <div id="termsModal" class="approval-modal">
+            <div class="approval-modal-content">
+                <span class="approval-close">&times;</span>
+                <h2 class="approval-modal-title">Termos de Responsabilidade</h2>
+                <p class="approval-modal-text">
+                    Eu, [Nome do Cliente], declaro estar ciente e concordo com os seguintes termos de responsabilidade
+                    para a realização de serviços pela oficina mecânica:
+                <ol>
+                    <li>Autorizo a oficina mecânica a realizar os serviços descritos.</li>
+                    <li>Aceito o uso de peças novas ou usadas, conforme especificado pelo mecânico.</li>
+                    <li>Compreendo que o prazo de conclusão pode variar conforme a complexidade do serviço.</li>
+                    <li>Concordo que eventuais problemas após a execução do serviço devem ser comunicados à oficina
+                        imediatamente.</li>
+                    <li>Comprometo-me a pagar pelos serviços realizados conforme o orçamento aprovado.</li>
+                </ol>
+                Data: [Data]
+                </p>
+                <button id="agreeButton" class="approval-button">Concordo</button>
             </div>
         </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 2">
-            <h2>Produto 2</h2>
-            <div class="valor-consumidor">
-                <p>R$ 40,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 3">
-            <h2>Produto 3</h2>
-            <div class="valor-consumidor">
-                <p>R$ 60,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <div class="produto">
-            <img src="https://via.placeholder.com/150" alt="Produto 4">
-            <h2>Produto 4</h2>
-            <div class="valor-consumidor">
-                <p>R$ 45,00</p>
-            </div>
-        </div>
-        <!-- Mais itens fictícios -->
-        <!-- Repita os mesmos itens fictícios conforme necessário -->
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const termsModal = document.getElementById('termsModal');
+            const modalClose = document.querySelector('.approval-close');
+            const openTermsButton = document.getElementById('openTermsButton');
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const approvalForm = document.getElementById('approvalForm');
 
+            modalClose.addEventListener('click', closeModal);
+            openTermsButton.addEventListener('click', openModal);
+            window.addEventListener('click', outsideClick);
+
+            function openModal() {
+                termsModal.style.display = 'block';
+            }
+
+            function closeModal() {
+                termsModal.style.display = 'none';
+            }
+
+            function outsideClick(e) {
+                if (e.target === termsModal) {
+                    termsModal.style.display = 'none';
+                }
+            }
+
+            agreeButton.addEventListener('click', function () {
+                closeModal();
+                termsCheckbox.checked = true;
+            });
+
+            approvalForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (termsCheckbox.checked) {
+                    alert('Serviço enviado para aprovação!');
+                } else {
+                    alert('Você precisa concordar com os termos de responsabilidade.');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

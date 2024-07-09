@@ -17,6 +17,32 @@
         <i class=" fas fa-download"></i>
     </a>
 </div>
+
+{% if registros_preservados.status %}
+{% if registros_preservados.status == 'ESPERANDO' %}
+<div class="registroForm">
+    <label for="statusServ">Status:</label>
+    <p>Esperanndo Liberação</p>
+</div>
+{% elif registros_preservados.status == 'AGUARDANDO' %}
+<div class="registroForm">
+    <label for="statusServ">Status:</label>
+    <p>Aguardando Aprovação</p>
+</div>
+{% else %}
+<div class="registroForm">
+    <label for="statusServ">Status:</label>
+    <select class="searchselector" name="statusServ" id="statusServ"
+        style="width: 100%; padding: 10px; border: 2px solid #4CAF50; border-radius: 5px; background-color: #f9f9f9;">
+        <option value="{{ registros_preservados.nome }}" selected>{{ registros_preservados.status }}</option>
+        <option value="Em Serviço">Em Serviço</option>
+        <option value="Aguardando Peças">Aguardando Peças</option>
+        <option value="Finalizado">Finalizado</option>
+        <option value="Entregue">Entregue</option>
+    </select>
+</div>
+{% endif %}
+{%endif%}
 {%endif%}
 <input type="hidden" name="Ser_id" id="Ser_id" value="{{ Servico.id }}">
 <div id="MensagemServico" class="retira"></div>
@@ -175,8 +201,8 @@
                     <fieldset class="containerForm" style="cursor: pointer;">
                         <div class="peca-Nome toggleButton">
                             <p></p>
-                            <div><strong>{{ loop.index }}&rpar; Nome:</strong><span>{{ item_peca.nome
-                                    }}</span><span class="arrow">▼</span>
+                            <div><strong>{{ loop.index }}&rpar; Nome:</strong><span>{{item_peca.nome}}</span><span
+                                    class="arrow">▼</span>
                             </div>
                         </div>
                         <div class="containerDados hidden">
@@ -287,7 +313,224 @@
     <textarea id="obsSer" name="obsSer" rows="5" cols="40">{{Servico.obs}}</textarea>
     {%endif%}
 </div>
+<fieldset class="containerForm">
+    <input type="hidden" name="Ser_id" id="Ser_id" value="{{ Servico.id }}">
+    <div class="header toggleButton">
+        <div class="divCentro">
+            <legend>Dados de Aprovação e Preservação</legend>
+        </div>
+        <span class="arrow">▼</span>
+    </div>
+    <div class="containerDados hidden">
+        <h4>Registro de Avarias do Veículo</h4>
+        <div style="background-color: #ffffff; border-radius: 10px;">
+            <div style="border: solid 1px; border-radius: 10px;">
+                <label for="">Fotos do Veículo:</label>
+                <div id="images-container-carro">
+                    {% if preservados_img and preservados_img.images_carro %}
+                    {% for img_carro in preservados_img.images_carro %}
+                    <div class="file-input">
+                        <input type="file" name="images_carro_{{ loop.index }}" id="images_carro_{{ loop.index }}"
+                            onclick="openFileInputAprovar({{ loop.index }},'images_carro')" accept="image/*">
+                        <label for="images_carro_{{ loop.index }}">Editar</label>
+                        <img id="preview-image-carro-{{ loop.index }}"
+                            src="{{ url_for('static', filename='preservados/' ~ img_carro) }}" alt=""
+                            onclick="subFileInputAprovar({{ loop.index }}, 'images_carro')">
+                        <button
+                            onclick="removeInputAprovar('{{ img_carro }}','images_carro_{{ loop.index }}','images_carro')"
+                            style="
+                                                        background-color: #f44336; 
+                                                        color: white; 
+                                                        border: none; 
+                                                        padding: 5px 5px; 
+                                                        text-align: center; 
+                                                        text-decoration: none; 
+                                                        display: inline-block; 
+                                                        font-size: 14px; 
+                                                        margin: 4px 2px; 
+                                                        cursor: pointer; 
+                                                        border-radius: 8px; 
+                                                        transition: background-color 0.3s;
+                                                    " onmouseover="this.style.backgroundColor='#d32f2f'"
+                            onmouseout="this.style.backgroundColor='#f44336'">
+                            <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Remover
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                <button class="button-pequeno cor-ok" onclick="addImageInputAprovar('images_carro')">
+                    <i class="fas fa-camera"></i> Adicionar Foto
+                </button>
+            </div>
+            <br><br>
 
+            <div style="border: solid 1px; border-radius: 10px;">
+                <label for="">Video do Veículo:</label>
+                <div id="videos-container-carro">
+                    {% if preservados_img and preservados_img.videos_carro %}
+                    {% for video_carro in preservados_img.videos_carro %}
+                    <div class="file-input">
+                        <input type="file" name="videos_carro_{{ loop.index }}" id="videos_carro_{{ loop.index }}"
+                            onclick="openFileInputAprovar({{ loop.index }},'videos_carro')" accept="video/*">
+                        <label for="videos_carro_{{ loop.index }}">Editar</label>
+                        <video id="preview-video-carro-{{ loop.index }}" controls
+                            src="{{ url_for('static', filename='preservados/' ~ video_carro) }}" type="video/mp4">
+
+                        </video>
+                        <button
+                            onclick="removeInputAprovar('{{ video_carro }}','videos_carro_{{ loop.index }}','videos_carro')"
+                            style="
+                                                                            background-color: #f44336; 
+                                                                            color: white; 
+                                                                            border: none; 
+                                                                            padding: 5px 5px; 
+                                                                            text-align: center; 
+                                                                            text-decoration: none; 
+                                                                            display: inline-block; 
+                                                                            font-size: 14px; 
+                                                                            margin: 4px 2px; 
+                                                                            cursor: pointer; 
+                                                                            border-radius: 8px; 
+                                                                            transition: background-color 0.3s;
+                                                                        "
+                            onmouseover="this.style.backgroundColor='#d32f2f'"
+                            onmouseout="this.style.backgroundColor='#f44336'">
+                            <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Remover
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                <button class="button-pequeno cor-alerta" onclick="addImageInputAprovar('videos_carro')">
+                    <i class="fas fa-video"></i> Adicionar Vídeo
+                </button>
+            </div>
+            <div class="registroForm">
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" name="descricao" rows="5"
+                    cols="40">{{registros_preservados.descricao}}</textarea><br>
+            </div>
+        </div>
+        <br><br>
+        <h4>Registro do Serviço</h4>
+        <div style="background-color: #ffffff; border-radius: 10px;">
+            <div style="border: solid 1px; border-radius: 10px;">
+                <label for="">Fotos do Serviço:</label>
+                <div id="images-container-serviso">
+                    {% if preservados_img and preservados_img.images_serviso %}
+                    {% for img_serviso in preservados_img.images_serviso %}
+                    <div class="file-input">
+                        <input type="file" name="images_serviso_{{ loop.index }}" id="images_serviso_{{ loop.index }}"
+                            onclick="openFileInputAprovar({{ loop.index }},'images_serviso')" accept="image/*">
+                        <label for="images_serviso_{{ loop.index }}">Editar</label>
+                        <img id="preview-image-serviso-{{ loop.index }}"
+                            src="{{ url_for('static', filename='preservados/' ~ img_serviso) }}" alt=""
+                            onclick="subFileInputAprovar({{ loop.index }}, 'images_serviso')">
+                        <button
+                            onclick="removeInputAprovar('{{ img_serviso }}','images_serviso_{{ loop.index }}','images_serviso')"
+                            style="
+                                                                            background-color: #f44336; 
+                                                                            color: white; 
+                                                                            border: none; 
+                                                                            padding: 5px 5px; 
+                                                                            text-align: center; 
+                                                                            text-decoration: none; 
+                                                                            display: inline-block; 
+                                                                            font-size: 14px; 
+                                                                            margin: 4px 2px; 
+                                                                            cursor: pointer; 
+                                                                            border-radius: 8px; 
+                                                                            transition: background-color 0.3s;
+                                                                        "
+                            onmouseover="this.style.backgroundColor='#d32f2f'"
+                            onmouseout="this.style.backgroundColor='#f44336'">
+                            <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Remover
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                <button class="button-pequeno cor-ok" onclick="addImageInputAprovar('images_serviso')">
+                    <i class="fas fa-camera"></i> Adicionar Foto
+                </button>
+            </div>
+            <br><br>
+
+            <div style="border: solid 1px; border-radius: 10px;">
+                <label for="">Video do Serviço:</label>
+                <div id="videos-container-serviso">
+                    {% if preservados_img and preservados_img.videos_serviso %}
+                    {% for video_serviso in preservados_img.videos_serviso %}
+                    <div class="file-input">
+                        <input type="file" name="videos_serviso_{{ loop.index }}" id="videos_serviso_{{ loop.index }}"
+                            onclick="openFileInputAprovar({{ loop.index }},'videos_serviso')" accept="video/*">
+                        <label for="videos_serviso_{{ loop.index }}">Editar</label>
+
+                        <video id="preview-video-serviso-{{ loop.index }}" controls
+                            src="{{ url_for('static', filename='preservados/' ~ video_serviso) }}" type="video/mp4">
+                        </video>
+                        <button
+                            onclick="removeInputAprovar('{{ video_serviso }}','videos_serviso_{{ loop.index }}','videos_serviso')"
+                            style="
+                                                                                                background-color: #f44336; 
+                                                                                                color: white; 
+                                                                                                border: none; 
+                                                                                                padding: 5px 5px; 
+                                                                                                text-align: center; 
+                                                                                                text-decoration: none; 
+                                                                                                display: inline-block; 
+                                                                                                font-size: 14px; 
+                                                                                                margin: 4px 2px; 
+                                                                                                cursor: pointer; 
+                                                                                                border-radius: 8px; 
+                                                                                                transition: background-color 0.3s;
+                                                                                            "
+                            onmouseover="this.style.backgroundColor='#d32f2f'"
+                            onmouseout="this.style.backgroundColor='#f44336'">
+                            <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Remover
+                        </button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                <button class="button-pequeno cor-alerta" onclick="addImageInputAprovar('videos_serviso')">
+                    <i class="fas fa-video"></i> Adicionar Vídeo
+                </button>
+            </div>
+            <div class="registroForm">
+                <label for="obsAdicionais">Observações:</label>
+                <textarea id="obsAdicionais" name="obsAdicionais" rows="5"
+                    cols="40">{{registros_preservados.obs}}</textarea><br>
+            </div>
+        </div>
+
+        <div class="registroForm">
+            <label for="images_token">Imagem de confirmação:</label>
+            {% if registros_preservados.image_token %}
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Editar Imagem 1</label>
+                <img src="{{url_for('static',filename='preservados/'+ registros_preservados.image_token)}}"
+                    id="preview-image-1" src="" alt="Preview Image 1" onclick="openFileInput(1)">
+            </div>
+            {% else %}
+            <div class="file-input">
+                <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
+                <label for="image_1">Editar Imagem</label>
+                <img id="preview-image-1" src="{{url_for('static',filename='preservados/foto.jpg')}}" alt=""
+                    onclick="openFileInput(1)">
+            </div>
+            {% endif %}
+        </div>
+
+        <label for="modo_aprovado">Modo de Aprovado:</label>
+        <h4>{{registros_preservados.modo_aprovado}}<h4></h4><br>
+        <h4>{{registros_preservados.token}}<h4></h4><br>
+        <h4>{{registros_preservados.data}}<h4></h4><br>
+    </div>
+
+</fieldset>
 {% if status == 'Aprovado' or status == 'Editar Finazados' %}
 <fieldset class="lado-lado containerForm">
     <div style="display: flex; justify-content: space-between;">
@@ -414,6 +657,229 @@
 {%endif%}
 
 <script>
+    //para carro
+    function addImageInputAprovar(tipo) {
+        let tipo_container, tipo_edit, typ;
+        if (tipo === 'images_carro') {
+            tipo_container = 'images-container-carro';
+            tipo_edit = 'image-carro';
+            typ = 'image';
+        } else if (tipo === 'images_serviso') {
+            tipo_container = 'images-container-serviso';
+            tipo_edit = 'image-serviso';
+            typ = 'image';
+        } else if (tipo === 'videos_carro') {
+            tipo_container = 'videos-container-carro';
+            tipo_edit = 'video-carro';
+            typ = 'video';
+        } else if (tipo === 'videos_serviso') {
+            tipo_container = 'videos-container-serviso';
+            tipo_edit = 'video-serviso';
+            typ = 'video';
+        } else {
+            alert('Erro');
+            return;
+        }
+
+        let Count = document.querySelectorAll(`#${tipo_container} .file-input`).length;
+        const tempInput = document.createElement('input');
+        tempInput.type = 'file';
+        tempInput.accept = `${typ}/*`;
+        tempInput.style.display = 'none';
+
+        tempInput.addEventListener('change', (event) => {
+            if (event.target.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', event.target.files[0]);
+                formData.append('Ser_id', $("#Ser_id").val());
+                formData.append('tipo', tipo);
+
+                fetch('/upload_registro_img', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.filename) {
+                            Count++;
+                            const container = document.getElementById(`${tipo_container}`);
+                            const div = document.createElement('div');
+                            div.className = 'file-input';
+
+                            let previewElement;
+                            if (typ === 'image') {
+                                previewElement = `<img id="preview-${tipo_edit}-${Count}"
+                                    src="/static/preservados/${data.filename}" alt=""
+                                    onclick="subFileInputAprovar(${Count}, '${tipo}')">`;
+                            } else if (typ === 'video') {
+                                previewElement = `<video id="preview-${tipo_edit}-${Count}" controls src="/static/preservados/${data.filename}" type="video/mp4">
+                                </video>`;
+                            }
+
+                            div.innerHTML = `
+                            <input type="file" name="${tipo}_${Count}" id="${tipo}_${Count}"
+                                onclick="openFileInputAprovar(${Count},'${tipo}')" accept="${typ}/*">
+                            <label for="${tipo}_${Count}">Editar</label>
+                            ${previewElement}
+                            <button onclick="removeInputAprovar('${data.filename}', '${tipo}_${Count}','${tipo}')" 
+                                    style="background-color: #f44336; color: white; border: none; padding: 5px 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 14px; margin: 4px 2px; cursor: pointer; border-radius: 8px; transition: background-color 0.3s;"
+                                    onmouseover="this.style.backgroundColor='#d32f2f'" 
+                                    onmouseout="this.style.backgroundColor='#f44336'">
+                                <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Remover
+                            </button>
+                        `;
+                            container.appendChild(div);
+                        } else {
+                            alert('Por favor, atualize a página e tente novamente.');
+                        }
+                    });
+            }
+        });
+
+        document.body.appendChild(tempInput);
+        tempInput.click();
+        tempInput.remove();
+    }
+
+    function removeInputAprovar(filename, inputId, tipo) {
+        const formData = new FormData();
+        formData.append('Ser_id', $("#Ser_id").val());
+        formData.append('tipo', tipo);
+        fetch(`/delete_registro_img/${filename}`, {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const element = document.getElementById(inputId);
+                    if (element) {
+                        element.parentNode.remove();
+                    }
+                } else {
+                    alert('Por favor, atualize a página e tente novamente.');
+                }
+            });
+    }
+
+    function openFileInputAprovar(count, tipo) {
+        let tipo_container, tipo_edit, typ;
+        if (tipo === 'images_carro') {
+            tipo_container = 'images-container-carro';
+            tipo_edit = 'image-carro';
+            typ = 'image';
+        } else if (tipo === 'images_serviso') {
+            tipo_container = 'images-container-serviso';
+            tipo_edit = 'image-serviso';
+            typ = 'image';
+        } else if (tipo === 'videos_carro') {
+            tipo_container = 'videos-container-carro';
+            tipo_edit = 'video-carro';
+            typ = 'video';
+        } else if (tipo === 'videos_serviso') {
+            tipo_container = 'videos-container-serviso';
+            tipo_edit = 'video-serviso';
+            typ = 'video';
+        } else {
+            alert('Erro');
+            return;
+        }
+        const input = document.getElementById(`${tipo}_${count}`);
+        const a = document.getElementById(`preview-video-serviso-1`);
+
+        input.addEventListener('change', async (event) => {
+            if (event.target.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', event.target.files[0]);
+                formData.append('Ser_id', $("#Ser_id").val());
+                formData.append('tipo', tipo);
+
+                const preview = document.getElementById(`preview-${tipo_edit}-${count}`);
+                const oldFilename = preview.src.split('/').pop();
+
+
+                try {
+                    const response = await fetch(`/edit_registro_img/${oldFilename}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.statusText}`);
+                    }
+                    const data = await response.json();
+                    if (typ === 'image') {
+                        var previewElement = `<img id="preview-${tipo_edit}-${count}"
+                                src="/static/preservados/${data.filename}" alt=""
+                                onclick="subFileInputAprovar(${count}, '${tipo}')">`;
+                    } else if (typ === 'video') {
+                        var previewElement = `<video id="preview-${tipo_edit}-${count}" controls src="/static/preservados/${data.filename}" type="video/mp4">
+                            </video>`;
+                    }
+                    if (data.filename) {
+                        const container = preview.parentNode;
+                        container.innerHTML = `
+                            <input type="file" name="${tipo}_${count}" id="${tipo}_${count}"
+                                onclick="openFileInputAprovar(${count},'${tipo}')" accept="${typ}/*">
+                            <label for="${tipo}_${count}">Editar Imagem</label>
+                            ${previewElement}
+                            <button onclick="removeInputAprovar('${data.filename}', '${tipo}_${count}','${tipo}')" 
+                                    style="background-color: #f44336; color: white; border: none; padding: 5px 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 14px; margin: 4px 2px; cursor: pointer; border-radius: 8px; transition: background-color 0.3s;"
+                                    onmouseover="this.style.backgroundColor='#d32f2f'" 
+                                    onmouseout="this.style.backgroundColor='#f44336'">
+                                <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Remover
+                            </button>
+                        `;
+                    } else {
+                        console.log('Error aqui 1:', error);
+                        throw new Error('Por favor, atualize a página e tente novamente.');
+                    }
+                } catch (error) {
+                    console.log('Error aqui 2:', error);
+                    alert('Por favor, atualize a página e tente novamente.');
+                }
+            }
+        });
+    }
+
+
+    function subFileInputAprovar(index, tipo) {
+        const fileInput = document.getElementById(`${tipo}_${index}`);
+        fileInput.click();
+    }
+
+    //adicionar ao banco 
+
+    $(document).ready(function () {
+        window.enviarDadosParaAprovacao = function enviarDadosParaAprovacao() {
+            var campos = ["Ser_id", "statusServ", "descricao", "obsAdicionais"];
+            var formData = new FormData();
+            campos.forEach(function (campo) {
+                formData.append(campo, $("#" + campo).val());
+            });
+            var fileInput = document.getElementById('image_1');
+            var file = fileInput.files[0];
+            formData.append('image_1', file);
+
+            $.ajax({
+                url: "/add_or_update_registro",
+                method: "PUT",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    response.message
+                },
+                error: function () {
+                    alert('O arquivo de imagem é muito grande. Por favor, selecione uma imagem menor ou utilize uma ferramenta de compressão de imagens para reduzir o tamanho do arquivo.')
+                }
+            });
+        }
+
+        $(".registroForm").on("input", function () {
+            enviarDadosParaAprovacao();
+        });
+    });
+    //redirecionar
+
     function redirecionar() {
         var idInput = document.getElementById("servico_id");
 

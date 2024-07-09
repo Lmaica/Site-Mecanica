@@ -88,7 +88,6 @@
             margin-right: 5px;
             box-sizing: border-box;
             padding: 5px;
-
         }
 
         .adireita-nomes:last-child {
@@ -103,12 +102,34 @@
             font-size: 20px;
             clear: both;
             margin-top: 20px;
-
         }
 
         .nota-servico img {
             width: 140px;
             height: 140px;
+        }
+
+        .assinatura-container {
+            margin-top: 40px;
+            font-size: 0;
+            /* Remove o espaço entre elementos inline-block */
+        }
+
+        .assinatura-box {
+            width: 45%;
+            text-align: center;
+            display: inline-block;
+            vertical-align: top;
+            /* Alinha os elementos ao topo */
+            font-size: 16px;
+            /* Define o tamanho da fonte desejado */
+        }
+
+        .assinatura-box p {
+            margin: 0;
+            margin-left: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #000;
         }
     </style>
 </head>
@@ -219,36 +240,38 @@
             </tbody>
         </table>
         <p style="text-align: right; padding: 5px; font-size: 18px;"><strong>Total em Peças:</strong>
-            {{valor_total_pecas}}
-        </p>
+            {{valor_total_pecas}}</p>
 
         <div class="rodape">
             <p><strong>Total:</strong> {{valor_total_total}}</p>
         </div>
-        <div></div>
 
-        <div class="">
+        <div>
             {% if Servico.status == 'Finalizado' %}
             <div style="font-size: 12px; display: flex; justify-content: space-between;">
                 <p><strong>Vendedor:</strong> {{Servico.vendedor.apelido}}</p>
-                <p><strong>Mecanico:</strong> {{Servico.mecanico.apelido}} </p>
-                <p><strong>Data inicil:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
-                <p><strong>Data fim:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M') }}</p>
+                <p><strong>Mecanico:</strong> {{Servico.mecanico.apelido}}</p>
+                <p><strong>Data inicial:</strong> {{Servico.data_criado.strftime('%d/%m/%Y %H:%M')}}</p>
+                <p><strong>Data fim:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M')}}</p>
             </div>
             <div style="font-size: 12px;">
-                <p><strong>observação:</strong>
-                    {{ Servico.obs }}
-                </p>
+                <p><strong>Observação:</strong> {{Servico.obs}}</p>
             </div>
             {% else %}
             <div style="font-size: 12px; display: flex; justify-content: space-between;">
-                <p><strong>Data incial:</strong> {{ Servico.data_criado.strftime('%d/%m/%Y %H:%M') }}</p>
-                <p style="text-align: right; padding: 5px;"><strong>observação:</strong>
-                    {{ Servico.obs }}
-                </p>
+                <p><strong>Data inicial:</strong> {{Servico.data_criado.strftime('%d/%m/%Y %H:%M')}}</p>
+                <p style="text-align: right; padding: 5px;"><strong>Observação:</strong> {{Servico.obs}}</p>
             </div>
             {% endif %}
-
+        </div>
+        <hr>
+        <div class="assinatura-container">
+            <div class="assinatura-box">
+                <p>Assinatura do Cliente</p>
+            </div>
+            <div class="assinatura-box">
+                <p>Assinatura da Empresa</p>
+            </div>
         </div>
     </div>
 </body>

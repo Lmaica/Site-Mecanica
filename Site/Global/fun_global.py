@@ -4,7 +4,9 @@ from datetime import datetime
 import json
 from Site.Servicos.modelos import Serviso
 from datetime import datetime, timezone
-
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 
 class Calculos_gloabal:
     def format_valor_moeda(valor):
@@ -33,6 +35,62 @@ class Calculos_gloabal:
 
 
 class Redutor_codigo:
+    def enviar_email_confirmar(usuario, nova_senha,confirmar,serviso):
+        remetente = 'maica.contato@outlook.com' 
+        destinatario = usuario
+        if confirmar == "CONFIRME":
+            assunto = "Confirmação de Conta"
+            reset_url = url_for('confirm_email',usuario=usuario ,token=nova_senha, _external=True)
+            mensagem  = f"""
+                <p>Olá!</p>
+                <p>Para Criar Sua conta, clique no link abaixo:</p>
+                <p><a href="{reset_url}">{reset_url}</a></p>
+                <p>O link expirará em 24 horas.</p>
+                <p>Se você tiver problemas ao clicar no link, copie e cole o seguinte URL em seu navegador:</p>
+                <p>{reset_url}</p>
+                <p>Atenciosamente,</p>
+                <p>Equipe de Suporte</p>"""
+        elif confirmar == 'APROVAR':
+            assunto = "Aprovar Serviço"
+            reset_url = url_for('aprovacao',usuario=usuario ,token=nova_senha,serviso=serviso.id, _external=True)
+            mensagem  = f"""
+                <p>Olá!</p>
+                <p>Para aprovar o serviço N:{serviso.id}, clique no link abaixo:</p>
+                <p><a href="{reset_url}">{reset_url}</a></p>
+                <p>O link expirará em 24 horas.</p>
+                <p>Se você tiver problemas ao clicar no link, copie e cole o seguinte URL em seu navegador:</p>
+                <p>{reset_url}</p>
+                <p>Atenciosamente,</p>
+                <p>Equipe de Suporte</p>"""
+        else:
+            assunto = "Reconfiguração de Senha"
+            reset_url = url_for('resete_senha', usuario=usuario, token=nova_senha, _external=True)
+            mensagem = f"""
+                <p>Olá!</p>
+                <p>Para reconfigurar sua senha, clique no link abaixo:</p>
+                <p><a href="{reset_url}">{reset_url}</a></p>
+                <p>O link expirará em 24 horas.</p>
+                <p>Se você tiver problemas ao clicar no link, copie e cole o seguinte URL em seu navegador:</p>
+                <p>{reset_url}</p>
+                <p>Atenciosamente,</p>
+                <p>Equipe de Suporte</p>"""
+
+        # Configuração do servidor SMTP da Microsoft
+        servidor_smtp = 'smtp.office365.com'
+        porta = 587
+        usuario_smtp = 'maica.contato@outlook.com'  
+        senha_smtp = 'atljMaic@2024'  
+
+        msg = MIMEMultipart()
+        msg['From'] = remetente
+        msg['To'] = destinatario
+        msg['Subject'] = assunto
+        msg.attach(MIMEText(mensagem, 'html'))
+
+        with smtplib.SMTP(servidor_smtp, porta) as servidor:
+            servidor.starttls()
+            servidor.login(usuario_smtp, senha_smtp)
+            servidor.send_message(msg)
     def handle_generic_add(request, model, attribute_name, redirect_route):
         try:
             if request.method == "POST":

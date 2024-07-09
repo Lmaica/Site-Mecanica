@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nota de Serviço</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            overflow-x: hidden;
+        }
+
+
+        .nota-servico {
+            background-color: #ffffff;
+            max-width: 800px;
+            min-width: 300px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+
+        .nota-servico h2,
+        .nota-servico h3 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .nota-servico h3 {
+            font-size: 1.2em;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .nota-servico p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .nota-servico strong {
+            margin: 5px;
+        }
+
+        .nota-servico .company-container,
+        .nota-servico .company-container-nomes {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .nota-servico .company-logo {
+            flex: 1;
+            max-width: 140px;
+        }
+
+        .nota-servico .company-logo img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .nota-servico .adireita {
+            flex: 3;
+            padding-left: 20px;
+        }
+
+        .nota-servico table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .nota-servico th,
+        .nota-servico td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .nota-servico th {
+            background-color: #f4f4f4;
+        }
+
+        .nota-servico tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .nota-servico .rodape {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: right;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        .media-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .media-container .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .media-container .media-item {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            /* 16:9 aspect ratio */
+            background-color: #fff9f9;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .media-container img,
+        .media-container video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform: translate(-50%, -50%);
+            margin-bottom: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .media-container video {
+            outline: none;
+        }
+
+        .media-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Modal CSS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal:target {
+            display: flex;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* aprovar temos */
+        .approval-container {
+            text-align: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .approval-label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .approval-button {
+            margin-bottom: 16px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            width: calc(100% - 22px);
+            resize: none;
+        }
+
+        .approval-checkbox:focus,
+        .approval-button:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .approval-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .approval-button:hover {
+            background-color: #0056b3;
+        }
+
+        .approval-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .approval-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .approval-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .approval-close:hover,
+        .approval-close:focus {
+            color: #333;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nota-servico">
+        <div class="company-container">
+            <div class="company-logo">
+                <img src="data:image/jpeg;base64,{{ imagem_codificada_base64 }}" alt="Company Logo">
+            </div>
+            <div class="adireita">
+                <h3>{{empresa.nomeFantasia}}</h3>
+                <p><strong>Telefone:</strong> {{empresa.fone}}-{{empresa.fone1}}</p>
+                <p><strong>E-mail:</strong> {{empresa.email}}</p>
+                <p><strong>Endereço:</strong>
+                    {{empresa.rua}}-{{empresa.nuCasa}}-{{empresa.bairro}}-{{empresa.cidade}}-{{empresa.estado}}</p>
+                <p><strong>Criador:</strong> {{Servico.user_os.apelido}}</p>
+            </div>
+        </div>
+
+        {% if Servico.status == 'Finalizado' %}
+        <h2>Nota de Serviço {{Servico.status}} N:{{ Servico.id }}</h2>
+        {% else %}
+        <h2>{{Servico.status}} N:{{ Servico.id }}</h2>
+        {% endif %}
+
+        <div class="company-container-nomes">
+            {% if Servico.cliente_os_id > 0 %}
+            {% if Servico.cliente_os.nomeFantasia %}
+            <p><strong>Nome:</strong> {{Servico.cliente_os.nomeFantasia}}</p>
+            {% else %}
+            <p><strong>Nome:</strong> {{Servico.cliente_os.nome}}</p>
+            {% endif %}
+            <p><strong>Telefone:</strong> {{Servico.cliente_os.fone}}</p>
+            <p><strong>Email:</strong> {{Servico.cliente_os.email}}</p>
+            {% else %}
+            <p><strong>Nome:</strong> {{nome_cliente_os}}</p>
+            <p><strong>Telefone:</strong> {{nome_telefone_os}}</p>
+            <p><strong>Email:</strong> {{nome_email_os}}</p>
+            {% endif %}
+
+            {% if Servico.veiculo_os_id > 0 %}
+            <p><strong>Placa:</strong> {{Servico.veiculo_os.placa}}</p>
+            <p><strong>Marca:</strong> {{Servico.veiculo_os.carro.marca}}</p>
+            <p><strong>Modelo:</strong> {{Servico.veiculo_os.carro.modelo}}</p>
+            {% else %}
+            <p><strong>Placa:</strong> {{placa}}</p>
+            <p><strong>Marca:</strong> {{marca}}</p>
+            <p><strong>Modelo:</strong> {{modelo}}</p>
+            {% endif %}
+
+            {% if Servico.veiculo_os_id > 0 %}
+            <p><strong>Ano:</strong> {{Servico.veiculo_os.carro.ano}}</p>
+            <p><strong>Motor:</strong> {{Servico.veiculo_os.carro.motor}}</p>
+            {% if Servico.status == 'Finalizado' %}
+            <p><strong>KM:</strong> {{Servico.km_final}}</p>
+            {% else %}
+            <p><strong>KM:</strong> {{Servico.veiculo_os.km}}</p>
+            {% endif %}
+            {% else %}
+            <p><strong>Ano:</strong> {{ano}}</p>
+            <p><strong>Motor:</strong> {{motor}}</p>
+            <p><strong>KM:</strong> {{km}}</p>
+            {% endif %}
+        </div>
+
+        <div style="overflow-x: auto; ">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código/Tipo</th>
+                        <th>Nome</th>
+                        <th>Lado</th>
+                        <th>Un</th>
+                        <th>Valor Unitário</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if items_data_pecas %}
+                    {% for item_peca in items_data_pecas %}
+                    <tr>
+                        <td>{{item_peca.codigo}}</td>
+                        <td>{{item_peca.nome}}</td>
+                        <td>{{item_peca.lado}}</td>
+                        <td>{{item_peca.un}}</td>
+                        <td>{{item_peca.preso}}</td>
+                        <td>{{item_peca.pago_total}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                    {% if items_data_MDO %}
+                    {% for items_MDO in items_data_MDO %}
+                    <tr>
+                        <td>Mão de Obra</td>
+                        <td>{{items_MDO.nome}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{items_MDO.preso}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <p style="text-align: right; padding: 5px; font-size: 1.1em;"><strong>Total em Peças:</strong>
+            {{valor_total_pecas}}</p>
+
+        <div class="rodape">
+            <p><strong>Total:</strong> {{valor_total_total}}</p>
+        </div>
+
+        <div>
+            {% if Servico.status == 'Finalizado' %}
+            <div style="font-size: 0.9em; display: flex; justify-content: space-between;">
+                <p><strong>Vendedor:</strong> {{Servico.vendedor.apelido}}</p>
+                <p><strong>Mecânico:</strong> {{Servico.mecanico.apelido}}</p>
+                <p><strong>Data inicial:</strong> {{Servico.data_criado.strftime('%d/%m/%Y %H:%M')}}</p>
+                <p><strong>Data final:</strong> {{Servico.data_finalizada.strftime('%d/%m/%Y %H:%M')}}</p>
+            </div>
+            <div style="font-size: 0.9em;">
+                <p><strong>Observação:</strong> {{Servico.obs}}</p>
+            </div>
+            {% else %}
+            <div style="font-size: 0.9em; display: flex; justify-content: space-between;">
+                <p><strong>Data inicial:</strong> {{Servico.data_criado.strftime('%d/%m/%Y %H:%M')}}</p>
+                <p><strong>Observação:</strong> {{Servico.obs}}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <hr>
+    </div>
+
+    <div class="media-container">
+        <h2>Registro de alertas do Veículo</h2>
+        <div class="media-grid">
+            {% if preservados_img and preservados_img.images_carro %}
+            {% for img_carro in preservados_img.images_carro %}
+            <div class="media-item">
+                <a href="#img{{ loop.index }}">
+                    <img src="{{ url_for('static', filename='preservados/' ~ img_carro) }}" alt="Descrição da Imagem">
+                </a>
+                <div id="img{{ loop.index }}" class="modal">
+                    <a href="#" class="close">&times;</a>
+                    <img src="{{ url_for('static', filename='preservados/' ~ img_carro) }}" alt="Descrição da Imagem">
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% if preservados_img and preservados_img.videos_carro %}
+            {% for video_carro in preservados_img.videos_carro %}
+            <div class="media-item">
+                <video controls>
+                    <source src="{{ url_for('static', filename='preservados/' ~ video_carro) }}" type="video/mp4">
+                    Seu navegador não suporta a tag de vídeo.
+                </video>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        <div>
+            <p><strong>Observações: </strong>{{registros_preservados.obs}}</p><br>
+        </div>
+        <div class="approval-container">
+            <form style="width: 100%;"
+                action="{{ url_for('aprovacao', usuario=usuario, token=token, serviso=Servico.id) }}" method="post">
+                <label class="approval-label">
+                    <input type="checkbox" id="termsCheckbox" class="approval-checkbox" required>
+                    Eu li e concordo com os <a href="#" id="openTermsButton">termos de responsabilidade</a>.
+                </label>
+                <button type="submit" class="approval-button">Enviar para Aprovação</button>
+            </form>
+
+            <div id="termsModal" class="approval-modal">
+                <div class="approval-modal-content">
+                    <span class="approval-close">&times;</span>
+                    <h2 class="approval-modal-title">Termos de Responsabilidade</h2>
+                    <p class="approval-modal-text">
+                        Eu, {{Servico.cliente_os.nome}}, declaro estar ciente e concordo com os seguintes termos de
+                        responsabilidade para a realização de serviços pela oficina mecânica:
+                    <ol>
+                        <li>Autorizo a oficina mecânica a realizar os serviços descritos.</li>
+                        <li>Aceito o uso de peças novas ou usadas, conforme especificado pelo mecânico.</li>
+                        <li>Compreendo que o prazo de conclusão pode variar conforme a complexidade do serviço.</li>
+                        <li>Concordo que eventuais problemas após a execução do serviço devem ser comunicados à oficina
+                            imediatamente.
+                        </li>
+                        <li>Comprometo-me a pagar pelos serviços realizados conforme o orçamento aprovado.</li>
+                        <li>Entendo que não poderei retirar o veículo da oficina sem realizar o pagamento integral
+                            conforme o orçamento
+                            acordado.</li>
+                        <li>Declaro que autorizei os reparos especificados e compreendo os serviços a serem realizados.
+                        </li>
+                        <li>Entendo que a oficina não se responsabiliza por danos preexistentes no veículo não
+                            relacionados aos serviços
+                            prestados.</li>
+                        <li>Concordo em comunicar à oficina imediatamente qualquer problema que surja após a realização
+                            dos serviços.
+                        </li>
+                        <li>Compreendo que a responsabilidade da oficina se limita aos serviços especificados e não se
+                            estende a
+                            problemas decorrentes de manutenção inadequada após a entrega do veículo.</li>
+                        <li>Estou ciente das condições da garantia oferecida para os serviços e peças instaladas.</li>
+                        <li>Confirmo que o veículo foi entregue conforme as imagens e vídeos relatados acima.</li>
+                        <li>Qualquer disputa relacionada a estes termos será resolvida conforme as leis do
+                            {{empresa.estado}}/Brasil
+                            e submetida à
+                            jurisdição exclusiva dos tribunais de {{empresa.cidade}}/{{empresa.estado}}/Brasil.</li>
+                    </ol>
+                    Data: {{Servico.data_criado.strftime('%d/%m/%Y %H:%M')}}
+                    </p>
+                    <button id="agreeButton" class="approval-button">Concordo</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const termsModal = document.getElementById('termsModal');
+            const modalClose = document.querySelector('.approval-close');
+            const openTermsButton = document.getElementById('openTermsButton');
+            const termsCheckbox = document.getElementById('termsCheckbox');
+            const approvalForm = document.getElementById('approvalForm');
+
+            modalClose.addEventListener('click', closeModal);
+            openTermsButton.addEventListener('click', openModal);
+            window.addEventListener('click', outsideClick);
+
+            function openModal() {
+                termsModal.style.display = 'block';
+            }
+
+            function closeModal() {
+                termsModal.style.display = 'none';
+            }
+
+            function outsideClick(e) {
+                if (e.target === termsModal) {
+                    termsModal.style.display = 'none';
+                }
+            }
+
+            agreeButton.addEventListener('click', function () {
+                closeModal();
+                termsCheckbox.checked = true;
+            });
+
+            approvalForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (termsCheckbox.checked) {
+                    alert('Serviço enviado para aprovação!');
+                } else {
+                    alert('Você precisa concordar com os termos de responsabilidade.');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

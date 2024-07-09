@@ -94,7 +94,7 @@ def nome_required(f):
         if current_user.nivel != session.get('nivel_nome'):
             flash("Faça o login novamente.", "Longin_Erro")
             return redirect(url_for("login"))
-        elif current_user.is_authenticated and current_user.nome == "" or current_user.apelido == ""or current_user.fone == ""or current_user.email == ""or current_user.niver == ""or current_user.cpf == ""or current_user.rg == ""or current_user.cep == ""or current_user.estado == ""or current_user.cidade == ""or current_user.bairro == ""or current_user.rua == ""or current_user.nuCasa == "":
+        if current_user.is_authenticated and current_user.nome == "" or current_user.apelido == ""or current_user.fone == ""or current_user.email == ""or current_user.niver == "" or current_user.cpf == ""or current_user.rg == ""or current_user.cep == ""or current_user.estado == ""or current_user.cidade == ""or current_user.bairro == ""or current_user.rua == ""or current_user.nuCasa == "":
             flash("Finalize o seu Cadastro Primeiro", "cor-alerta")
             return redirect(url_for("atulizUser", id=current_user.id))
         return f(*args, **kwargs)

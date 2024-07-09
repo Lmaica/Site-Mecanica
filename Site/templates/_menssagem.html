@@ -27,14 +27,21 @@
     </div>
     <div class="DivFlutanteConte">
         <form action="/aprovarServico/{{ message }}" method="POST">
-            <div class="DivFlutanteConte">
-                <p>Qual o KM do Veiculo???</p>
-            </div>
+            <label for="kmAtualiza">Qual o KM do Veiculo?</label>
             <input type="number" name="kmAtualiza" id="kmAtualiza" required>
             <span style="font-size: 14px; font-family: Arial, sans-serif;">Km Anterior: {{Servico.veiculo_os.km}}</span>
-            <div style="padding: 0px 10px 10px 10px;" class="lado-a-lado">
-                <input type="button" onclick="ButunDivFlutante()" class="button-grande cor-cancelar" value="Cancelar">
-                <input type="submit" class="button-grande cor-ok" name="" value="Continuar">
+            <div class="lado-lado">
+                <div style="font-family: Arial; font-size: 19px; text-align: center; padding: 5px; ">
+                    <label> Como o cliente aprovar o serviço? </label>
+                </div>
+                <input style="position: absolute; left: -9999px;" type="submit" name="copia" value="">
+                <input style="position: absolute; left: -9999px;" type="submit" name="imprimir" value="">
+                <input style="position: absolute; left: -9999px;" type="submit" name="email" value="">
+                <button name="imprimir" class="button-grande cor-ok"><i class="fas fa-print"></i> Papel</button>
+                <button name="email" class="button-grande cor-ok"><i class="fas fa-envelope"></i> Email</button>
+                <button name="copia" class="button-grande cor-ok"><i class="fas fa-copy"></i>
+                    Copiar</button>
+                <input type="hidden" id="linkInput" value="{{session['aprovar_url']}}">
             </div>
         </form>
     </div>

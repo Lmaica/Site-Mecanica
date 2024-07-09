@@ -56,6 +56,8 @@ def verifica_cliente_ativo(f):
             id_conferi = kwargs['id']
             email_conferi = session.get('email_consumidor')
             session['next_url'] = request.path
+            print(request.path)
+            print(session['next_url'])
             cliente = Cliente.query.filter_by(email=email_conferi).first()
             if id_conferi != cliente.id:
                 return redirect(url_for("Consumidor"))
@@ -69,51 +71,6 @@ def verifica_cliente_ativo(f):
                 return redirect(url_for("loginCliente"))
         return redirect(url_for("loginCliente"))
     return decorator
-
-def enviar_email_confirmar(usuario, nova_senha,confirmar):
-    remetente = 'maica.contato@outlook.com' 
-    destinatario = usuario
-    if confirmar:
-        assunto = "Confirmação de Conta"
-        reset_url = url_for('confirm_email',usuario=usuario ,token=nova_senha, _external=True)
-        mensagem  = f"""
-            <p>Olá!</p>
-            <p>Para Criar Sua conta, clique no link abaixo:</p>
-            <p><a href="{reset_url}">{reset_url}</a></p>
-            <p>O link expirará em 24 horas.</p>
-            <p>Se você tiver problemas ao clicar no link, copie e cole o seguinte URL em seu navegador:</p>
-            <p>{reset_url}</p>
-            <p>Atenciosamente,</p>
-            <p>Equipe de Suporte</p>"""
-    else:
-        assunto = "Reconfiguração de Senha"
-        reset_url = url_for('resete_senha', usuario=usuario, token=nova_senha, _external=True)
-        mensagem = f"""
-            <p>Olá!</p>
-            <p>Para reconfigurar sua senha, clique no link abaixo:</p>
-            <p><a href="{reset_url}">{reset_url}</a></p>
-            <p>O link expirará em 24 horas.</p>
-            <p>Se você tiver problemas ao clicar no link, copie e cole o seguinte URL em seu navegador:</p>
-            <p>{reset_url}</p>
-            <p>Atenciosamente,</p>
-        <p>Equipe de Suporte</p>"""
-
-    # Configuração do servidor SMTP da Microsoft
-    servidor_smtp = 'smtp.office365.com'
-    porta = 587
-    usuario_smtp = 'maica.contato@outlook.com'  
-    senha_smtp = 'atljMaic@2024'  
-
-    msg = MIMEMultipart()
-    msg['From'] = remetente
-    msg['To'] = destinatario
-    msg['Subject'] = assunto
-    msg.attach(MIMEText(mensagem, 'html'))
-
-    with smtplib.SMTP(servidor_smtp, porta) as servidor:
-        servidor.starttls()
-        servidor.login(usuario_smtp, senha_smtp)
-        servidor.send_message(msg)
         
 def verificar_formato_numero(numero):
     padrao = r'^\(\d{2}\) \d{5}-\d{3,4}$'
@@ -131,6 +88,7 @@ def verificar_tentativas_login():
 
 @app.route("/")
 def Consumidor():
+
     page = request.args.get("page", 1, type=int)
     combos = Combo.query.filter_by(atividade='Ativo').order_by(Combo.id.desc()).paginate(page=page, per_page=10)
     combosOfertas = Combo.query.filter(Combo.status == 'Oferta', Combo.atividade == 'Ativo').order_by(Combo.id.desc())
@@ -413,7 +371,7 @@ def pedidoContato():
         }
         return jsonify(response_data)
 
-    
+
 #login cliente
 @app.route("/loginCliente", methods=["GET", "POST"])
 def loginCliente():
@@ -468,7 +426,7 @@ def CriarLogin():
                     flash('E-mail Já Cadastrado', 'Longin_Erro_Utrapado')
                 else:
                     nova_senha = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-                    enviar_email_confirmar(form.email.data.strip(), nova_senha,True)
+                    Redutor_codigo.enviar_email_confirmar(form.email.data.strip(), nova_senha,'CONFIRME', False)
                     get_token = Token(
                         requisitor=form.email.data.strip(),
                         token=nova_senha,
@@ -835,7 +793,7 @@ def recuperarSenha():
             if form.email.data.strip() == form.confirm_email.data.strip(): 
                 if user:
                     nova_senha = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-                    enviar_email_confirmar(form.email.data.strip(), nova_senha, False)
+                    Redutor_codigo.enviar_email_confirmar(form.email.data.strip(), nova_senha, False,False)
                     get_token = Token(
                         requisitor=form.email.data.strip(),
                         token=nova_senha,
@@ -896,3 +854,6 @@ def resete_senha(usuario, token):
         return redirect(url_for("loginCliente"))
 
     return render_template("Consumidor/CriarCadastro.html", form=form,redefinirSenha=True)
+
+
+

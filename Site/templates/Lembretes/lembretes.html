@@ -2,6 +2,31 @@
 
 {% block content %}
 <h2 class="cabeçario-pagina">LEMBRETES</h2>
+<div id="search-container">
+    <div class="search-box">
+        <form style="display: flex; width: 98%;" method="POST">
+            {% if busca %}
+            <input class="anular searchselector" value="{{busca}}" type="text" id="searchinput"
+                placeholder="Buscar Lembretes" autofocus="autofocus" name="search_string"
+                aria-label="searchLembretes">
+            {% else %}
+            <input class="anular" type="text" id="searchinput" placeholder="Buscar Lembretes" autofocus="autofocus"
+                name="search_string" aria-label="searchLembretes">
+            {% endif %}
+
+            <select class="anular searchselector" id="searchselector" name="searchselector" onchange="alterarFormato()">
+                <option style="background-color: rgb(165, 164, 164); color: black;" disabled>Lembretes
+                </option>
+                {% if escolha == "todos" %}
+                <option value="todos" selected>Todos</option>
+                {% else %}
+                <option value="todos">Todos</option>
+                {% endif %}
+            </select>
+            <button id="search-button" formaction="/searchLembretes">Buscar</button>
+        </form>
+    </div>
+</div>
 <div class="botao-add">
     <a href="{{url_for('addLembretes')}}" class="button-pequeno cor-ok">Adicionar lembrete</a>
 </div>
@@ -15,7 +40,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for lembrete in lembretes %}
+            {% for lembrete in Lembretes %}
             <tr>
                 <td>{{ lembrete.autor }}</td>
                 <td>{{ lembrete.destinatario }}</td>
@@ -45,8 +70,9 @@
                         </tr>
                         <tr>
                             <td colspan="3">
-                                <input type="button" onclick="showDiv('Lembrete', '{{lembrete.id}}', '{{lembrete.nome}}')" class="cor-cancelar"
-                                    style="margin-bottom: 10px;" value="Apagar">
+                                <input type="button"
+                                    onclick="showDiv('Lembrete', '{{lembrete.id}}', '{{lembrete.nome}}')"
+                                    class="cor-cancelar" style="margin-bottom: 10px;" value="Apagar">
                                 <a href="{{url_for('atulizLembretes',id=lembrete.id)}}"><input type="submit"
                                         class="cor-alerta" name="" value="Editar"></a>
                             </td>
@@ -59,53 +85,53 @@
     </table>
 </div>
 <div class="pagination">
-    {% if lembretes.has_prev %}
+    {% if Lembretes.has_prev %}
     {% if busca %}
-    <form action="{{ url_for('searchlembrete', page=lembretes.prev_num) }}" method="POST">
+    <form action="{{ url_for('searchLembretes', page=Lembretes.prev_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&lt;</button>
     </form>
     {% else %}
-    <a href="{{ url_for('lembretes', page=lembretes.prev_num) }}">&lt;</a>
+    <a href="{{ url_for('Lembretes', page=Lembretes.prev_num) }}">&lt;</a>
     {% endif %}
     {% endif %}
-    {% if lembretes.total > 10 %}
-    {% for page_num in lembretes.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
+    {% if Lembretes.total > 10 %}
+    {% for page_num in Lembretes.iter_pages(left_edge=0, right_edge=1, left_current=1, right_current=1) %}
     {% if page_num %}
-    {% if lembretes.page == page_num %}
+    {% if Lembretes.page == page_num %}
     {%if busca %}
-    <form action="{{ url_for('searchlembrete', page=page_num) }}" method="POST">
+    <form action="{{ url_for('searchLembretes', page=page_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button class="paginationActive" type="submit">{{ page_num }}</button>
     </form>
     {% else %}
-    <a class="paginationActive" href="{{ url_for('lembretes', page=page_num) }}">{{ page_num }}</a>
+    <a class="paginationActive" href="{{ url_for('Lembretes', page=page_num) }}">{{ page_num }}</a>
     {% endif %}
     {% else %}
     {%if busca %}
-    <form action="{{ url_for('searchlembrete', page=page_num) }}" method="POST">
+    <form action="{{ url_for('searchLembretes', page=page_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">{{ page_num }}</button>
     </form>
     {% else %}
-    <a href="{{ url_for('lembretes', page=page_num) }}">{{ page_num }}</a>
+    <a href="{{ url_for('Lembretes', page=page_num) }}">{{ page_num }}</a>
     {% endif %}
     {% endif %}
     {% endif %}
     {% endfor %}
     {% endif %}
-    {% if lembretes.has_next %}
+    {% if Lembretes.has_next %}
     {% if busca %}
-    <form action="{{ url_for('searchlembrete', page=lembretes.next_num) }}" method="POST">
+    <form action="{{ url_for('searchLembretes', page=Lembretes.next_num) }}" method="POST">
         <input value="{{ busca }}" type="hidden" id="searchinput" name="search_string">
         <input value="{{ escolha }}" type="hidden" id="searchselector" name="searchselector">
         <button type="submit">&gt;</button>
     </form>
     {% else %}
-    <a href="{{ url_for('lembretes', page=lembretes.next_num) }}">&gt;</a>
+    <a href="{{ url_for('Lembretes', page=Lembretes.next_num) }}">&gt;</a>
     {% endif %}
     {% endif %}
 </div>

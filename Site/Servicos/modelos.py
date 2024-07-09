@@ -52,6 +52,22 @@ class Serviso(db.Model):
         db.DateTime, default=datetime.now(timezone.utc).astimezone(), nullable=False
     )
 
-
+class Registrospreservados(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    serviso_id = db.Column(db.Integer, db.ForeignKey('serviso.id'))
+    serviso = db.relationship('Serviso', backref=db.backref('serviso', lazy=True))
+    modo_aprovado = db.Column(db.String)
+    descricao = db.Column(db.String)
+    obs = db.Column(db.String)
+    status = db.Column(db.String, default=False)
+    images_carro = db.Column(db.Text, default="[]")
+    videos_carro = db.Column(db.Text, default="[]")
+    images_serviso = db.Column(db.Text, default="[]")
+    videos_serviso = db.Column(db.Text, default="[]")
+    image_token = db.Column(db.String, unique=False, nullable=False, default="foto.jpg")
+    token = db.Column(db.String, unique=False, nullable=False)
+    data = db.Column(db.DateTime, default=datetime.now(timezone.utc).astimezone(), nullable=False)
+    
+    
 with app.app_context():
     db.create_all()

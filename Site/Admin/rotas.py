@@ -28,7 +28,7 @@ from Site.Global.fun_global import (
     Calculos_gloabal,
 )
 from flask_login import login_required, current_user, login_user, logout_user
-from Site.Servicos.modelos import Serviso
+from Site.Servicos.modelos import Serviso,Registrospreservados
 from datetime import datetime, timedelta,timezone
 from sqlalchemy import and_, or_, desc,func, extract,cast,Integer, Numeric
 import requests
@@ -45,6 +45,8 @@ from email.mime.text import MIMEText
 from Site.Combo.modelos import Combo
 import json
 from Site.Consumidor.modelos import Token
+from dateutil.relativedelta import relativedelta
+
 
 def get_results_dict(query_results, date_extractor, *value_columns):
     from collections import defaultdict
@@ -260,14 +262,58 @@ def Admin():
         Serviso.data_finalizada <= data_limite_servicos
     ).delete()
 
+    data_limite = datetime.now() - timedelta(days=2*365)
+
+    # Limpar Preservados
+    registros_expirados = Registrospreservados.query.filter(Registrospreservados.data < data_limite).all()
+
+    # Itera sobre os registros expirados e os exclui do banco de dados
+    for registro in registros_expirados:
+        if registro.images_carro:
+            filenames_images_carro = json.loads(registro.images_carro)
+            for filename in filenames_images_carro:
+                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                if os.path.exists(file_path):
+                    os.unlink(file_path)
+
+        if registro.videos_carro:
+            filenames_videos_carro = json.loads(registro.videos_carro)
+            for filename in filenames_videos_carro:
+                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                if os.path.exists(file_path):
+                    os.unlink(file_path)
+
+        if registro.images_serviso:
+            filenames_images_serviso = json.loads(registro.images_serviso)
+            for filename in filenames_images_serviso:
+                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                if os.path.exists(file_path):
+                    os.unlink(file_path)
+
+        if registro.videos_serviso:
+            filenames_videos_serviso = json.loads(registro.videos_serviso)
+            for filename in filenames_videos_serviso:
+                file_path = os.path.join(current_app.root_path, "static/preservados", filename.strip())
+                if os.path.exists(file_path):
+                    os.unlink(file_path)
+
+        if registro.image_token and registro.image_token != 'foto.jpg':
+            file_path = os.path.join(current_app.root_path, "static/preservados", registro.image_token)
+            if os.path.exists(file_path):
+                os.unlink(file_path)
+        db.session.delete(registro)
+        print(f"Registro expirado '{registro.id}' excluído com sucesso.")
+
+    # Commit das alterações no banco de dados
+    db.session.commit()
     # Resetando combos não válidos
     Combo.query.filter(
         ~(
-            Combo.peca_os_combo.like('%"itens"%') |  # Alterando para pipe (|) para operador OR
+            Combo.peca_os_combo.like('%"itens"%') | 
             Combo.mo_os_combo.like('%"itens"%')
-        ) | (Combo.nome == '') | (Combo.obs == '') | (Combo.carro == '""') |  # Usando parênteses para agrupar as condições
-        (Combo.image_1 == 'foto.jpg') | (Combo.data_inicil_combo >= data_atual) |  # Usando parênteses para agrupar as condições
-        ((Combo.data_final_combo != None) & (Combo.data_final_combo <= data_atual))  # Usando parênteses para agrupar as condições e alterando para != para verificar se não é None
+        ) | (Combo.nome == '') | (Combo.obs == '') | (Combo.carro == '""') |  
+        (Combo.image_1 == 'foto.jpg') | (Combo.data_inicil_combo >= data_atual) |  
+        ((Combo.data_final_combo != None) & (Combo.data_final_combo <= data_atual))
     ).update({'atividade': None})
 
     # Committing changes
@@ -312,16 +358,17 @@ def cartaoVisita():
     dados = session
     agora = datetime.now(timezone.utc).astimezone()
     msg = "Acesso session " + str(dados) + " hora do Acesso " + str(agora)
-    data_atual = datetime.now()
-    data_atual_mais_30_dias = data_atual + timedelta(days=30)
+    data_atual_mais_30_dias = agora + timedelta(days=120)
+    data_atual_formatada = agora.strftime("%Y-%m-%d %H:%M:%S")
+    data_atual_mais_30_dias_formatada = data_atual_mais_30_dias.strftime("%Y-%m-%d %H:%M:%S")
     lembrete = Lembretestodos(
         titulo='Acesso pelo QR CODE',
         msg= msg,
         tipo='ADIVERTENCIA',
         autor='PLACA',
         destinatario='TODOS',
-        data_inicil=data_atual,
-        data_fim=data_atual_mais_30_dias,
+        data_inicil=data_atual_formatada,
+        data_fim=data_atual_mais_30_dias_formatada,
     )
     db.session.add(lembrete)
     db.session.commit()
@@ -968,7 +1015,6 @@ def alterar_senha(id):
 
 @app.route("/atulizUser/<int:id>", methods=["GET", "POST"])
 @login_required
-@nome_required
 def atulizUser(id):
     try:
         user = current_user
@@ -1567,18 +1613,37 @@ def Lembretes():
         lembretes = Lembretestodos.query.order_by(
             Lembretestodos.data_inicil.desc()
         ).paginate(page=page, per_page=10)
-        return render_template("Lembretes/lembretes.html", lembretes=lembretes)
+        return render_template("Lembretes/lembretes.html", Lembretes=lembretes)
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)
 
+def proxima_ocorrencia(data, periodo):
+    if periodo == 'diario':
+        return data + timedelta(days=1)
+    elif periodo == 'semanal':
+        return data + timedelta(weeks=1)
+    elif periodo == 'quinzenal':
+        return data + timedelta(weeks=2)
+    elif periodo == 'mensal':
+        return data + relativedelta(months=1)
+    elif periodo == 'trimestral':
+        return data + relativedelta(months=3)
+    elif periodo == 'anual':
+        return data + relativedelta(years=1)
+    else:
+        raise ValueError('Período inválido')
 
 @app.route("/addLembretes", methods=["GET", "POST"])
 @login_required
 @nome_required
+@verificacao_nivel(4)
 def addLembretes():
     form = LembretesMensagens()
     if request.method == "POST":
+        show_repeat = request.form.get("show-repeat-count")
+        periodo = request.form.get("periodo")
+        repetir = request.form.get("repetir")
         gettitulo = request.form.get("titulo").strip()
         getmsg = request.form.get("msg").strip()
         getautor = request.form.get("autor").strip()
@@ -1588,38 +1653,74 @@ def addLembretes():
         getdata_fim = request.form.get("data_fim")
         data_inicil_for = datetime.strptime(getdata_inicil, "%Y-%m-%d")
         data_fim_for = datetime.strptime(getdata_fim, "%Y-%m-%d")
-        lembrete = Lembretestodos(
-            titulo=gettitulo,
-            msg=getmsg,
-            tipo=gettipo,
-            autor=getautor,
-            destinatario=getdestinatario,
-            data_inicil=data_inicil_for,
-            data_fim=data_fim_for,
-        )
-        db.session.add(lembrete)
+        
+        if show_repeat:
+            ultimo_id = db.session.query(db.func.max(Lembretestodos.id)).scalar()
+            for i in range(int(repetir)):
+                if i == 0:
+                    data_inicil_for_ocorrencia = data_inicil_for
+                    data_fim_for_ocorrencia = data_fim_for
+                else:
+                    data_inicil_for_ocorrencia = proxima_ocorrencia(data_inicil_for_ocorrencia, periodo)
+                    data_fim_for_ocorrencia = proxima_ocorrencia(data_fim_for_ocorrencia, periodo)
+                
+                getmsg_tratada = f"{getmsg} ({i + 1}/{repetir})"
+                soma = int(ultimo_id) + 1
+                dados_repet_soma = str(soma) + ',' + str(periodo) + ',' + str(repetir)
+                lembrete = Lembretestodos(
+                    titulo=gettitulo,
+                    msg=getmsg_tratada,
+                    tipo=gettipo,
+                    autor=getautor,
+                    destinatario=getdestinatario,
+                    data_inicil=data_inicil_for_ocorrencia,
+                    data_fim=data_fim_for_ocorrencia,
+                    repet=dados_repet_soma,
+                )
+                db.session.add(lembrete)
+                
+                data_inicil_for = data_inicil_for_ocorrencia
+                data_fim_for = data_fim_for_ocorrencia
+        else:
+            lembrete = Lembretestodos(
+                titulo=gettitulo,
+                msg=getmsg,
+                tipo=gettipo,
+                autor=getautor,
+                destinatario=getdestinatario,
+                data_inicil=data_inicil_for,
+                data_fim=data_fim_for,
+                repet=None
+            )
+            db.session.add(lembrete)
+        
         db.session.commit()
-        flash(
-            f"O lembrete Foi Criado com Sucesso!!!",
-            "cor-ok",
-        )
+        flash("O lembrete foi criado com sucesso!!!", "cor-ok")
         return redirect(url_for("Lembretes"))
+    
     data_atual = datetime.now().date()
     data_final = data_atual + timedelta(days=30)
     data_formatada_inicil = data_atual.strftime("%Y-%m-%d")
     data_formatada_fim = data_final.strftime("%Y-%m-%d")
+    
     return render_template("Lembretes/addLembrete.html",
-                            form=form,
-                            data_formatada_inicil=data_formatada_inicil,
-                            data_formatada_fim=data_formatada_fim,)
+                           form=form,
+                           data_formatada_inicil=data_formatada_inicil,
+                           data_formatada_fim=data_formatada_fim)
 
 
 @app.route("/atulizLembretes/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
+@verificacao_nivel(4)
 def atulizLembretes(id):
     lembrete = Lembretestodos.query.get_or_404(id)
     if request.method == "POST":
+        sim = request.form.get("modificar_repeticoes")
+        show_repeat = request.form.get("show-repeat-count")
+        periodo = request.form.get("periodo")
+        repetir = request.form.get("repetir")
+        
         gettitulo = request.form.get("titulo").strip()
         getmsg = request.form.get("msg").strip()
         getautor = request.form.get("autor").strip()
@@ -1630,14 +1731,70 @@ def atulizLembretes(id):
         getdata_fim = request.form.get("data_fim")
         data_inicial_for = datetime.strptime(getdata_inicil, "%Y-%m-%d")
         data_fim_for = datetime.strptime(getdata_fim, "%Y-%m-%d")
-        lembrete.titulo = gettitulo
-        lembrete.autor = getautor
-        lembrete.destinatario = getdestinatario
-        lembrete.tipo = gettipo
-        lembrete.msg = getmsg
-        lembrete.data_inicil = data_inicial_for
-        lembrete.data_fim = data_fim_for
+        if sim == 'True':
+            resultados = Lembretestodos.query.filter_by(repet=lembrete.repet).order_by(desc(Lembretestodos.data_inicil)).all()
+            for index, dados in enumerate(resultados):
+                dados_repet = lembrete.repet.split(',')
+                periodo = dados_repet[1]
+                repetir = dados_repet[2]
+                if index == 0:
+                    data_inicial_for_ocorrencia = data_inicial_for
+                    data_fim_for_ocorrencia = data_fim_for
+                else:
+                    data_inicial_for_ocorrencia = proxima_ocorrencia(data_inicial_for_ocorrencia, periodo)
+                    data_fim_for_ocorrencia = proxima_ocorrencia(data_fim_for_ocorrencia, periodo)
+                
+                getmsg_tratada = f"{getmsg} ({index + 1}/{repetir})"
+                
+                dados.titulo = gettitulo
+                dados.autor = getautor
+                dados.destinatario = getdestinatario
+                dados.tipo = gettipo
+                dados.msg = getmsg_tratada
+                dados.data_inicil = data_inicial_for_ocorrencia
+                dados.data_fim = data_fim_for_ocorrencia
+                
+                data_inicial_for = data_inicial_for_ocorrencia
+                data_fim_for = data_fim_for_ocorrencia
+        elif show_repeat:
+            db.session.delete(lembrete)
+            db.session.commit()
+            ultimo_id = db.session.query(db.func.max(Lembretestodos.id)).scalar()
+            for i in range(int(repetir)):
+                if i == 0:
+                    data_inicial_for_ocorrencia = data_inicial_for
+                    data_fim_for_ocorrencia = data_fim_for
+                else:
+                    data_inicial_for_ocorrencia = proxima_ocorrencia(data_inicial_for_ocorrencia, periodo)
+                    data_fim_for_ocorrencia = proxima_ocorrencia(data_fim_for_ocorrencia, periodo)
+                
+                getmsg_tratada = f"{getmsg} ({i + 1}/{repetir})"
+                soma = int(ultimo_id) + 1
+                dados_repet_soma = str(soma) + ',' + str(periodo) + ',' + str(repetir)
+                lembrete_novo = Lembretestodos(
+                    titulo=gettitulo,
+                    msg=getmsg_tratada,
+                    tipo=gettipo,
+                    autor=getautor,
+                    destinatario=getdestinatario,
+                    data_inicil=data_inicial_for_ocorrencia,
+                    data_fim=data_fim_for_ocorrencia,
+                    repet=dados_repet_soma,
+                )
+                db.session.add(lembrete_novo)
+                
+                data_inicial_for = data_inicial_for_ocorrencia
+                data_fim_for = data_fim_for_ocorrencia
+        else:
+            lembrete.titulo = gettitulo
+            lembrete.autor = getautor
+            lembrete.destinatario = getdestinatario
+            lembrete.tipo = gettipo
+            lembrete.msg = getmsg
+            lembrete.data_inicil = data_inicial_for
+            lembrete.data_fim = data_fim_for
         db.session.commit()
+        
         flash(
             f"O lembrete foi Atulizado com Sucesso!!!",
             "cor-ok",
@@ -1664,6 +1821,7 @@ def atulizLembretes(id):
 @app.route("/deleteLembrete/<int:id>", methods=["GET", "POST"])
 @login_required
 @nome_required
+@verificacao_nivel(4)
 def deleteLembrete(id):
     try:
         lembrete = Lembretestodos.query.get_or_404(id)
@@ -1688,6 +1846,54 @@ def deleteLembrete(id):
             "cor-alerta",
         )
         return jsonify()
+    except Exception as erro:
+        MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
+        return render_template("pagina_erro.html", MSG=MSG)
+
+@app.route("/searchLembretes", methods=["GET", "POST"])
+@login_required
+@nome_required
+@verificacao_nivel(4)
+def searchLembretes():
+    try:
+        if request.method == "POST":
+            page = request.args.get("page", 1, type=int)
+            form = request.form
+            search_value = form["search_string"].upper()
+            search = "%{0}%".format(search_value)
+            escolha = str(request.form.get("searchselector"))
+            busca = search_value = form["search_string"]
+            search_terms = search.split()  
+            conditions = []
+            for term in search_terms:
+                conditions.append(
+                    or_(
+                        Lembretestodos.id.like(f'%{term}%'),
+                        Lembretestodos.titulo.like(f'%{term}%'),
+                        Lembretestodos.msg.like(f'%{term}%'),
+                        Lembretestodos.autor.like(f'%{term}%'),
+                        Lembretestodos.destinatario.like(f'%{term}%'),
+                        Lembretestodos.tipo.like(f'%{term}%'),
+                        Lembretestodos.data_inicil.like(f'%{term}%'),
+                        Lembretestodos.data_fim.like(f'%{term}%'),
+                    )
+                )
+
+            getLembrete = (
+                Lembretestodos.query.filter(
+                    *conditions
+                )
+                .order_by(Lembretestodos.id.desc())
+                .paginate(page=page, per_page=10)
+            )
+            return render_template(
+                "Lembretes/lembretes.html",
+                Lembretes=getLembrete,
+                busca=busca,
+                escolha=escolha,
+            )
+        else:
+            return redirect("Lembretes")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)

@@ -267,29 +267,30 @@
             <div class="file-input">
                 <input type="file" name="image_1" id="image_1" onchange="previewImage(event, 1)" accept="image/*">
                 <label for="image_1">Adicionar Imagem Combo</label>
-                <img src="{{url_for('static',filename='imagens/'+Combo.image_1)}}" id="preview-image-1" src=""
+                <img src="{{url_for('static',filename='imagens/'+ Combo.image_1)}}" id="preview-image-1" src=""
                     alt="Preview Image 1" onclick="openFileInput(1)">
 
             </div>
         </div>
     </fieldset>
     <fieldset class="lado-a-lado containerForm">
-        <div style="width: 50%; margin-right: 10px; " >
-            <a href="{{url_for('combos')}}" ><input class="button-grande cor-cancelar" type="button" value="Votar"></a>
+        <div style="width: 50%; margin-right: 10px; ">
+            <a href="{{url_for('combos')}}"><input class="button-grande cor-cancelar" type="button" value="Votar"></a>
         </div>
-        <div style="width: 100%; margin-right: 10px;" >
-            <a href="{{url_for('dadosInformativos', id=Combo.id)}}" ><input class="button-grande cor-ok" type="button" value="Ver no Site"></a>
+        <div style="width: 100%; margin-right: 10px;">
+            <a href="{{url_for('dadosInformativos', id=Combo.id)}}"><input class="button-grande cor-ok" type="button"
+                    value="Ver no Site"></a>
         </div>
     </fieldset>
     <div
         style="color: white; background-color: #ff4444; text-align: center; padding: 5px; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);margin: 10px;">
         <p>Os dados modificados aqui serão automaticamente atualizados.</p>
-    
+
     </div>
     <div class="botao-add" style="padding: 10px;">
         <a style="border-radius: 10px; padding-left: 5px;padding-right: 5px; color: #000000; text-decoration: none; background-color: #f4f4f4; border: 1px solid #000000; display: inline-block;"
             href="{{url_for('duplicarCombo', id=Combo.id)}}">Duplicar Combo</a>
-    
+
     </div>
 </div>
 
