@@ -265,12 +265,49 @@
             {% endif %}
         </div>
         <hr>
-        <div class="assinatura-container">
-            <div class="assinatura-box">
-                <p>Assinatura do Cliente</p>
+        <div id="termsModal" class="approval-modal">
+            <div class="approval-modal-content">
+                <h2 class="approval-modal-title">Termos de Responsabilidade</h2>
+                <p class="approval-modal-text">
+                    Eu, {{Servico.cliente_os.nome}}, declaro estar ciente e concordo com os seguintes termos de
+                    responsabilidade para a realização de serviços pela oficina mecânica:
+                <ol>
+                    <li>Autorizo a oficina mecânica a realizar os serviços descritos.</li>
+                    <li>Aceito o uso de peças novas ou usadas, conforme especificado pelo mecânico.</li>
+                    <li>Compreendo que o prazo de conclusão pode variar conforme a complexidade do serviço.</li>
+                    <li>Concordo que eventuais problemas após a execução do serviço devem ser comunicados à oficina
+                        imediatamente.
+                    </li>
+                    <li>Comprometo-me a pagar pelos serviços realizados conforme o orçamento aprovado.</li>
+                    <li>Entendo que não poderei retirar o veículo da oficina sem realizar o pagamento integral
+                        conforme o orçamento
+                        acordado.</li>
+                    <li>Declaro que autorizei os reparos especificados e compreendo os serviços a serem realizados.
+                    </li>
+                    <li>Entendo que a oficina não se responsabiliza por danos preexistentes no veículo não
+                        relacionados aos serviços
+                        prestados.</li>
+                    <li>Concordo em comunicar à oficina imediatamente qualquer problema que surja após a realização
+                        dos serviços.
+                    </li>
+                    <li>Compreendo que a responsabilidade da oficina se limita aos serviços especificados e não se
+                        estende a
+                        problemas decorrentes de manutenção inadequada após a entrega do veículo.</li>
+                    <li>Estou ciente das condições da garantia oferecida para os serviços e peças instaladas.</li>
+                    <li>Qualquer disputa relacionada a estes termos será resolvida conforme as leis do
+                        {{empresa.estado}}/Brasil
+                        e submetida à
+                        jurisdição exclusiva dos tribunais de {{empresa.cidade}}/{{empresa.estado}}/Brasil.</li>
+                </ol>
+                </p>
             </div>
-            <div class="assinatura-box">
-                <p>Assinatura da Empresa</p>
+            <div class="assinatura-container">
+                <div class="assinatura-box">
+                    <p>Assinatura do Cliente</p>
+                </div>
+                <div class="assinatura-box">
+                    <p>Assinatura da Empresa</p>
+                </div>
             </div>
         </div>
     </div>
