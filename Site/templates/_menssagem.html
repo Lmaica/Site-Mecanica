@@ -19,6 +19,24 @@
         </a>
     </div>
 </div>
+{% elif category == "confimeveiculo" %}
+<div id="DivFlutante">
+    <div class="cor-cancelar DivFlutanteCabeça">
+        <h3>AVISO!!!</h3>
+        <span onclick="ButunDivFlutante()" class="close-btn">&times;</span>
+    </div>
+    <div class="DivFlutanteConte">
+        <p>Esse Carro pertence ao cliente {{message.split(',')[2] }}</p>
+        <p>Gostaria De trasferir esse carro para o cliente {{message.split(',')[3] }}?</p>
+    </div>
+    <div style="padding: 0px 10px 10px 10px;" class="lado-a-lado">
+        <a href=""><input type="submit" onclick="ButunDivFlutante()" class="button-grande cor-cancelar" name=""
+                value="Cancelar"></a>
+        <a href="{{url_for('trocarVeicCli',veid=message.split(',')[1],clid=message.split(',')[0])}}">
+            <input type="submit" class="button-grande cor-ok" name="" value="Modficar">
+        </a>
+    </div>
+</div>
 {% elif category == "Aprovado" %}
 <div id="DivFlutante">
     <div class="cor-ok DivFlutanteCabeça">

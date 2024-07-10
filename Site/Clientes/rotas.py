@@ -309,7 +309,6 @@ def deletecliente(id):
 @nome_required
 @verificacao_nivel(3)
 def search():
-
     if request.method == "POST":
         veiculos = Veiculo.query.all()
         page = request.args.get("page", 1, type=int)
@@ -421,7 +420,6 @@ def search():
         return redirect("/clientes")
 
 
-
 # Veiculos
 @app.route("/addVeiculo/<int:id>", methods=["GET", "POST"])
 @login_required
@@ -457,8 +455,8 @@ def addVeiculo(id):
                     id=filtroplaca.cliente_id
                 ).first()
                 flash(
-                    f"O Veiculo da placa {filtroplaca.placa} Pertence ao Cliente do ID {cientefilter.id} Nome/Social {clientenome}!!!",
-                    "cor-alerta",
+                    f"{cliente.id},{filtroplaca.id},{cientefilter.nome},{cliente.nome}",
+                    "confimeveiculo",
                 )
             else:
                 veicu = Veiculo(
@@ -473,6 +471,21 @@ def addVeiculo(id):
                 flash(f"O Veiculo, Foi Cadatrada com Sucesso!!!", "cor-ok")
                 return redirect(url_for("clientes"))
         return render_template("/Clientes/addVeiculo.html", marcas=marcas, form=form)
+    except Exception as erro:
+        MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
+        return render_template("pagina_erro.html", MSG=MSG)
+
+@app.route("/trocarVeicCli/<int:veid>/<int:clid>", methods=["GET", "POST"])
+@login_required
+@nome_required
+@verificacao_nivel(3)
+def trocarVeicCli(veid,clid):
+    try:
+        veicu = Veiculo.query.filter_by(id=veid).first()
+        veicu.cliente_id = clid
+        db.session.commit()
+        flash(f"O Veiculo, Foi Atulizado com Sucesso!!!", "cor-ok")
+        return redirect("/clientes")
     except Exception as erro:
         MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
         return render_template("pagina_erro.html", MSG=MSG)

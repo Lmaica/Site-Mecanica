@@ -306,6 +306,7 @@ def searchServiso(status):
 @verificacao_nivel(4)
 def deleteServisos(id):
     try:
+        
         servisos = Serviso.query.get_or_404(id)
         if request.method == "POST":
             servisosnome = servisos.id
@@ -380,7 +381,6 @@ def deleteServisos(id):
                     db.session.delete(servisos)
                     db.session.commit()
                     registro = Registrospreservados.query.filter_by(serviso_id=servisos.id).first()
-                    print(registro)
                     flash(
                         f"O Serviço com ID: {servisosnome} foi Deletada com Sucesso!!!",
                         "cor-ok",
@@ -2129,6 +2129,7 @@ def atualizar_mecanico_os(Ser_id, mecanico):
 @verificacao_nivel(3)
 def aprovarServico(id):
     try:
+        #modo_aprovado
         servisoAprovado = Serviso.query.get_or_404(id)
         if servisoAprovado.status == "Aprovado":
             return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
@@ -2153,9 +2154,10 @@ def aprovarServico(id):
                 if 'email' in request.form:
                     if servisoAprovado.cliente_os.email:
                         Redutor_codigo.enviar_email_confirmar(servisoAprovado.cliente_os.email, nova_senha, 'APROVAR', servisoAprovado)
-                        registro.status = 'AGUARDANDO'
-                        registro.modo_aprovado = 'Link enviado ao e-mail do cliente'
-                        db.session.commit()
+                        if registro:
+                            registro.status = 'AGUARDANDO'
+                            registro.modo_aprovado = 'Link enviado ao e-mail do cliente'
+                            db.session.commit()
                         flash(
                             f"Email enviado com sucesso!!!",
                             "cor-ok",
@@ -2169,9 +2171,10 @@ def aprovarServico(id):
                         return redirect(f"/AbrirServico/{servisoAprovado.id}/dados")
                 if 'copia' in request.form:
                     pyperclip.copy(aprovar_url)
-                    registro.status = 'AGUARDANDO'
-                    registro.modo_aprovado = 'Link copiado e enviado ao cliente'
-                    db.session.commit()
+                    if registro:
+                        registro.status = 'AGUARDANDO'
+                        registro.modo_aprovado = 'Link copiado e enviado ao cliente'
+                        db.session.commit()
                     flash(
                             f"Link Copiado para a área de transferência. Para aprovar o serviço, é fundamental que o cliente Aprove.",
                             "cor-ok",
@@ -2229,9 +2232,10 @@ def aprovarServico(id):
                                         db.session.commit()
                     servisoAprovado.status = "Aprovado"
                     db.session.commit()
-                    registro.modo_aprovado = 'Assinado pelo cliente'
-                    registro.status = '!Autorizado!--Escolha o status do serviço--'
-                    db.session.commit()
+                    if registro:
+                        registro.modo_aprovado = 'Assinado pelo cliente'
+                        registro.status = '!Autorizado!--Escolha o status do serviço--'
+                        db.session.commit()
                     flash(
                         f"O Serviço foi Aprovado, com Sucesso!!!",
                         "cor-ok",
