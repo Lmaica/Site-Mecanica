@@ -499,7 +499,6 @@ def atulizveiculo(id):
     try:
         veiculo = Veiculo.query.get_or_404(id)
         form = ForVeiculo(request.form)
-
         if request.method == "POST":
             marca = request.form.get("marca")
             modelo = request.form.get("modelo")

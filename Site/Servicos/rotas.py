@@ -2128,7 +2128,7 @@ def atualizar_mecanico_os(Ser_id, mecanico):
 @nome_required
 @verificacao_nivel(3)
 def aprovarServico(id):
-    try:
+
         #modo_aprovado
         servisoAprovado = Serviso.query.get_or_404(id)
         if servisoAprovado.status == "Aprovado":
@@ -2140,7 +2140,6 @@ def aprovarServico(id):
         if servisoAprovado.cliente_os_id > 0 and servisoAprovado.veiculo_os_id > 0:
             if request.method == "POST":
                 nova_senha = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-                aprovar_url = url_for('aprovacao',usuario=servisoAprovado.cliente_os.email ,token=nova_senha,serviso=servisoAprovado.id, _external=True)
                 get_token = Token(
                             requisitor=servisoAprovado.cliente_os.email,
                             token=nova_senha,
@@ -2152,6 +2151,7 @@ def aprovarServico(id):
                 veiculo.km = request.form.get("kmAtualiza")
                 db.session.commit()
                 if 'email' in request.form:
+                    aprovar_url = url_for('aprovacao', usuario=servisoAprovado.cliente_os.email, token=nova_senha, serviso=servisoAprovado.id, _external=True)                    
                     if servisoAprovado.cliente_os.email:
                         Redutor_codigo.enviar_email_confirmar(servisoAprovado.cliente_os.email, nova_senha, 'APROVAR', servisoAprovado)
                         if registro:
@@ -2170,6 +2170,7 @@ def aprovarServico(id):
                         )
                         return redirect(f"/AbrirServico/{servisoAprovado.id}/dados")
                 if 'copia' in request.form:
+                    aprovar_url = url_for('aprovacao', usuario=servisoAprovado.cliente_os.email, token=nova_senha, serviso=servisoAprovado.id, _external=True)
                     pyperclip.copy(aprovar_url)
                     if registro:
                         registro.status = 'AGUARDANDO'
@@ -2181,6 +2182,7 @@ def aprovarServico(id):
                         )
                     return redirect(f"/AbrirServico/{servisoAprovado.id}/tratatar")
                 if 'imprimir' in request.form:
+                    #aprovacao
                     for peca_um in getPeca:
                         if "itens" in pecas_os:
                             for index, item in enumerate(pecas_os["itens"]):
@@ -2249,9 +2251,7 @@ def aprovarServico(id):
                 "cor-alerta",
             )
             return redirect(f"/AbrirServico/{servisoAprovado.id}/dados")
-    except Exception as erro:
-        MSG = f"Erro {erro}!!! Desculpe mais algo deu errado,volte a pagina inicial e Tente Novamente!!!"
-        return render_template("pagina_erro.html", MSG=MSG)
+
 
  
 # SERVIcOS FINALIZAR
