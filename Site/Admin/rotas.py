@@ -161,7 +161,29 @@ def buscar_dados_dois_banco(data_objeto_data_inicio, data_objeto_data_fim, granu
 
 def buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias_lista, granularity,tabela):
     resultados_organizados = {}
-
+    if granularity == 'ano':
+        group_by_fields = [cast(func.strftime('%Y', Caixa.data_criado), Integer)]
+        date_fields = [cast(func.strftime('%Y', Caixa.data_criado), Integer).label('ano')]
+    elif granularity == 'mes':
+        group_by_fields = [
+            cast(func.strftime('%Y', Caixa.data_criado), Integer),
+            cast(func.strftime('%m', Caixa.data_criado), Integer)
+        ]
+        date_fields = [
+            cast(func.strftime('%Y', Caixa.data_criado), Integer).label('ano'),
+            cast(func.strftime('%m', Caixa.data_criado), Integer).label('mes')
+        ]
+    else:
+        group_by_fields = [
+            cast(func.strftime('%Y', Caixa.data_criado), Integer),
+            cast(func.strftime('%m', Caixa.data_criado), Integer),
+            cast(func.strftime('%d', Caixa.data_criado), Integer)
+        ]
+        date_fields = [
+            cast(func.strftime('%Y', Caixa.data_criado), Integer).label('ano'),
+            cast(func.strftime('%m', Caixa.data_criado), Integer).label('mes'),
+            cast(func.strftime('%d', Caixa.data_criado), Integer).label('dia')
+        ]
     for index, categoria in enumerate(categorias_lista):
         if tabela == 'Tabela_Caixa':
             resultado_categoria = (
@@ -180,11 +202,22 @@ def buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias_
                     Caixa.catcaixa_id != 2,
                     Caixa.catcaixa.has(Catcaixa.nome == categoria)
                 )
-                .group_by(
-                    cast(func.strftime('%Y', Caixa.data_criado), Integer),
-                    cast(func.strftime('%m', Caixa.data_criado), Integer),
-                    cast(func.strftime('%d', Caixa.data_criado), Integer),
+                .group_by(*group_by_fields)
+                .all()
+            )
+        elif tabela == 'bruto':
+            resultado_categoria = (
+                db.session.query(
+                    cast(func.strftime('%Y', Caixa.data_criado), Integer).label('ano'),
+                    cast(func.strftime('%m', Caixa.data_criado), Integer).label('mes'),
+                    cast(func.strftime('%d', Caixa.data_criado), Integer).label('dia'),
+                    func.sum(text("CAST(REPLACE(REPLACE(REPLACE(REPLACE(valor, 'R$', ''), '\xa0', ''), '.', ''), ',', '.') AS FLOAT)")).label(categoria)
                 )
+                .filter(
+                    Caixa.data_criado.between(data_objeto_data_inicio, data_objeto_data_fim),
+                    Caixa.tipo == categoria,
+                )
+                .group_by(*group_by_fields)
                 .all()
             )
         else:
@@ -206,6 +239,7 @@ def buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias_
                 .all()
             )
         
+
         for resultado in resultado_categoria:
             ano, mes, dia, valor = resultado[:4]
             if granularity == 'ano':
@@ -239,7 +273,6 @@ def buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias_
             [{'ano': date_tuple[0], **data} for date_tuple, data in resultados_organizados.items() if len(date_tuple) == 1],
             key=lambda x: (x['ano'])
         )
-    
     return resultados_finais
 
 
@@ -434,11 +467,13 @@ def buscar_graficos():
     
     diferenca_meses = (data_objeto_data_fim.year - data_objeto_data_inicio.year) * 12 + (data_objeto_data_fim.month - data_objeto_data_inicio.month)
     diferenca_dias = data_objeto_data_fim.day - data_objeto_data_inicio.day
-    
+   
     if diferenca_dias > 0:
         diferenca_meses += 1
     if tipo == 'ganho':
         categorias = ['SERVIÇOS', 'PEÇAS', 'OUTROS']
+    elif tipo == 'bruto':
+        categorias = ['Entrada', 'Saida']
     else:
         categorias = [] 
         lista_catcaixa = Catcaixa.query.filter(Catcaixa.id != 1).all()
@@ -453,13 +488,13 @@ def buscar_graficos():
     meses_referente= []
     if tipo == 'ganho':
         resultados_finais = buscar_dados_dois_banco(data_objeto_data_inicio, data_objeto_data_fim, estilo_data)
+    elif tipo == 'bruto':
+        resultados_finais = buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias, estilo_data,'bruto')
     else:    
         resultados_finais = buscar_dados_banco(data_objeto_data_inicio, data_objeto_data_fim,categorias, estilo_data,'Tabela_Caixa')
 
-
     excluidas = ['ano', 'mes', 'dia']
     categoria_filtradas = list({chave for item in resultados_finais for chave, valor in item.items() if chave not in excluidas})
-
 
     dados_grafico = {categoria: {} for categoria in categoria_filtradas}
     listas_categorias = {categoria: [] for categoria in categoria_filtradas}
@@ -467,7 +502,8 @@ def buscar_graficos():
         'categories': meses_referente,
         'series': []
     }
-
+    valor_total_bruto_entrada = []
+    valor_total_bruto_saida = []
     for categoria in categoria_filtradas:
         lista_categoria = []
         dados_categoria = {categoria: []}
@@ -491,19 +527,28 @@ def buscar_graficos():
             
             lista_categoria.append(valor_categoria)
             dados_categoria[categoria].append(valor_categoria)
+            if tipo == 'bruto':
+                if categoria == 'Entrada':
+                    valor_total_bruto_entrada.append(valor_categoria)
+                if categoria == 'Saida':
+                    valor_total_bruto_saida.append(valor_categoria)
+
 
         listas_categorias[categoria] = lista_categoria
         dados_grafico[categoria] = dados_categoria
 
         meses_referente = list(set(meses_referente))
     for categoria in categoria_filtradas:
-        for nome_serie, valores in dados_grafico[categoria].items():
+        for nome_serie, valores in dados_grafico[categoria].items():  
             grafico_data['series'].append({'name': nome_serie, 'values': valores})
 
     total_somas_pizza = [sum(listas_categorias[categoria]) for categoria in categoria_filtradas]
 
     #para o grafico de velocidade ---------------------------------------------    
-    valor_metas_liquida = Metasliquido.query.order_by(desc(Metasliquido.id)).first()
+    if tipo == 'bruto':
+        valor_metas_liquida = Metasbruto.query.order_by(desc(Metasbruto.id)).first()
+    else:     
+        valor_metas_liquida = Metasliquido.query.order_by(desc(Metasliquido.id)).first()
     meta_liquiudo = Calculos_gloabal.valor_para_Calculos(valor_metas_liquida.meta)
     bonos_liquiudo = Calculos_gloabal.valor_para_Calculos(valor_metas_liquida.bonos)
 
@@ -550,18 +595,48 @@ def buscar_graficos():
     for valor in total_mes_liquido_outros:
         valor_total_mes_liquido_outros.append(valor[0])
     valor_total_mes_liquido_outros= sum(valor_total_mes_liquido_outros)
+    if tipo == 'bruto':
+        grafico = sum(valor_total_bruto_entrada)
+        nova_serie = {'name': 'Diferença', 'values': []}
+        valor_serie_entrada = None
+        valor_serie_saida = None
+
+        # Itera sobre as categorias
+        for i in range(len(grafico_data['categories'])):
+            # Reseta os valores das séries
+            valor_serie_entrada = None
+            valor_serie_saida = None
+            
+            # Encontra os valores das séries para a categoria atual
+            for series in grafico_data['series']:
+                if series['name'] == 'Entrada':
+                    valor_serie_entrada = series['values'][i]
+                elif series['name'] == 'Saida':
+                    valor_serie_saida = series['values'][i]
+            
+            # Verifica se ambos os valores foram encontrados
+            if valor_serie_entrada is not None and valor_serie_saida is not None:
+                diferenca = valor_serie_entrada - valor_serie_saida
+                nova_serie['values'].append(diferenca)
+            else:
+                # Adiciona um valor nulo ou 0 se faltar dados
+                nova_serie['values'].append(None)  # ou 0, dependendo do que faz sentido para você
+
+        # Adiciona a nova série ao gráfico
+        grafico_data['series'].append(nova_serie)
+    else:     
+        grafico = valor_total_mes_liquido + valor_total_mes_liquido_outros
     
-    grafico = valor_total_mes_liquido + valor_total_mes_liquido_outros
-    nova_serie = {'name': 'TOTAL', 'values': []}
+        nova_serie = {'name': 'TOTAL', 'values': []}
 
-    for i in range(len(grafico_data['categories'])):
-        soma_dia = 0
-        for serie in grafico_data['series']:
-            soma_dia += serie['values'][i]
-        
-        nova_serie['values'].append(soma_dia)
+        for i in range(len(grafico_data['categories'])):
+            soma_dia = 0
+            for serie in grafico_data['series']:
+                soma_dia += serie['values'][i]
+            
+            nova_serie['values'].append(soma_dia)
 
-    grafico_data['series'].append(nova_serie)
+        grafico_data['series'].append(nova_serie)
 
     #Dados de grafico
     dados = {
@@ -578,7 +653,6 @@ def buscar_graficos():
 
             'bar_data': grafico_data,
         }
-    
     return jsonify(dados)
 
 

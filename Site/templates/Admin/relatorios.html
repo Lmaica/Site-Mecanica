@@ -24,7 +24,15 @@
                 <hr>
             </ul>
         </li>
-
+        <li class="principalCorUnica"><a href="#"  onclick="toggleSubMenu(this)">Entra e Saida<i>&#8595;</i></a>
+            <ul class="principalCorMesclada submenu">
+                <hr>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='dia',tipo='bruto')}}">Diario<a></li>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='mes',tipo='bruto')}}">Mensal<a></li>
+                <li><a href="{{url_for('pagina_graficos',estilo_data='ano',tipo='bruto')}}">Anual</a></li>
+                <hr>
+            </ul>
+        </li>
         <hr style="padding: 1px; background-color: black; border-radius: 10px;">
     </ul>
 </div>
