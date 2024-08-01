@@ -116,7 +116,14 @@
                             </tr>
                             <tr>
                                 <th>Pagador/Codigo</th>
+                                {%if Caixa.catcaixa_id == 1 %}
+                                <td colspan="3"><a
+                                        href="{{url_for('AbrirServico',id=Caixa.pagopor,tratatar='alertar')}}">{{ Caixa.pagopor }}</a></td>
+
+                                {%else%}
+                                {{Caixa.catcaixa_id}}
                                 <td colspan="3">{{ Caixa.pagopor }}</td>
+                                {%endif%}
                             </tr>
                             {%if Caixa.tipo == 'Entrada' %}
                             {%else%}
@@ -145,7 +152,8 @@
                                             necessário utilizar
                                             exclusivamente o Serviços Finalizados.</p>
                                         {%elif Caixa.catcaixa.nome == '*TRASFERIR*'%}
-                                        <p style="color: aliceblue;">Transferências: Esta operação não pode ser excluída nem modificada</p>
+                                        <p style="color: aliceblue;">Transferências: Esta operação não pode ser excluída
+                                            nem modificada</p>
                                         {%else%}
                                         <a href="#"><input type="submit"
                                                 onclick="showDiv('Caixas', '{{Caixa.id}}', '{{Caixa.descricao}}')"

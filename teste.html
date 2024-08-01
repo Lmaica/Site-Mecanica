@@ -4,175 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Aprovação de Serviço</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .approval-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 600px;
-        }
-
-        .approval-form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .approval-label {
-            margin-bottom: 8px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-        }
-
-        .approval-button {
-            margin-bottom: 16px;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            width: calc(100% - 22px);
-            resize: none;
-        }
-
-        .approval-checkbox:focus,
-        .approval-button:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-
-        .approval-button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .approval-button:hover {
-            background-color: #0056b3;
-        }
-
-        .approval-modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .approval-modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            width: 80%;
-            max-width: 500px;
-        }
-
-        .approval-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .approval-close:hover,
-        .approval-close:focus {
-            color: #333;
-            text-decoration: none;
-        }
-    </style>
+    <title>Carregar e Redimensionar Vídeo</title>
 </head>
 
 <body>
-    <div class="approval-container">
-        <label class="approval-label">
-            <input type="checkbox" id="termsCheckbox" class="approval-checkbox" required>
-            Eu li e concordo com os <a href="#" id="openTermsButton">termos de responsabilidade</a>.
-        </label>
-        <button type="submit" class="approval-button">Enviar para Aprovação</button>
+    <h1>Carregar e Redimensionar Vídeo</h1>
+    <input type="file" id="videoInput" accept="video/*">
+    <video id="video" controls></video>
+    <canvas id="canvas"></canvas>
 
-        <div id="termsModal" class="approval-modal">
-            <div class="approval-modal-content">
-                <span class="approval-close">&times;</span>
-                <h2 class="approval-modal-title">Termos de Responsabilidade</h2>
-                <p class="approval-modal-text">
-                    Eu, [Nome do Cliente], declaro estar ciente e concordo com os seguintes termos de responsabilidade
-                    para a realização de serviços pela oficina mecânica:
-                <ol>
-                    <li>Autorizo a oficina mecânica a realizar os serviços descritos.</li>
-                    <li>Aceito o uso de peças novas ou usadas, conforme especificado pelo mecânico.</li>
-                    <li>Compreendo que o prazo de conclusão pode variar conforme a complexidade do serviço.</li>
-                    <li>Concordo que eventuais problemas após a execução do serviço devem ser comunicados à oficina
-                        imediatamente.</li>
-                    <li>Comprometo-me a pagar pelos serviços realizados conforme o orçamento aprovado.</li>
-                </ol>
-                Data: [Data]
-                </p>
-                <button id="agreeButton" class="approval-button">Concordo</button>
-            </div>
-        </div>
-    </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const termsModal = document.getElementById('termsModal');
-            const modalClose = document.querySelector('.approval-close');
-            const openTermsButton = document.getElementById('openTermsButton');
-            const termsCheckbox = document.getElementById('termsCheckbox');
-            const approvalForm = document.getElementById('approvalForm');
+        document.getElementById('videoInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(file);
+                video.onloadedmetadata = function () {
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxWidth = 300;  // Largura máxima desejada
+                    const maxHeight = 300; // Altura máxima desejada
+                    let width = video.videoWidth;
+                    let height = video.videoHeight;
 
-            modalClose.addEventListener('click', closeModal);
-            openTermsButton.addEventListener('click', openModal);
-            window.addEventListener('click', outsideClick);
+                    // Calcular as novas dimensões do vídeo
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
 
-            function openModal() {
-                termsModal.style.display = 'block';
+                    // Definir as dimensões do canvas
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Desenhar o primeiro frame do vídeo redimensionado no canvas
+                    video.currentTime = 0;
+                    video.onseeked = function () {
+                        ctx.drawImage(video, 0, 0, width, height);
+                    };
+                };
+
+                // Atualizar a fonte do vídeo para exibir no elemento <video>
+                const videoElement = document.getElementById('video');
+                videoElement.src = URL.createObjectURL(file);
             }
-
-            function closeModal() {
-                termsModal.style.display = 'none';
-            }
-
-            function outsideClick(e) {
-                if (e.target === termsModal) {
-                    termsModal.style.display = 'none';
-                }
-            }
-
-            agreeButton.addEventListener('click', function () {
-                closeModal();
-                termsCheckbox.checked = true;
-            });
-
-            approvalForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-                if (termsCheckbox.checked) {
-                    alert('Serviço enviado para aprovação!');
-                } else {
-                    alert('Você precisa concordar com os termos de responsabilidade.');
-                }
-            });
         });
     </script>
 </body>
